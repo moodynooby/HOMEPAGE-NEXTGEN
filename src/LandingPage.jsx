@@ -1,13 +1,11 @@
-import Sidebar from './Components/Sidebar'
+import Header from './Components/Header'
 
-function LP() {
+function LandingPage() {
 
   return (
     <>
-    <Sidebar drawer={"Menu"} active=""/>
-      <h1>Manas Doshi</h1>
-    </>
+<Header/>    </>
   )
 }
 
-export default LP
+export default LandingPage

@@ -1,0 +1,29 @@
+[
+  {
+    "link": "https://github.com/moodynooby",
+    "img": "src/assets/github-color-svgrepo-com.svg",
+    "alt": "Github"
+  },
+  {
+    "link": "https://www.linkedin.com/in/manas-doshi-644751363",
+    "img": "src/assets/linkedin-color-svgrepo-com.svg",
+    "alt": "LinkedIn"
+  },
+  {
+    "link": "https://www.instagram.com/doshimanas__/",
+    "img": "src/assets/instagram-color-svgrepo-com.svg",
+    "alt": "Instagram"
+  },
+    {
+    "link": "addons.mozilla.org/en-US/firefox/user/17859963/",
+    "img": "src/assets/firefox-color-svgrepo-com.svg",
+    "alt": "Addons Profile"
+  },
+    {
+    "link": "mailto:moodynooby@proton.me",
+    "img": "src/assets/gmail-svgrepo-com.svg",
+    "alt": "Public Mail"
+  }
+
+
+]
