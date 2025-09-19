@@ -46,8 +46,8 @@ function LandingPage() {
             
           }}
         >
-          {/* Image Section */}
-          <img src='src\Assets\generated-image.png' className='hero-icon' />
+
+
           {/* Content Section */}
           <Box 
             sx={{ 
