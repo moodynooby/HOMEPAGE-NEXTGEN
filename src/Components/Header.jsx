@@ -1,24 +1,25 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  ButtonGroup,
+  Menu,
+  MenuItem,
+  useMediaQuery
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
-import socialLinks from '../Content/socialLinks.json';
-import Drawer from '@mui/material/Drawer';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import EmailIcon from '@mui/icons-material/Email';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import socialLinks from '../Content/socialLinks.json';
 
 // Create the icon mapping
 const iconMap = {
@@ -90,23 +91,23 @@ export default function ButtonAppBar() {
 
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" color="primary" elevation={5} enableColorOnDark >
-        <Toolbar>
+    <Box >
+      <AppBar position="static" color="primary" elevation={5} enableColorOnDark  >
+        <Toolbar sx={{   display: 'flex',flexDirection: 'row',justifyContent: 'space-between',flexGrow: 1,}}>
           <Typography
-            variant="h2"
+            variant="h4"
             component="div"
-            sx={{ fontFamily: "'Winky Sans', serif" ,padding: '10px'}}
+            sx={{ fontFamily: "'Winky Sans', serif" ,padding: '10px' , fontWeight: 'bold'}}
           >
             Manas Doshi
           </Typography>
-
+<Button variant="contained" color="success">My Projects</Button>
           {isMobile ? (
             <>
               <IconButton
                 color="inherit"
                 onClick={handleMenuOpen}
-                sx={{ ml: 'auto' }}
+                sx={{ ml: 'auto'}}
               >
                 <MenuIcon />
               </IconButton>

@@ -5,3 +5,8 @@ body {
       font-family: "Alan Sans", sans-serif;
 }
 
+
+.hero-icon {
+  width: 40vw;
+  padding: 2px;
+  height: auto;}
