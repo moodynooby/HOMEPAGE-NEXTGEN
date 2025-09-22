@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import {
   AppBar,
   Box,
@@ -19,6 +20,8 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import EmailIcon from '@mui/icons-material/Email';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
+    import { Link} from 'react-router-dom';
+
 import socialLinks from '../Content/socialLinks.json';
 
 // Create the icon mapping
@@ -77,6 +80,12 @@ function SocialLinksMenu({ open, anchorEl, onClose }) {
   );
 }
 
+SocialLinksMenu.propTypes = {
+  open: PropTypes.bool.isRequired,
+  anchorEl: PropTypes.object,
+  onClose: PropTypes.func.isRequired,
+};
+
 export default function ButtonAppBar() {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const theme = useTheme();
@@ -91,23 +100,38 @@ export default function ButtonAppBar() {
 
 
   return (
-    <Box >
-      <AppBar position="static" color="primary" elevation={5} enableColorOnDark  >
-        <Toolbar sx={{   display: 'flex',flexDirection: 'row',justifyContent: 'space-between',flexGrow: 1,}}>
+    <Box>
+      <AppBar position="static" color="primary" elevation={5} enableColorOnDark>
+        <Toolbar sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1 }}>
           <Typography
             variant="h4"
             component="div"
-            sx={{ fontFamily: "'Winky Sans', serif" ,padding: '10px' , fontWeight: 'bold'}}
+            sx={{ fontFamily: '\'Winky Sans\', serif', padding: '10px', fontWeight: 'bold' }}
           >
             Manas Doshi
           </Typography>
-<Button variant="contained" color="success">My Projects</Button>
+          <Button
+            component={Link}
+            to="/"
+            color="inherit"
+            sx={{ mx: 1 }}
+          >
+            Home
+          </Button>
+          <Button
+            component={Link}
+            to="/projects"
+            color="inherit"
+            sx={{ mx: 1 }}
+          >
+            My Projects
+          </Button>
           {isMobile ? (
             <>
               <IconButton
                 color="inherit"
                 onClick={handleMenuOpen}
-                sx={{ ml: 'auto'}}
+                sx={{ ml: 'auto' }}
               >
                 <MenuIcon />
               </IconButton>
