@@ -1,14 +1,14 @@
-import { StrictMode } from 'react';
+import { StrictMode, lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box, CircularProgress } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 
 import LandingPage from './Components/LandingPage';
-import SpeedDial from './Components/Projects';
-import ProjectDetail from './Components/ProjectDetail';
-import LinkTree from './Components/LinkTree';
+const SpeedDial = lazy(() => import('./Components/Projects'));
+const ProjectDetail = lazy(() => import('./Components/ProjectDetail'));
+const LinkTree = lazy(() => import('./Components/LinkTree'));
 
 const customTheme = createTheme({
   palette: {
@@ -144,12 +144,18 @@ root.render(
     <ThemeProvider theme={customTheme}>
       <CssBaseline /> {/* Reset CSS and apply MUI base styles */}
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/projects" element={<SpeedDial />} />
-          <Route path="/projects/:projectName" element={<ProjectDetail />} />
-          <Route path="/links" element={<LinkTree />} />
-        </Routes>
+        <Suspense fallback={
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+            <CircularProgress />
+          </Box>
+        }>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/projects" element={<SpeedDial />} />
+            <Route path="/projects/:projectName" element={<ProjectDetail />} />
+            <Route path="/links" element={<LinkTree />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,

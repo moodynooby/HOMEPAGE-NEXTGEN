@@ -40,11 +40,29 @@ export default function ProjectDetail() {
       return;
     }
 
+    const cacheKey = `readme_${project.githubName}`;
+    const cacheTimeKey = `readme_time_${project.githubName}`;
+    const CACHE_DURATION = 1000 * 60 * 60 * 24;
+
+    const cachedContent = localStorage.getItem(cacheKey);
+    const cachedTime = localStorage.getItem(cacheTimeKey);
+
+    if (cachedContent && cachedTime) {
+      const age = Date.now() - parseInt(cachedTime);
+      if (age < CACHE_DURATION) {
+        setMarkdown(cachedContent);
+        setLoading(false);
+        return;
+      }
+    }
+
     setLoading(true);
     fetch(project.githubContentPath)
       .then((res) => res.text())
       .then((content) => {
         setMarkdown(content);
+        localStorage.setItem(cacheKey, content);
+        localStorage.setItem(cacheTimeKey, Date.now().toString());
         setLoading(false);
       })
       .catch(() => {
