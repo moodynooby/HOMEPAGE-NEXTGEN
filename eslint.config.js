@@ -1,11 +1,15 @@
 import globals from 'globals';
+import js from '@eslint/js';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
 import importPlugin from 'eslint-plugin-import';
-import { defineConfig } from 'eslint-define-config';
 
-export default defineConfig([
+export default [
+  {
+    ignores: ['node_modules/', 'dist/', 'build/'],
+  },
+  js.configs.recommended,
   {
     files: ['**/*.{js,jsx}'],
     plugins: {
@@ -20,8 +24,6 @@ export default defineConfig([
       globals: {
         ...globals.browser,
         ...globals.es2021,
-        React: 'readonly',
-        JSX: 'readonly',
       },
       parserOptions: {
         ecmaFeatures: {
@@ -39,37 +41,42 @@ export default defineConfig([
         },
       },
     },
-    ignorePatterns : ['node_modules/', 'dist/', 'build/'],
     rules: {
-      // React rules
+      ...reactPlugin.configs.recommended.rules,
+      ...reactPlugin.configs['jsx-runtime'].rules,
+      
       'react/prop-types': 'error',
       'react/jsx-uses-react': 'error',
       'react/jsx-uses-vars': 'error',
-      'react/react-in-jsx-scope': 'off', // Not needed in React 17+
+      'react/react-in-jsx-scope': 'off',
       
-      // React Hooks rules
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       
-      // Import rules
       'import/no-unresolved': 'error',
       'import/named': 'error',
       'import/default': 'error',
       'import/namespace': 'error',
       'import/order': ['error', {
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-        'newlines-between': 'always'
+        'newlines-between': 'always',
       }],
       
-      // General JavaScript rules
-      'no-unused-vars': 'warn',
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': 'warn',
       'no-undef': 'error',
       'semi': ['error', 'always'],
-      'quotes': ['error', 'single'],
+      'quotes': ['error', 'single', { avoidEscape: true }],
+      'indent': ['error', 2],
+      'comma-dangle': ['error', 'always-multiline'],
+      'object-curly-spacing': ['error', 'always'],
+      'array-bracket-spacing': ['error', 'never'],
+      'arrow-spacing': 'error',
+      'keyword-spacing': 'error',
+      'space-before-blocks': 'error',
+      'eqeqeq': ['error', 'always'],
       
-      // React Refresh
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
-]);
+];

@@ -1,16 +1,14 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import {
   AppBar,
   Box,
   Toolbar,
   Typography,
-  Button,
   IconButton,
-  ButtonGroup,
   Menu,
   MenuItem,
-  useMediaQuery
+  useMediaQuery,
+  Chip,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -20,7 +18,8 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import EmailIcon from '@mui/icons-material/Email';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
-    import { Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
 
 import socialLinks from '../Content/socialLinks.json';
 
@@ -36,60 +35,45 @@ const iconMap = {
 
 function SocialLinksComponent() {
   return (
-    <ButtonGroup className="flex gap-2 ml-auto">
+    <Box sx={{ display: 'flex', gap: 1.5 }}>
       {socialLinks.map((social, index) => {
         const IconComponent = iconMap[social.alt];
         if (!IconComponent) return null;
         return (
-          <Button
+          <motion.div
             key={index}
-            href={social.link}
-            color="inherit"
-            startIcon={<IconComponent />}
-            target="_blank"
-            variant="outlined"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {social.alt}
-          </Button>
+            <IconButton
+              href={social.link}
+              target="_blank"
+              sx={{
+                color: 'primary.contrastText',
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': {
+                  bgcolor: 'secondary.main',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <IconComponent />
+            </IconButton>
+          </motion.div>
         );
       })}
-    </ButtonGroup>
+    </Box>
   );
 }
 
-function SocialLinksMenu({ open, anchorEl, onClose }) {
-  return (
-    <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
-      {socialLinks.map((social, index) => {
-        const IconComponent = iconMap[social.alt];
-        if (!IconComponent) return null;
-        return (
-          <MenuItem
-            key={index}
-            component="a"
-            href={social.link}
-            target="_blank"
-            onClick={onClose}
-          >
-            <IconComponent style={{ marginRight: 8 }} />
-            {social.alt}
-          </MenuItem>
-        );
-      })}
-    </Menu>
-  );
-}
 
-SocialLinksMenu.propTypes = {
-  open: PropTypes.bool.isRequired,
-  anchorEl: PropTypes.object,
-  onClose: PropTypes.func.isRequired,
-};
 
 export default function ButtonAppBar() {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleMenuOpen = (event) => {
     setMenuAnchorEl(event.currentTarget);
@@ -98,54 +82,175 @@ export default function ButtonAppBar() {
     setMenuAnchorEl(null);
   };
 
-
   return (
     <Box>
-      <AppBar position="static" color="primary" elevation={5} enableColorOnDark>
-        <Toolbar sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 1 }}>
-          <Typography
-            variant="h4"
-            component="div"
-            sx={{ fontFamily: '\'Winky Sans\', serif', padding: '10px', fontWeight: 'bold' }}
+      <AppBar
+        position="fixed"
+        sx={{
+          background: 'linear-gradient(135deg, rgba(63, 81, 181, 0.95) 0%, rgba(156, 39, 176, 0.9) 100%)',
+          backdropFilter: 'blur(20px)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            Manas Doshi
-          </Typography>
-          <Button
-            component={Link}
-            to="/"
-            color="inherit"
-            sx={{ mx: 1 }}
-          >
-            Home
-          </Button>
-          <Button
-            component={Link}
-            to="/projects"
-            color="inherit"
-            sx={{ mx: 1 }}
-          >
-            My Projects
-          </Button>
-          {isMobile ? (
-            <>
-              <IconButton
-                color="inherit"
-                onClick={handleMenuOpen}
-                sx={{ ml: 'auto' }}
+            <Typography
+              variant="h4"
+              component={Link}
+              to="/"
+              sx={{
+                fontFamily: '\'Winky Sans\', serif',
+                fontWeight: 'bold',
+                background: 'linear-gradient(45deg, #FFF 30%, #FFD54F 90%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  filter: 'brightness(1.2)',
+                },
+              }}
+            >
+              Manas Doshi
+            </Typography>
+          </motion.div>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                style={{ display: 'flex', gap: '12px' }}
               >
-                <MenuIcon />
-              </IconButton>
-              <SocialLinksMenu
-                open={Boolean(menuAnchorEl)}
-                anchorEl={menuAnchorEl}
-                onClose={handleMenuClose}
-              />
-            </>
-          ) : (
-            <SocialLinksComponent />
-          )}
+                <Chip
+                  component={Link}
+                  to="/"
+                  label="Home"
+                  clickable
+                  sx={{
+                    bgcolor: 'rgba(255, 255, 255, 0.15)',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    '&:hover': {
+                      bgcolor: 'secondary.main',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                />
+                <Chip
+                  component={Link}
+                  to="/projects"
+                  label="My Projects"
+                  clickable
+                  sx={{
+                    bgcolor: 'rgba(255, 255, 255, 0.15)',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    '&:hover': {
+                      bgcolor: 'secondary.main',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                />
+                <Chip
+                  component={Link}
+                  to="/links"
+                  label="Profile"
+                  clickable
+                  sx={{
+                    bgcolor: 'rgba(255, 255, 255, 0.15)',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    '&:hover': {
+                      bgcolor: 'secondary.main',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                />
+              </motion.div>
+            )}
+
+            {isMobile ? (
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <IconButton
+                  color="inherit"
+                  onClick={handleMenuOpen}
+                  sx={{
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.2)' },
+                  }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <SocialLinksComponent />
+              </motion.div>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
+
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          sx: {
+            bgcolor: 'rgba(63, 81, 181, 0.95)',
+            backdropFilter: 'blur(20px)',
+            color: 'white',
+            mt: 1,
+          },
+        }}
+      >
+        <MenuItem component={Link} to="/" onClick={handleMenuClose}>
+          Home
+        </MenuItem>
+        <MenuItem component={Link} to="/projects" onClick={handleMenuClose}>
+          My Projects
+        </MenuItem>
+        <MenuItem component={Link} to="/links" onClick={handleMenuClose}>
+          Profile
+        </MenuItem>
+        {socialLinks.map((social, index) => {
+          const IconComponent = iconMap[social.alt];
+          if (!IconComponent) return null;
+          return (
+            <MenuItem
+              key={index}
+              component="a"
+              href={social.link}
+              target="_blank"
+              onClick={handleMenuClose}
+            >
+              <IconComponent sx={{ mr: 1 }} />
+              {social.alt}
+            </MenuItem>
+          );
+        })}
+      </Menu>
     </Box>
   );
 }

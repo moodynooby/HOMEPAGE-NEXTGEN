@@ -1,0 +1,143 @@
+import { Box, Container, Typography, Paper, Avatar } from '@mui/material';
+import { motion } from 'motion/react';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import EmailIcon from '@mui/icons-material/Email';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import WebIcon from '@mui/icons-material/Web';
+import PropTypes from 'prop-types';
+
+import socialLinks from '../Content/socialLinks.json';
+
+const iconMap = {
+  'LinkedIn': LinkedInIcon,
+  'GitHub': GitHubIcon,
+  'Email': EmailIcon,
+  'Instagram': InstagramIcon,
+  'Addons Profile': WebIcon,
+};
+
+function LinkButton({ link, alt, index }) {
+  const IconComponent = iconMap[alt];
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.1 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Paper
+        component="a"
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        elevation={2}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+          p: 2.5,
+          textDecoration: 'none',
+          color: 'text.primary',
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+          border: '2px solid',
+          borderColor: 'primary.main',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+            color: 'white',
+            boxShadow: '0 8px 24px rgba(79, 70, 229, 0.3)',
+            borderColor: 'secondary.main',
+          },
+        }}
+      >
+        {IconComponent && <IconComponent sx={{ fontSize: 28 }} />}
+        <Typography variant="h6" fontWeight={600}>
+          {alt}
+        </Typography>
+      </Paper>
+    </motion.div>
+  );
+}
+
+LinkButton.propTypes = {
+  link: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+};
+
+export default function LinkTree() {
+  return (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        py: 6,
+      }}
+    >
+      <Container maxWidth="sm">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Avatar
+              sx={{
+                width: 120,
+                height: 120,
+                mx: 'auto',
+                mb: 3,
+                bgcolor: 'white',
+                color: 'primary.main',
+                fontSize: '3rem',
+                fontWeight: 800,
+                border: '4px solid',
+                borderColor: 'secondary.main',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+              }}
+            >
+              MD
+            </Avatar>
+            <Typography
+              variant="h3"
+              fontWeight={800}
+              sx={{
+                color: 'white',
+                mb: 1,
+                textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              Manas Doshi
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontSize: '1.1rem',
+              }}
+            >
+              Developer • Creator • Explorer
+            </Typography>
+          </Box>
+        </motion.div>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {socialLinks.map((social, index) => (
+            <LinkButton
+              key={index}
+              link={social.link}
+              alt={social.alt}
+              index={index}
+            />
+          ))}
+        </Box>
+      </Container>
+    </Box>
+  );
+}
