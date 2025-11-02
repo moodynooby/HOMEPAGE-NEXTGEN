@@ -48,7 +48,7 @@ const cards = [
         <Button
           variant="contained"
           size="large"
-          href="https://iet799-my.sharepoint.com/:b:/g/personal/manas_d_ahduni_edu_in/EVY_BkiInyBDqvSv50a2pDkBZ27J-yTJwBkobezhrkR1-g?e=B6miwV"
+          href="https://drive.google.com/file/d/1eJOQt0RYOFuC2p0p6Bh9c9jQ8hcL4tDL/view?usp=sharing"
           sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }}
         >
           View My Resume
