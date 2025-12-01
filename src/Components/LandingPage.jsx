@@ -48,7 +48,7 @@ const cards = [
         <Button
           variant="contained"
           size="large"
-          href="https://drive.google.com/file/d/1eJOQt0RYOFuC2p0p6Bh9c9jQ8hcL4tDL/view?usp=sharing"
+          href="https://flowcv.com/resume/woofkdsq4sse"
           sx={{ fontSize: { xs: '1rem', md: '1.1rem' } }}
         >
           View My Resume
