@@ -2,7 +2,12 @@ import { StrictMode, lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, Box, CircularProgress } from '@mui/material';
+import {
+  ThemeProvider,
+  CssBaseline,
+  Box,
+  CircularProgress,
+} from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 
 import LandingPage from './Components/LandingPage';
@@ -14,38 +19,40 @@ const customTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#4F46E5',
-      light: '#818CF8',
-      dark: '#3730A3',
+      main: '#6B7280',
+      light: '#9CA3AF',
+      dark: '#4B5563',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#F59E0B',
-      light: '#FCD34D',
-      dark: '#D97706',
-      contrastText: '#1F2937',
+      main: '#9CA3AF',
+      light: '#D1D5DB',
+      dark: '#6B7280',
+      contrastText: '#111827',
     },
     success: {
-      main: '#10B981',
-      light: '#34D399',
-      dark: '#059669',
+      main: '#6EE7B7',
+      light: '#86EFAC',
+      dark: '#4ADE80',
     },
     info: {
-      main: '#06B6D4',
-      light: '#22D3EE',
-      dark: '#0891B2',
+      main: '#60A5FA',
+      light: '#93C5FD',
+      dark: '#3B82F6',
     },
     background: {
       default: '#F9FAFB',
       paper: '#FFFFFF',
     },
     text: {
-      primary: '#1F2937',
+      primary: '#111827',
       secondary: '#6B7280',
     },
+    divider: 'rgba(107, 114, 128, 0.12)', // M3 divider tone
   },
   typography: {
-    fontFamily: '"Alan Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily:
+      '"Alan Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
       fontSize: '3rem',
       fontWeight: 800,
@@ -73,18 +80,19 @@ const customTheme = createTheme({
       fontWeight: 600,
     },
   },
-  spacing: 8,
+  spacing: 4, // M3 standard spacing unit
   shape: {
     borderRadius: 12,
   },
   shadows: [
+    // M3 tonal elevations (neutral + primary surface)
     'none',
-    '0px 2px 4px rgba(79, 70, 229, 0.05)',
-    '0px 4px 8px rgba(79, 70, 229, 0.08)',
-    '0px 8px 16px rgba(79, 70, 229, 0.12)',
-    '0px 12px 24px rgba(79, 70, 229, 0.15)',
-    '0px 16px 32px rgba(79, 70, 229, 0.18)',
-    ...Array(19).fill('0px 16px 32px rgba(79, 70, 229, 0.18)'),
+    '0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.24)',
+    '0px 3px 6px rgba(0, 0, 0, 0.16), 0px 3px 6px rgba(0, 0, 0, 0.23)',
+    '0px 10px 20px rgba(0, 0, 0, 0.19), 0px 6px 6px rgba(0, 0, 0, 0.23)',
+    '0px 14px 28px rgba(0, 0, 0, 0.25), 0px 10px 10px rgba(0, 0, 0, 0.22)',
+    '0px 19px 38px rgba(0, 0, 0, 0.30), 0px 15px 12px rgba(0, 0, 0, 0.22)',
+    ...Array(20).fill('0px 25px 50px rgba(0, 0, 0, 0.25)'),
   ],
   components: {
     MuiCssBaseline: {
@@ -93,24 +101,43 @@ const customTheme = createTheme({
           height: 100%;
           margin: 0;
           padding: 0;
+          scroll-behavior: smooth;
+        }
+        *::-webkit-scrollbar {
+          width: 6px;
+        }
+        *::-webkit-scrollbar-track {
+          background: rgba(229, 231, 235, 0.5);
+          border-radius: 12px;
+        }
+        *::-webkit-scrollbar-thumb {
+          background: rgba(107, 114, 128, 0.4);
+          border-radius: 12px;
+        }
+        *::-webkit-scrollbar-thumb:hover {
+          background: rgba(107, 114, 128, 0.6);
         }
       `,
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
-          padding: '10px 24px',
-          fontSize: '1rem',
+          borderRadius: 12,
+          padding: '12px 28px',
+          fontSize: '0.95rem',
           fontWeight: 600,
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          height: 48,
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-1px)',
+            boxShadow: ({ palette }) => `0 4px 12px ${palette.primary.main}20`,
+          },
         },
         contained: {
-          boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)',
-          '&:hover': {
-            boxShadow: '0 6px 20px rgba(79, 70, 229, 0.35)',
-            transform: 'translateY(-2px)',
-          },
+          boxShadow: ({ palette }) => `0 2px 8px ${palette.primary.main}15`,
+        },
+        outlined: {
+          borderWidth: 1.5,
         },
       },
     },
@@ -118,19 +145,59 @@ const customTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
+          backdropFilter: 'saturate(180%) blur(20px)',
         },
         elevation1: {
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'saturate(180%) blur(20px)',
         },
         elevation3: {
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+          background: 'rgba(255, 255, 255, 0.92)',
+          backdropFilter: 'saturate(180%) blur(24px)',
         },
       },
     },
     MuiAppBar: {
+      defaultProps: {
+        elevation: 2,
+      },
       styleOverrides: {
         root: {
-          background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+          backdropFilter: 'saturate(180%) blur(20px)',
+          background: 'rgba(255, 255, 255, 0.92)',
+          borderBottom: ({ palette }) => `1px solid ${palette.divider}`,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: ({ shadows }) => shadows[8],
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          height: 32,
+          fontWeight: 500,
+          fontSize: '0.8rem',
+          borderRadius: 20,
+        },
+      },
+    },
+    MuiSpeedDial: {
+      styleOverrides: {
+        root: {
+          '& .MuiSpeedDialAction-fab': {
+            bgcolor: ({ palette }) => palette.primary.main,
+            boxShadow: ({ shadows }) => shadows[4],
+          },
         },
       },
     },
@@ -142,13 +209,23 @@ const root = createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
     <ThemeProvider theme={customTheme}>
-      <CssBaseline /> {/* Reset CSS and apply MUI base styles */}
+      <CssBaseline />
       <BrowserRouter>
-        <Suspense fallback={
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-            <CircularProgress />
-          </Box>
-        }>
+        <Suspense
+          fallback={
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh',
+                bgcolor: 'background.default',
+              }}
+            >
+              <CircularProgress size={48} thickness={4} />
+            </Box>
+          }
+        >
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/projects" element={<SpeedDial />} />

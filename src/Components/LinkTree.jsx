@@ -73,8 +73,6 @@ export default function LinkTree() {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         display: 'flex',
         alignItems: 'center',
         py: 6,
@@ -108,7 +106,6 @@ export default function LinkTree() {
               variant="h3"
               fontWeight={800}
               sx={{
-                color: 'white',
                 mb: 1,
                 textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
               }}

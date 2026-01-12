@@ -10,12 +10,7 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import {
-  ArrowBack,
-  ArrowForward,
-  GitHub,
-  Close,
-} from '@mui/icons-material';
+import { ArrowBack, ArrowForward, GitHub, Close } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -229,16 +224,36 @@ export default function ProjectDetail() {
                   remarkPlugins={[remarkGfm]}
                   components={{
                     h1: ({ ...props }) => (
-                      <Typography variant="h3" gutterBottom sx={{ fontWeight: 700, mt: 3 }} {...props} />
+                      <Typography
+                        variant="h3"
+                        gutterBottom
+                        sx={{ fontWeight: 700, mt: 3 }}
+                        {...props}
+                      />
                     ),
                     h2: ({ ...props }) => (
-                      <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, mt: 3 }} {...props} />
+                      <Typography
+                        variant="h4"
+                        gutterBottom
+                        sx={{ fontWeight: 600, mt: 3 }}
+                        {...props}
+                      />
                     ),
                     h3: ({ ...props }) => (
-                      <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mt: 2 }} {...props} />
+                      <Typography
+                        variant="h5"
+                        gutterBottom
+                        sx={{ fontWeight: 600, mt: 2 }}
+                        {...props}
+                      />
                     ),
                     p: ({ ...props }) => (
-                      <Typography variant="body1" paragraph sx={{ lineHeight: 1.8 }} {...props} />
+                      <Typography
+                        variant="body1"
+                        paragraph
+                        sx={{ lineHeight: 1.8 }}
+                        {...props}
+                      />
                     ),
                     a: ({ ...props }) => (
                       <a
@@ -278,10 +293,16 @@ export default function ProjectDetail() {
                         </pre>
                       ),
                     ul: ({ ...props }) => (
-                      <ul style={{ paddingLeft: '20px', lineHeight: 1.8 }} {...props} />
+                      <ul
+                        style={{ paddingLeft: '20px', lineHeight: 1.8 }}
+                        {...props}
+                      />
                     ),
                     ol: ({ ...props }) => (
-                      <ol style={{ paddingLeft: '20px', lineHeight: 1.8 }} {...props} />
+                      <ol
+                        style={{ paddingLeft: '20px', lineHeight: 1.8 }}
+                        {...props}
+                      />
                     ),
                     blockquote: ({ ...props }) => (
                       <Box

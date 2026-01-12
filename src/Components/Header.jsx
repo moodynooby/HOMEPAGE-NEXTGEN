@@ -23,43 +23,47 @@ import { motion } from 'motion/react';
 
 import socialLinks from '../Content/socialLinks.json';
 
-// Create the icon mapping
+// Icon mapping
 const iconMap = {
-  'LinkedIn': LinkedInIcon,
-  'GitHub': GitHubIcon,
-  'Twitter': TwitterIcon,
-  'Email': EmailIcon,
-  'Instagram': InstagramIcon,
+  LinkedIn: LinkedInIcon,
+  GitHub: GitHubIcon,
+  Twitter: TwitterIcon,
+  Email: EmailIcon,
+  Instagram: InstagramIcon,
   'Addons Profile': WebIcon,
 };
 
 function SocialLinksComponent() {
   return (
-    <Box sx={{ display: 'flex', gap: 1.5 }}>
+    <Box sx={{ display: 'flex', gap: 1 }}>
       {socialLinks.map((social, index) => {
         const IconComponent = iconMap[social.alt];
         if (!IconComponent) return null;
         return (
           <motion.div
             key={index}
-            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
           >
             <IconButton
               href={social.link}
               target="_blank"
+              size="small"
               sx={{
-                color: 'primary.contrastText',
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
+                color: 'primary.main',
+                bgcolor: 'background.paper',
+                boxShadow:
+                  '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
                 '&:hover': {
-                  bgcolor: 'secondary.main',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                  bgcolor: 'primary.light',
+                  boxShadow: '0 4px 12px rgba(107, 114, 128, 0.3)', // primary.main alpha
+                  transform: 'translateY(-1px)',
                 },
-                transition: 'all 0.3s ease',
+                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
-              <IconComponent />
+              <IconComponent fontSize="small" />
             </IconButton>
           </motion.div>
         );
@@ -67,8 +71,6 @@ function SocialLinksComponent() {
     </Box>
   );
 }
-
-
 
 export default function ButtonAppBar() {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
@@ -83,37 +85,50 @@ export default function ButtonAppBar() {
   };
 
   return (
-    <Box>
+    <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
+        elevation={1}
         sx={{
-          background: 'linear-gradient(135deg, rgba(63, 81, 181, 0.95) 0%, rgba(156, 39, 176, 0.9) 100%)',
-          backdropFilter: 'blur(20px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'rgba(255, 255, 255, 0.92)',
+          backdropFilter: 'saturate(180%) blur(12px)',
+          boxShadow: theme.shadows[2], 
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          borderRadius: '16px 16px 16px 16px', 
+          top: { xs: 0, md: '12px' }, 
+          left: { md: '50%' },
+          transform: { md: 'translateX(-50%)' },
+          width: { md: 'calc(100% - 48px)' },
+          maxWidth: '1200px',
         }}
       >
-        <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+        <Toolbar
+          sx={{
+            justifyContent: 'space-between',
+            px: { xs: 2, md: 3 },
+            py: 1.5,
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
           >
             <Typography
-              variant="h4"
+              variant="h5"
               component={Link}
               to="/"
               sx={{
-                fontFamily: '\'Winky Sans\', serif',
-                fontWeight: 'bold',
-                background: 'linear-gradient(45deg, #FFF 30%, #FFD54F 90%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                fontFamily: theme.typography.fontFamily,
+                fontWeight: 700,
+                color: 'text.primary',
                 textDecoration: 'none',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
+                letterSpacing: '-0.02em',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
-                  filter: 'brightness(1.2)',
+                  color: 'primary.dark',
+                  transform: 'scale(1.02)',
                 },
               }}
             >
@@ -121,48 +136,51 @@ export default function ButtonAppBar() {
             </Typography>
           </motion.div>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {!isMobile && (
               <motion.div
-                initial={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                style={{ display: 'flex', gap: '12px' }}
+                transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <Chip
                   component={Link}
                   to="/"
                   label="Home"
                   clickable
+                  size="small"
                   sx={{
-                    bgcolor: 'rgba(255, 255, 255, 0.15)',
-                    color: 'white',
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
+                    bgcolor: 'rgba(107, 114, 128, 0.08)', // primary.main subtle
+                    color: 'text.primary',
+                    fontWeight: 500,
+                    fontSize: '0.875rem',
+                    borderRadius: 20,
                     '&:hover': {
-                      bgcolor: 'secondary.main',
+                      bgcolor: 'primary.light',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      boxShadow: theme.shadows[4],
                     },
-                    transition: 'all 0.3s ease',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 />
                 <Chip
                   component={Link}
                   to="/projects"
-                  label="My Projects"
+                  label="Projects"
                   clickable
+                  size="small"
                   sx={{
-                    bgcolor: 'rgba(255, 255, 255, 0.15)',
-                    color: 'white',
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
+                    bgcolor: 'rgba(107, 114, 128, 0.08)',
+                    color: 'text.primary',
+                    fontWeight: 500,
+                    fontSize: '0.875rem',
+                    borderRadius: 20,
                     '&:hover': {
-                      bgcolor: 'secondary.main',
+                      bgcolor: 'primary.light',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      boxShadow: theme.shadows[4],
                     },
-                    transition: 'all 0.3s ease',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 />
                 <Chip
@@ -170,30 +188,36 @@ export default function ButtonAppBar() {
                   to="/links"
                   label="Profile"
                   clickable
+                  size="small"
                   sx={{
-                    bgcolor: 'rgba(255, 255, 255, 0.15)',
-                    color: 'white',
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
+                    bgcolor: 'rgba(107, 114, 128, 0.08)',
+                    color: 'text.primary',
+                    fontWeight: 500,
+                    fontSize: '0.875rem',
+                    borderRadius: 20,
                     '&:hover': {
-                      bgcolor: 'secondary.main',
+                      bgcolor: 'primary.light',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      boxShadow: theme.shadows[4],
                     },
-                    transition: 'all 0.3s ease',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 />
               </motion.div>
             )}
 
             {isMobile ? (
-              <motion.div whileTap={{ scale: 0.9 }}>
+              <motion.div whileTap={{ scale: 0.95 }}>
                 <IconButton
-                  color="inherit"
                   onClick={handleMenuOpen}
                   sx={{
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
-                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.2)' },
+                    color: 'primary.main',
+                    bgcolor: 'rgba(107, 114, 128, 0.12)',
+                    '&:hover': {
+                      bgcolor: 'primary.light',
+                      transform: 'scale(1.1)',
+                    },
+                    transition: 'all 0.2s ease',
                   }}
                 >
                   <MenuIcon />
@@ -203,7 +227,7 @@ export default function ButtonAppBar() {
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <SocialLinksComponent />
               </motion.div>
@@ -216,20 +240,34 @@ export default function ButtonAppBar() {
         anchorEl={menuAnchorEl}
         open={Boolean(menuAnchorEl)}
         onClose={handleMenuClose}
-        PaperProps={{
-          sx: {
-            bgcolor: 'rgba(63, 81, 181, 0.95)',
-            backdropFilter: 'blur(20px)',
-            color: 'white',
-            mt: 1,
+        slotProps={{
+          paper: {
+            sx: {
+              mt: 1,
+              borderRadius: 12,
+              bgcolor: 'background.paper',
+              boxShadow: theme.shadows[8],
+              minWidth: 200,
+              '& .MuiMenuItem-root': {
+                fontWeight: 500,
+                borderRadius: 8,
+                mx: 0.5,
+                my: 0.25,
+                '&:hover': {
+                  bgcolor: 'primary.light',
+                },
+              },
+            },
           },
         }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <MenuItem component={Link} to="/" onClick={handleMenuClose}>
           Home
         </MenuItem>
         <MenuItem component={Link} to="/projects" onClick={handleMenuClose}>
-          My Projects
+          Projects
         </MenuItem>
         <MenuItem component={Link} to="/links" onClick={handleMenuClose}>
           Profile
@@ -244,8 +282,9 @@ export default function ButtonAppBar() {
               href={social.link}
               target="_blank"
               onClick={handleMenuClose}
+              sx={{ py: 1.25 }}
             >
-              <IconComponent sx={{ mr: 1 }} />
+              <IconComponent sx={{ mr: 1.5, color: 'primary.main' }} />
               {social.alt}
             </MenuItem>
           );
