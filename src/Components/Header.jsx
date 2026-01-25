@@ -57,7 +57,7 @@ function SocialLinksComponent() {
                   '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
                 '&:hover': {
                   bgcolor: 'primary.light',
-                  boxShadow: '0 4px 12px rgba(107, 114, 128, 0.3)', // primary.main alpha
+                  boxShadow: '0 4px 12px rgba(107, 114, 128, 0.3)',
                   transform: 'translateY(-1px)',
                 },
                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -150,7 +150,7 @@ export default function ButtonAppBar() {
                   clickable
                   size="small"
                   sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)', // primary.main subtle
+                    bgcolor: 'rgba(107, 114, 128, 0.08)',
                     color: 'text.primary',
                     fontWeight: 500,
                     fontSize: '0.875rem',

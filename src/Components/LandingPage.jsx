@@ -40,6 +40,15 @@ const cards = [
           >
             Check Out Some of My Projects
           </Button>
+          <Button
+            component={Link}
+            to="/services"
+            variant="contained"
+            size="large"
+            color="secondary"
+          >
+            Get your own website
+          </Button>
         </Box>
       </Box>
     ),
@@ -234,7 +243,6 @@ function LandingPage() {
         </IconButton>
       </Box>
 
-      {/* Optional evergreen footer note */}
       <Typography
         variant="caption"
         sx={{

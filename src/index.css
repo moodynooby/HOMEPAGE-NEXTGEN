@@ -3,14 +3,13 @@
 html {
     scroll-behavior: smooth;
 }
-/* Subtle tech pattern background - no gradients, tileable */
+
 body, .Container {
   background-image: 
     radial-gradient(circle at 1px 1px, rgba(0,0,0,0.2) 1px, transparent 0);
-  background-size: 50px 50px; /* Dots pattern for tech feel */
+  background-size: 50px 50px;
 }
 
-/* Optional: Add faint noise overlay for texture */
 body::before {
   content: '';
   position: fixed;
