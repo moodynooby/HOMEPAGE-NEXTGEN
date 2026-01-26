@@ -11,7 +11,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { ArrowBack, ArrowForward, GitHub, Close } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 

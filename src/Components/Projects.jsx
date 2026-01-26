@@ -12,7 +12,7 @@ import {
   Fade,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import projects from '../Content/projects.json';
 
