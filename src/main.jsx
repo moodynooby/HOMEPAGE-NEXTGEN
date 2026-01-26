@@ -10,11 +10,11 @@ import {
 } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 
-import LandingPage from './Components/LandingPage';
-const SpeedDial = lazy(() => import('./Components/Projects'));
-const ProjectDetail = lazy(() => import('./Components/ProjectDetail'));
-const LinkTree = lazy(() => import('./Components/LinkTree'));
-const WebDesignServices = lazy(() => import('./Components/WebDesignServices'));
+import LandingPage from '@/components/LandingPage';
+const SpeedDial = lazy(() => import('@/components/Projects'));
+const ProjectDetail = lazy(() => import('@/components/ProjectDetail'));
+const LinkTree = lazy(() => import('@/components/LinkTree'));
+const WebDesignServices = lazy(() => import('@/components/WebDesignServices'));
 
 const customTheme = createTheme({
   palette: {

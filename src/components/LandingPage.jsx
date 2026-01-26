@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Box, Typography, Button, IconButton, Chip } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CodeIcon from '@mui/icons-material/Code';
 import { Link } from 'react-router-dom';
 
-import ButtonAppBar from './Header';
-import LinkTree from './LinkTree';
-import Projects from './Projects';
+import ButtonAppBar from '@/components/Header';
+
+const LinkTree = lazy(() => import('@/components/LinkTree'));
+const Projects = lazy(() => import('@/components/Projects'));
 
 const cards = [
   {
@@ -92,7 +93,9 @@ const cards = [
     id: 3,
     content: (
       <Box sx={{ textAlign: 'center' }}>
-        <Projects />
+        <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Projects...</Typography></Box>}>
+          <Projects />
+        </Suspense>
       </Box>
     ),
   },
@@ -100,7 +103,9 @@ const cards = [
     id: 4,
     content: (
       <Box>
-        <LinkTree />
+        <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Links...</Typography></Box>}>
+          <LinkTree />
+        </Suspense>
       </Box>
     ),
   },

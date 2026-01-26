@@ -15,7 +15,7 @@ import { motion } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import projects from '../Content/projects.json';
+import projects from '@/content/projects.json';
 
 export default function ProjectDetail() {
   const { projectName } = useParams();

@@ -7,7 +7,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
 import PropTypes from 'prop-types';
 
-import socialLinks from '../Content/socialLinks.json';
+import socialLinks from '@/content/socialLinks.json';
 
 const iconMap = {
   'LinkedIn': LinkedInIcon,
@@ -19,7 +19,7 @@ const iconMap = {
 
 function LinkButton({ link, alt, index }) {
   const IconComponent = iconMap[alt];
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

@@ -14,9 +14,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 
-import projects from '../Content/projects.json';
-
-import ButtonAppBar from './Header';
+import projects from '@/content/projects.json';
+import ButtonAppBar from '@/components/Header';
 
 const MotionCard = motion(Card);
 

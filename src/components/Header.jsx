@@ -21,7 +21,7 @@ import WebIcon from '@mui/icons-material/Web';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
-import socialLinks from '../Content/socialLinks.json';
+import socialLinks from '@/content/socialLinks.json';
 
 // Icon mapping
 const iconMap = {
@@ -92,10 +92,10 @@ export default function ButtonAppBar() {
         sx={{
           background: 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'saturate(180%) blur(12px)',
-          boxShadow: theme.shadows[2], 
+          boxShadow: theme.shadows[2],
           borderBottom: `1px solid ${theme.palette.divider}`,
-          borderRadius: '16px 16px 16px 16px', 
-          top: { xs: 0, md: '12px' }, 
+          borderRadius: '16px 16px 16px 16px',
+          top: { xs: 0, md: '12px' },
           left: { md: '50%' },
           transform: { md: 'translateX(-50%)' },
           width: { md: 'calc(100% - 48px)' },

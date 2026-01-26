@@ -39,20 +39,26 @@ export default [
         node: {
           extensions: ['.js', '.jsx'],
         },
+        alias: {
+          map: [
+            ['@', './src'],
+          ],
+          extensions: ['.js', '.jsx', '.json'],
+        },
       },
     },
     rules: {
       ...reactPlugin.configs.recommended.rules,
       ...reactPlugin.configs['jsx-runtime'].rules,
-      
+
       'react/prop-types': 'error',
       'react/jsx-uses-react': 'error',
       'react/jsx-uses-vars': 'error',
       'react/react-in-jsx-scope': 'off',
-      
+
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       'import/no-unresolved': 'error',
       'import/named': 'error',
       'import/default': 'error',
@@ -61,7 +67,7 @@ export default [
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
         'newlines-between': 'always',
       }],
-      
+
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': 'warn',
       'no-undef': 'error',
@@ -75,7 +81,7 @@ export default [
       'keyword-spacing': 'error',
       'space-before-blocks': 'error',
       'eqeqeq': ['error', 'always'],
-      
+
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
