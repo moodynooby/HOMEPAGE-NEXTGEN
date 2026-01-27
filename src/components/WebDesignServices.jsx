@@ -627,7 +627,7 @@ export default function WebDesignServices() {
                         borderColor: tier.color,
                       },
                     }}
-                    href="mailto:doshimanas27@gmail.com"
+                    href="mailto:future.frwad@gmail.com"
                   >
                     Choose Plan
                   </Button>
