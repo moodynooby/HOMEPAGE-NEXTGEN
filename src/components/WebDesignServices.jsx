@@ -166,7 +166,7 @@ export default function WebDesignServices() {
                 icon={
                   <AutoAwesomeIcon sx={{ fontSize: '1.2rem !important' }} />
                 }
-                label="Premium Web Design Services"
+                label="Future Forward Inc"
                 sx={{
                   mb: 4,
                   py: 3,
