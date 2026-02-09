@@ -161,6 +161,8 @@ export default function ButtonAppBar() {
                       boxShadow: theme.shadows[4],
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    marginLeft: '2px',
+
                   }}
                 />
                 <Chip
@@ -181,6 +183,8 @@ export default function ButtonAppBar() {
                       boxShadow: theme.shadows[4],
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    marginLeft: '2px',
+
                   }}
                 />
                 <Chip
@@ -201,8 +205,33 @@ export default function ButtonAppBar() {
                       boxShadow: theme.shadows[4],
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    marginLeft: '2px',
+                  }}
+
+                />
+                <Chip
+                  component={Link}
+                  label="          Get your own website
+"
+                  to="/services"
+                  clickable
+                  size="small"
+                  sx={{
+                    bgcolor: 'rgba(107, 114, 128, 0.08)',
+                    color: 'text.primary',
+                    fontWeight: 500,
+                    fontSize: '0.875rem',
+                    borderRadius: 20,
+                    '&:hover': {
+                      bgcolor: 'primary.light',
+                      transform: 'translateY(-2px)',
+                      boxShadow: theme.shadows[4],
+                    },
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    marginLeft: '2px',
                   }}
                 />
+
               </motion.div>
             )}
 
@@ -244,7 +273,6 @@ export default function ButtonAppBar() {
           paper: {
             sx: {
               mt: 1,
-              borderRadius: 12,
               bgcolor: 'background.paper',
               boxShadow: theme.shadows[8],
               minWidth: 200,
@@ -272,6 +300,20 @@ export default function ButtonAppBar() {
         <MenuItem component={Link} to="/links" onClick={handleMenuClose}>
           Profile
         </MenuItem>
+        <MenuItem
+          component={Link}
+          to="/services"
+          variant="contained"
+          size="large"
+          color="secondary"
+
+          sx={{
+            overflow: 'scroll',
+          }}
+        >
+          Get your own website
+        </MenuItem>
+
         {socialLinks.map((social, index) => {
           const IconComponent = iconMap[social.alt];
           if (!IconComponent) return null;

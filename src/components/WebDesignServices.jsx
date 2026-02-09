@@ -359,7 +359,7 @@ export default function WebDesignServices() {
 
             <Grid container spacing={4}>
               {processSteps.map((step, index) => (
-                <Grid item xs={12} sm={6} md={3} key={step.id}>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={step.id}>
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -507,7 +507,7 @@ export default function WebDesignServices() {
               delay: 2,
             },
           ].map((tier, index) => (
-            <Grid item xs={12} md={4} key={index}>
+            <Grid size={{ xs: 12, md: 4 }} key={index}>
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -649,7 +649,6 @@ export default function WebDesignServices() {
             elevation={0}
             sx={{
               p: { xs: 4, md: 8 },
-              borderRadius: 8,
               background: `linear-gradient(135deg, ${theme.palette.primary.main}10, ${theme.palette.info.main}10)`,
               backdropFilter: 'blur(20px)',
               border: `1px solid ${theme.palette.divider}`,

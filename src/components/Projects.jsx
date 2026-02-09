@@ -80,7 +80,7 @@ export default function Projects() {
 
           <Grid container spacing={4}>
             {projects.map((project, idx) => (
-              <Grid item xs={12} sm={6} md={4} key={project.githubName}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project.githubName} >
                 <MotionCard
                   initial={{ y: 40, opacity: 0, scale: 0.95 }}
                   animate={{ y: 0, opacity: 1, scale: 1 }}

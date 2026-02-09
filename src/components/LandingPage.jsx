@@ -24,7 +24,11 @@ const cards = [
         </Typography>
         <Box sx={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'space-evenly',
+          flexFlow:'column',
+          gap: '2px',
+          
+
         }}>
           <Button
             variant="contained"
@@ -38,17 +42,9 @@ const cards = [
             to="/projects"
             variant="contained"
             size="large"
+
           >
-            Check Out Some of My Projects
-          </Button>
-          <Button
-            component={Link}
-            to="/services"
-            variant="contained"
-            size="large"
-            color="secondary"
-          >
-            Get your own website
+            See My Work
           </Button>
         </Box>
       </Box>
@@ -193,7 +189,7 @@ function LandingPage() {
           right: 32,
           top: '50%',
           transform: 'translateY(-50%)',
-          display: 'flex',
+          display: { xs: 'none', md: 'flex' },
           flexDirection: 'column',
           gap: 2,
           zIndex: 1000,
@@ -251,7 +247,7 @@ function LandingPage() {
       <Typography
         variant="caption"
         sx={{
-          position: 'fixed',
+          position: 'sticky',
           bottom: 16,
           right: 16,
           color: 'text.secondary',
