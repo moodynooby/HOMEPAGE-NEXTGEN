@@ -18,10 +18,13 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import EmailIcon from '@mui/icons-material/Email';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
 import socialLinks from '@/content/socialLinks.json';
+import { useThemeContext } from '@/contexts/ThemeContext';
 
 // Icon mapping
 const iconMap = {
@@ -76,6 +79,7 @@ export default function ButtonAppBar() {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { mode, toggleColorMode } = useThemeContext();
 
   const handleMenuOpen = (event) => {
     setMenuAnchorEl(event.currentTarget);
@@ -90,7 +94,7 @@ export default function ButtonAppBar() {
         position="fixed"
         elevation={1}
         sx={{
-          background: 'rgba(255, 255, 255, 0.92)',
+          background: theme.palette.mode === 'light' ? 'rgba(255, 250, 240, 0.92)' : 'rgba(45, 36, 30, 0.92)',
           backdropFilter: 'saturate(180%) blur(12px)',
           boxShadow: theme.shadows[2],
           borderBottom: `1px solid ${theme.palette.divider}`,
@@ -142,6 +146,7 @@ export default function ButtonAppBar() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
+                style={{ display: 'flex', gap: '8px' }}
               >
                 <Chip
                   component={Link}
@@ -161,8 +166,6 @@ export default function ButtonAppBar() {
                       boxShadow: theme.shadows[4],
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                    marginLeft: '2px',
-
                   }}
                 />
                 <Chip
@@ -183,8 +186,6 @@ export default function ButtonAppBar() {
                       boxShadow: theme.shadows[4],
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                    marginLeft: '2px',
-
                   }}
                 />
                 <Chip
@@ -205,35 +206,15 @@ export default function ButtonAppBar() {
                       boxShadow: theme.shadows[4],
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                    marginLeft: '2px',
                   }}
 
                 />
-                <Chip
-                  component={Link}
-                  label="          Get your own website
-"
-                  to="/services"
-                  clickable
-                  size="small"
-                  sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)',
-                    color: 'text.primary',
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                    borderRadius: 20,
-                    '&:hover': {
-                      bgcolor: 'primary.light',
-                      transform: 'translateY(-2px)',
-                      boxShadow: theme.shadows[4],
-                    },
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                    marginLeft: '2px',
-                  }}
-                />
-
               </motion.div>
             )}
+
+            <IconButton onClick={toggleColorMode} color="primary">
+              {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
 
             {isMobile ? (
               <motion.div whileTap={{ scale: 0.95 }}>
@@ -303,13 +284,7 @@ export default function ButtonAppBar() {
         <MenuItem
           component={Link}
           to="/services"
-          variant="contained"
-          size="large"
-          color="secondary"
-
-          sx={{
-            overflow: 'scroll',
-          }}
+          onClick={handleMenuClose}
         >
           Get your own website
         </MenuItem>

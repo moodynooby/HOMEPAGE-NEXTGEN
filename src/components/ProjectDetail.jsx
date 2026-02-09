@@ -7,6 +7,7 @@ import {
   Typography,
   Paper,
   Fab,
+  Skeleton,
   useTheme,
   useMediaQuery,
 } from '@mui/material';
@@ -88,7 +89,9 @@ export default function ProjectDetail() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: theme.palette.mode === 'light'
+          ? `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`
+          : `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.secondary.dark} 100%)`,
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -145,7 +148,7 @@ export default function ProjectDetail() {
                 sx={{
                   width: isMobile ? 80 : 120,
                   height: isMobile ? 80 : 120,
-                  borderRadius: 3,
+                  borderRadius: 6,
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
                   bgcolor: 'white',
                   p: 2,
@@ -194,8 +197,8 @@ export default function ProjectDetail() {
               elevation={8}
               sx={{
                 p: isMobile ? 3 : 5,
-                borderRadius: 4,
-                bgcolor: 'rgba(255, 255, 255, 0.98)',
+                borderRadius: 8,
+                bgcolor: theme.palette.background.paper,
                 backdropFilter: 'blur(20px)',
                 minHeight: '60vh',
                 maxHeight: '70vh',
@@ -207,18 +210,25 @@ export default function ProjectDetail() {
                   bgcolor: 'transparent',
                 },
                 '&::-webkit-scrollbar-thumb': {
-                  bgcolor: 'rgba(0, 0, 0, 0.2)',
+                  bgcolor: theme.palette.divider,
                   borderRadius: '4px',
                   '&:hover': {
-                    bgcolor: 'rgba(0, 0, 0, 0.3)',
+                    bgcolor: theme.palette.action.hover,
                   },
                 },
               }}
             >
               {loading ? (
-                <Typography variant="h6" sx={{ textAlign: 'center', py: 10 }}>
-                  Loading...
-                </Typography>
+                <Box sx={{ py: 2 }}>
+                  <Skeleton variant="text" sx={{ fontSize: '3rem', mb: 2 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 3 }} />
+                  <Skeleton variant="text" sx={{ fontSize: '2rem', mb: 2 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                </Box>
               ) : (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
@@ -270,7 +280,7 @@ export default function ProjectDetail() {
                       inline ? (
                         <code
                           style={{
-                            backgroundColor: theme.palette.grey[100],
+                            backgroundColor: theme.palette.action.hover,
                             padding: '2px 6px',
                             borderRadius: '4px',
                             fontFamily: 'monospace',
@@ -281,10 +291,10 @@ export default function ProjectDetail() {
                       ) : (
                         <pre
                           style={{
-                            backgroundColor: theme.palette.grey[900],
-                            color: theme.palette.grey[50],
+                            backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : '#1e1e1e',
+                            color: '#fff',
                             padding: '16px',
-                            borderRadius: '8px',
+                            borderRadius: '12px',
                             overflow: 'auto',
                             fontFamily: 'monospace',
                           }}
@@ -371,5 +381,3 @@ export default function ProjectDetail() {
     </Box>
   );
 }
-
-ProjectDetail.propTypes = {};

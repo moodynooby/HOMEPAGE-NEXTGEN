@@ -6,6 +6,7 @@ import CodeIcon from '@mui/icons-material/Code';
 import { Link } from 'react-router-dom';
 
 import ButtonAppBar from '@/components/Header';
+import GitHubStats from '@/components/GitHubStats';
 
 const LinkTree = lazy(() => import('@/components/LinkTree'));
 const Projects = lazy(() => import('@/components/Projects'));
@@ -84,6 +85,12 @@ const cards = [
         </Box>
       </Box>
     ),
+  },
+  {
+    id: 'stats',
+    content: (
+      <GitHubStats />
+    )
   },
   {
     id: 3,
