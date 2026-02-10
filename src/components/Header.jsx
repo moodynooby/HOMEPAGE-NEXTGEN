@@ -18,12 +18,14 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import EmailIcon from '@mui/icons-material/Email';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
 import socialLinks from '@/content/socialLinks.json';
+import { useThemeMode } from '@/contexts/ThemeContext';
 
-// Icon mapping
 const iconMap = {
   LinkedIn: LinkedInIcon,
   GitHub: GitHubIcon,
@@ -53,11 +55,16 @@ function SocialLinksComponent() {
               sx={{
                 color: 'primary.main',
                 bgcolor: 'background.paper',
-                boxShadow:
-                  '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                boxShadow: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? '0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.4)'
+                    : '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
                 '&:hover': {
                   bgcolor: 'primary.light',
-                  boxShadow: '0 4px 12px rgba(107, 114, 128, 0.3)',
+                  boxShadow: (theme) =>
+                    theme.palette.mode === 'dark'
+                      ? '0 4px 12px rgba(0, 0, 0, 0.4)'
+                      : '0 4px 12px rgba(107, 114, 128, 0.3)',
                   transform: 'translateY(-1px)',
                 },
                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -69,6 +76,39 @@ function SocialLinksComponent() {
         );
       })}
     </Box>
+  );
+}
+
+function ThemeToggle() {
+  const { isDark, toggleTheme } = useThemeMode();
+
+  return (
+    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+      <IconButton
+        onClick={toggleTheme}
+        size="small"
+        sx={{
+          color: 'primary.main',
+          bgcolor: 'background.paper',
+          boxShadow: (theme) =>
+            theme.palette.mode === 'dark'
+              ? '0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.4)'
+              : '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+          '&:hover': {
+            bgcolor: 'primary.light',
+            color: 'primary.contrastText',
+          },
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        {isDark ? (
+          <LightModeIcon fontSize="small" />
+        ) : (
+          <DarkModeIcon fontSize="small" />
+        )}
+      </IconButton>
+    </motion.div>
   );
 }
 
@@ -90,7 +130,10 @@ export default function ButtonAppBar() {
         position="fixed"
         elevation={1}
         sx={{
-          background: 'rgba(255, 255, 255, 0.92)',
+          background: (theme) =>
+            theme.palette.mode === 'dark'
+              ? 'rgba(15, 23, 42, 0.92)'
+              : 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'saturate(180%) blur(12px)',
           boxShadow: theme.shadows[2],
           borderBottom: `1px solid ${theme.palette.divider}`,
@@ -100,6 +143,7 @@ export default function ButtonAppBar() {
           transform: { md: 'translateX(-50%)' },
           width: { md: 'calc(100% - 48px)' },
           maxWidth: '1200px',
+          transition: 'background-color 0.3s ease, border-color 0.3s ease',
         }}
       >
         <Toolbar
@@ -162,7 +206,6 @@ export default function ButtonAppBar() {
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     marginLeft: '2px',
-
                   }}
                 />
                 <Chip
@@ -184,7 +227,6 @@ export default function ButtonAppBar() {
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     marginLeft: '2px',
-
                   }}
                 />
                 <Chip
@@ -207,12 +249,10 @@ export default function ButtonAppBar() {
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     marginLeft: '2px',
                   }}
-
                 />
                 <Chip
                   component={Link}
-                  label="          Get your own website
-"
+                  label="Get your own website"
                   to="/services"
                   clickable
                   size="small"
@@ -231,9 +271,10 @@ export default function ButtonAppBar() {
                     marginLeft: '2px',
                   }}
                 />
-
               </motion.div>
             )}
+
+            <ThemeToggle />
 
             {isMobile ? (
               <motion.div whileTap={{ scale: 0.95 }}>
@@ -306,7 +347,6 @@ export default function ButtonAppBar() {
           variant="contained"
           size="large"
           color="secondary"
-
           sx={{
             overflow: 'scroll',
           }}
