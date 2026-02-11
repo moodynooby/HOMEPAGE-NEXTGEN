@@ -1,4 +1,4 @@
-import { StrictMode, lazy, Suspense } from 'react';
+import { StrictMode, lazy, Suspense, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -8,17 +8,19 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 import LandingPage from '@/components/LandingPage';
+import { ColorModeContext } from '@/context/ColorModeContext';
+
 const SpeedDial = lazy(() => import('@/components/Projects'));
 const ProjectDetail = lazy(() => import('@/components/ProjectDetail'));
 const LinkTree = lazy(() => import('@/components/LinkTree'));
 const WebDesignServices = lazy(() => import('@/components/WebDesignServices'));
 
-const customTheme = createTheme({
+const getDesignTokens = (mode) => ({
   palette: {
-    mode: 'light',
+    mode,
     primary: {
       main: '#334155',
       light: '#475569',
@@ -41,15 +43,15 @@ const customTheme = createTheme({
       light: '#38BDF8',
       dark: '#0284C7',
     },
-    background: {
-      default: '#F8FAFC',
-      paper: '#FFFFFF',
-    },
-    text: {
-      primary: '#0F172A',
-      secondary: '#475569',
-    },
-    divider: 'rgba(71, 85, 105, 0.12)',
+    background: mode === 'light'
+      ? { default: '#F8FAFC', paper: '#FFFFFF' }
+      : { default: '#0B1120', paper: '#0F172A' },
+    text: mode === 'light'
+      ? { primary: '#0F172A', secondary: '#475569' }
+      : { primary: '#F8FAFC', secondary: '#CBD5F5' },
+    divider: mode === 'light'
+      ? 'rgba(71, 85, 105, 0.12)'
+      : 'rgba(148, 163, 184, 0.24)',
   },
   typography: {
     fontFamily:
@@ -58,7 +60,7 @@ const customTheme = createTheme({
       fontSize: '3rem',
       fontWeight: 800,
       letterSpacing: '-0.02em',
-      color: '#1e293b',
+      color: mode === 'dark' ? '#F8FAFC' : '#1e293b',
     },
     h2: {
       fontSize: '2.5rem',
@@ -137,27 +139,34 @@ const customTheme = createTheme({
         contained: {
           boxShadow: '0 2px 8px rgba(51, 65, 85, 0.15)',
         },
-        outlined: {
+        outlined: ({ theme }) => ({
           borderWidth: 1.5,
-          borderColor: '#CBD5E1',
-        },
+          borderColor: theme.palette.mode === 'dark'
+            ? 'rgba(148, 163, 184, 0.5)'
+            : '#CBD5E1',
+        }),
       },
     },
     MuiPaper: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           backgroundImage: 'none',
           backdropFilter: 'saturate(180%) blur(20px)',
-        },
-        elevation1: {
-          background: 'rgba(255, 255, 255, 0.85)',
+          backgroundColor: theme.palette.background.paper,
+        }),
+        elevation1: ({ theme }) => ({
+          background: theme.palette.mode === 'dark'
+            ? 'rgba(15, 23, 42, 0.85)'
+            : 'rgba(255, 255, 255, 0.85)',
           backdropFilter: 'saturate(180%) blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-        },
-        elevation3: {
-          background: 'rgba(255, 255, 255, 0.92)',
+          border: `1px solid ${theme.palette.divider}`,
+        }),
+        elevation3: ({ theme }) => ({
+          background: theme.palette.mode === 'dark'
+            ? 'rgba(30, 41, 59, 0.92)'
+            : 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'saturate(180%) blur(24px)',
-        },
+        }),
       },
     },
     MuiAppBar: {
@@ -165,25 +174,29 @@ const customTheme = createTheme({
         elevation: 0,
       },
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           backdropFilter: 'saturate(180%) blur(20px)',
-          background: 'rgba(255, 255, 255, 0.8)',
-          borderBottom: '1px solid rgba(226, 232, 240, 0.8)',
-        },
+          background: theme.palette.mode === 'dark'
+            ? 'rgba(15, 23, 42, 0.9)'
+            : 'rgba(255, 255, 255, 0.8)',
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }),
       },
     },
     MuiCard: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           borderRadius: 16,
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          border: '1px solid rgba(226, 232, 240, 0.8)',
+          border: `1px solid ${theme.palette.divider}`,
           '&:hover': {
             transform: 'translateY(-4px)',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            borderColor: '#94A3B8',
+            borderColor: theme.palette.mode === 'dark'
+              ? theme.palette.primary.light
+              : '#94A3B8',
           },
-        },
+        }),
       },
     },
     MuiChip: {
@@ -194,65 +207,92 @@ const customTheme = createTheme({
           fontSize: '0.8rem',
           borderRadius: 8,
         },
-        filled: {
-          backgroundColor: '#F1F5F9',
+        filled: ({ theme }) => ({
+          backgroundColor: theme.palette.mode === 'dark'
+            ? 'rgba(51, 65, 85, 0.6)'
+            : '#F1F5F9',
           '&:hover': {
-            backgroundColor: '#E2E8F0',
+            backgroundColor: theme.palette.mode === 'dark'
+              ? 'rgba(51, 65, 85, 0.8)'
+              : '#E2E8F0',
           },
-        },
+        }),
       },
     },
     MuiSpeedDial: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           '& .MuiSpeedDialAction-fab': {
-            bgcolor: '#F8FAFC',
-            color: '#334155',
+            bgcolor: theme.palette.mode === 'dark' ? '#0F172A' : '#F8FAFC',
+            color: theme.palette.mode === 'dark' ? '#E2E8F0' : '#334155',
             '&:hover': {
-              bgcolor: '#F1F5F9',
+              bgcolor: theme.palette.mode === 'dark' ? '#1E293B' : '#F1F5F9',
             },
           },
-        },
+        }),
       },
     },
   },
 });
 
+function App() {
+  const [mode, setMode] = useState('light');
+
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+      },
+    }),
+    [],
+  );
+
+  const theme = useMemo(() => {
+    return responsiveFontSizes(createTheme(getDesignTokens(mode)));
+  }, [mode]);
+
+  return (
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <Suspense
+            fallback={
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minHeight: '100vh',
+                  bgcolor: 'background.default',
+                }}
+              >
+                <CircularProgress
+                  size={48}
+                  thickness={4}
+                  sx={{ color: 'secondary.main' }}
+                />
+              </Box>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/projects" element={<SpeedDial />} />
+              <Route path="/projects/:projectName" element={<ProjectDetail />} />
+              <Route path="/links" element={<LinkTree />} />
+              <Route path="/services" element={<WebDesignServices />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+  );
+}
+
 const root = createRoot(document.getElementById('root'));
 
 root.render(
   <StrictMode>
-    <ThemeProvider theme={customTheme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Suspense
-          fallback={
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '100vh',
-                bgcolor: 'background.default',
-              }}
-            >
-              <CircularProgress
-                size={48}
-                thickness={4}
-                sx={{ color: 'secondary.main' }}
-              />
-            </Box>
-          }
-        >
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/projects" element={<SpeedDial />} />
-            <Route path="/projects/:projectName" element={<ProjectDetail />} />
-            <Route path="/links" element={<LinkTree />} />
-            <Route path="/services" element={<WebDesignServices />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </ThemeProvider>
+    <App />
   </StrictMode>,
 );

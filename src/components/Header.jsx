@@ -18,10 +18,13 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import EmailIcon from '@mui/icons-material/Email';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
 import socialLinks from '@/content/socialLinks.json';
+import { ColorModeContext } from '@/context/ColorModeContext';
 
 // Icon mapping
 const iconMap = {
@@ -76,6 +79,8 @@ export default function ButtonAppBar() {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const colorMode = React.useContext(ColorModeContext);
+  const isDarkMode = theme.palette.mode === 'dark';
 
   const handleMenuOpen = (event) => {
     setMenuAnchorEl(event.currentTarget);
@@ -90,11 +95,13 @@ export default function ButtonAppBar() {
         position="fixed"
         elevation={1}
         sx={{
-          background: 'rgba(255, 255, 255, 0.92)',
+          background: theme.palette.mode === 'dark'
+            ? 'rgba(15, 23, 42, 0.92)'
+            : 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'saturate(180%) blur(12px)',
           boxShadow: theme.shadows[2],
           borderBottom: `1px solid ${theme.palette.divider}`,
-          borderRadius: '16px 16px 16px 16px',
+          borderRadius: { xs: 0, md: 4 },
           top: { xs: 0, md: '12px' },
           left: { md: '50%' },
           transform: { md: 'translateX(-50%)' },
@@ -211,8 +218,7 @@ export default function ButtonAppBar() {
                 />
                 <Chip
                   component={Link}
-                  label="          Get your own website
-"
+                  label="Get your own website"
                   to="/services"
                   clickable
                   size="small"
@@ -234,6 +240,24 @@ export default function ButtonAppBar() {
 
               </motion.div>
             )}
+
+            <motion.div whileTap={{ scale: 0.95 }}>
+              <IconButton
+                onClick={colorMode.toggleColorMode}
+                aria-label="Toggle dark mode"
+                sx={{
+                  color: 'primary.main',
+                  bgcolor: 'rgba(107, 114, 128, 0.12)',
+                  '&:hover': {
+                    bgcolor: 'primary.light',
+                    transform: 'scale(1.05)',
+                  },
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+            </motion.div>
 
             {isMobile ? (
               <motion.div whileTap={{ scale: 0.95 }}>
@@ -275,12 +299,13 @@ export default function ButtonAppBar() {
               mt: 1,
               bgcolor: 'background.paper',
               boxShadow: theme.shadows[8],
-              minWidth: 200,
+              minWidth: 240,
               '& .MuiMenuItem-root': {
                 fontWeight: 500,
                 borderRadius: 8,
                 mx: 0.5,
                 my: 0.25,
+                whiteSpace: 'normal',
                 '&:hover': {
                   bgcolor: 'primary.light',
                 },
@@ -303,13 +328,8 @@ export default function ButtonAppBar() {
         <MenuItem
           component={Link}
           to="/services"
-          variant="contained"
-          size="large"
-          color="secondary"
-
-          sx={{
-            overflow: 'scroll',
-          }}
+          onClick={handleMenuClose}
+          sx={{ fontWeight: 600, whiteSpace: 'normal' }}
         >
           Get your own website
         </MenuItem>
