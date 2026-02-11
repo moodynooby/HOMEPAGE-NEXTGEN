@@ -74,7 +74,8 @@ export default function LinkTreePreview() {
               href={social.link}
               target="_blank"
               rel="noopener noreferrer"
-              elevation={2}
+              elevation={0}
+              variant="glass"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.08 }}
@@ -88,13 +89,10 @@ export default function LinkTreePreview() {
                 gap: 1,
                 p: 2,
                 borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.95) 100%)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: 'primary.main',
-                  boxShadow: '0 10px 20px rgba(99, 102, 241, 0.18)',
+                  borderColor: theme.custom.glass.borderActive,
+                  boxShadow: theme.custom.glass.shadowActive,
                   transform: 'translateY(-2px)',
                 },
               }}

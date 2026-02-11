@@ -34,6 +34,7 @@ const iconMap = {
 };
 
 function SocialLinksComponent() {
+  const theme = useTheme();
   return (
     <Box sx={{ display: 'flex', gap: 1 }}>
       {socialLinks.map((social, index) => {
@@ -52,12 +53,12 @@ function SocialLinksComponent() {
               size="small"
               sx={{
                 color: 'primary.main',
-                bgcolor: 'background.paper',
-                boxShadow:
-                  '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                background: theme.custom.glass.bg,
+                backdropFilter: theme.custom.glass.blur,
+                boxShadow: theme.custom.glass.shadow,
                 '&:hover': {
-                  bgcolor: 'primary.light',
-                  boxShadow: '0 4px 12px rgba(107, 114, 128, 0.3)',
+                  background: theme.custom.glass.bgStrong,
+                  boxShadow: theme.custom.glass.shadowActive,
                   transform: 'translateY(-1px)',
                 },
                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -88,12 +89,12 @@ export default function ButtonAppBar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
-        elevation={1}
+        elevation={0}
         sx={{
-          background: 'rgba(255, 255, 255, 0.92)',
-          backdropFilter: 'saturate(180%) blur(12px)',
-          boxShadow: theme.shadows[2],
-          borderBottom: `1px solid ${theme.palette.divider}`,
+          background: theme.custom.glass.bgStrong,
+          backdropFilter: theme.custom.glass.blur,
+          boxShadow: theme.custom.glass.shadow,
+          borderBottom: `1px solid ${theme.custom.glass.border}`,
           borderRadius: '16px 16px 16px 16px',
           top: { xs: 0, md: '12px' },
           left: { md: '50%' },
@@ -150,19 +151,18 @@ export default function ButtonAppBar() {
                   clickable
                   size="small"
                   sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)',
+                    bgcolor: theme.custom.glassChip.bg,
                     color: 'text.primary',
                     fontWeight: 500,
                     fontSize: '0.875rem',
                     borderRadius: 20,
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: theme.custom.glassChip.bgHover,
                       transform: 'translateY(-2px)',
-                      boxShadow: theme.shadows[4],
+                      boxShadow: theme.custom.glass.shadow,
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     marginLeft: '2px',
-
                   }}
                 />
                 <Chip
@@ -172,19 +172,18 @@ export default function ButtonAppBar() {
                   clickable
                   size="small"
                   sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)',
+                    bgcolor: theme.custom.glassChip.bg,
                     color: 'text.primary',
                     fontWeight: 500,
                     fontSize: '0.875rem',
                     borderRadius: 20,
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: theme.custom.glassChip.bgHover,
                       transform: 'translateY(-2px)',
-                      boxShadow: theme.shadows[4],
+                      boxShadow: theme.custom.glass.shadow,
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     marginLeft: '2px',
-
                   }}
                 />
                 <Chip
@@ -194,20 +193,19 @@ export default function ButtonAppBar() {
                   clickable
                   size="small"
                   sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)',
+                    bgcolor: theme.custom.glassChip.bg,
                     color: 'text.primary',
                     fontWeight: 500,
                     fontSize: '0.875rem',
                     borderRadius: 20,
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: theme.custom.glassChip.bgHover,
                       transform: 'translateY(-2px)',
-                      boxShadow: theme.shadows[4],
+                      boxShadow: theme.custom.glass.shadow,
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     marginLeft: '2px',
                   }}
-
                 />
                 <Chip
                   component={Link}
@@ -217,15 +215,15 @@ export default function ButtonAppBar() {
                   clickable
                   size="small"
                   sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)',
+                    bgcolor: theme.custom.glassChip.bg,
                     color: 'text.primary',
                     fontWeight: 500,
                     fontSize: '0.875rem',
                     borderRadius: 20,
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: theme.custom.glassChip.bgHover,
                       transform: 'translateY(-2px)',
-                      boxShadow: theme.shadows[4],
+                      boxShadow: theme.custom.glass.shadow,
                     },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     marginLeft: '2px',

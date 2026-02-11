@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
 import projects from '@/content/projects.json';
+import CustomScrollbarHorizontal from '@/components/CustomScrollbarHorizontal';
 
 const MotionCard = motion(Card);
 
@@ -45,63 +46,62 @@ export default function ProjectsPreview() {
           View all
         </Button>
       </Box>
-      <Box
-        sx={{
-          display: { xs: 'flex', sm: 'grid' },
-          gridTemplateColumns: { sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' },
-          gap: 2.5,
-          overflowX: { xs: 'auto', sm: 'visible' },
-          pb: { xs: 1, sm: 0 },
-          scrollSnapType: { xs: 'x mandatory', sm: 'none' },
-        }}
-      >
-        {featuredProjects.map((project, index) => (
-          <MotionCard
-            key={project.githubName}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.08 }}
-            sx={{
-              borderRadius: 3,
-              bgcolor: 'background.paper',
-              flex: { xs: '0 0 240px', sm: '1 1 auto' },
-              scrollSnapAlign: { xs: 'center', sm: 'unset' },
-            }}
-          >
-            <CardActionArea component={Link} to={`/projects/${project.githubName}`}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  minHeight: 120,
-                  background: `linear-gradient(135deg, ${theme.palette.primary.light}14 0%, ${theme.palette.background.paper} 100%)`,
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={project.githubImg}
-                  alt={project.githubName}
+      <CustomScrollbarHorizontal>
+        <Box
+          sx={{
+            display: { xs: 'flex', sm: 'grid' },
+            gridTemplateColumns: { sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(4, minmax(0, 1fr))' },
+            gap: 2.5,
+          }}
+        >
+          {featuredProjects.map((project, index) => (
+            <MotionCard
+              key={project.githubName}
+              variant="glass"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
+              sx={{
+                borderRadius: 3,
+                flex: { xs: '0 0 240px', sm: '1 1 auto' },
+                scrollSnapAlign: { xs: 'center', sm: 'unset' },
+              }}
+            >
+              <CardActionArea component={Link} to={`/projects/${project.githubName}`}>
+                <Box
                   sx={{
-                    width: 'auto',
-                    height: 72,
-                    objectFit: 'contain',
-                    filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.12))',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: 120,
+                    background: theme.custom.glass.highlight,
                   }}
-                />
-              </Box>
-              <CardContent sx={{ p: 2.5, pt: 1.5 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5 }}>
-                  {project.githubName}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Open details →
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </MotionCard>
-        ))}
-      </Box>
+                >
+                  <CardMedia
+                    component="img"
+                    image={project.githubImg}
+                    alt={project.githubName}
+                    sx={{
+                      width: 'auto',
+                      height: 72,
+                      objectFit: 'contain',
+                      filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.12))',
+                    }}
+                  />
+                </Box>
+                <CardContent sx={{ p: 2.5, pt: 1.5 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5 }}>
+                    {project.githubName}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Open details →
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </MotionCard>
+          ))}
+        </Box>
+      </CustomScrollbarHorizontal>
     </Box>
   );
 }
