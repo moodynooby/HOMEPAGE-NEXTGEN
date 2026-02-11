@@ -8,7 +8,7 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 import LandingPage from '@/components/LandingPage';
 const SpeedDial = lazy(() => import('@/components/Projects'));
@@ -16,7 +16,7 @@ const ProjectDetail = lazy(() => import('@/components/ProjectDetail'));
 const LinkTree = lazy(() => import('@/components/LinkTree'));
 const WebDesignServices = lazy(() => import('@/components/WebDesignServices'));
 
-const customTheme = createTheme({
+let customTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
@@ -217,6 +217,8 @@ const customTheme = createTheme({
     },
   },
 });
+
+customTheme = responsiveFontSizes(customTheme);
 
 const root = createRoot(document.getElementById('root'));
 
