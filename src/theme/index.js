@@ -106,19 +106,29 @@ const getTheme = () => {
             padding: 0;
             scroll-behavior: smooth;
           }
+          * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.35) rgba(241, 245, 249, 0.4);
+          }
           *::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
+            height: 8px;
           }
           *::-webkit-scrollbar-track {
             background: rgba(241, 245, 249, 0.4);
-            border-radius: 12px;
+            border-radius: 0;
           }
           *::-webkit-scrollbar-thumb {
             background: rgba(148, 163, 184, 0.35);
-            border-radius: 12px;
+            border-radius: 4px;
+            border: 2px solid rgba(241, 245, 249, 0.4);
+            background-clip: content-box;
           }
           *::-webkit-scrollbar-thumb:hover {
             background: rgba(100, 116, 139, 0.5);
+          }
+          *::-webkit-scrollbar-corner {
+            background: rgba(241, 245, 249, 0.4);
           }
           @supports not (backdrop-filter: saturate(180%) blur(16px)) {
             .glass-surface {
