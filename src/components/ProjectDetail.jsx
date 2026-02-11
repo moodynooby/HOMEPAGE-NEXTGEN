@@ -16,6 +16,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import projects from '@/content/projects.json';
+import CustomScrollbar from '@/components/CustomScrollbar';
 
 export default function ProjectDetail() {
   const { projectName } = useParams();
@@ -193,135 +194,125 @@ export default function ProjectDetail() {
             <Paper
               elevation={8}
               sx={{
-                p: isMobile ? 3 : 5,
                 borderRadius: 4,
                 bgcolor: 'rgba(255, 255, 255, 0.98)',
                 backdropFilter: 'blur(20px)',
                 minHeight: '60vh',
                 maxHeight: '70vh',
-                overflowY: 'auto',
-                '&::-webkit-scrollbar': {
-                  width: '8px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  bgcolor: 'transparent',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  bgcolor: 'rgba(0, 0, 0, 0.2)',
-                  borderRadius: '4px',
-                  '&:hover': {
-                    bgcolor: 'rgba(0, 0, 0, 0.3)',
-                  },
-                },
+                overflow: 'hidden',
               }}
             >
-              {loading ? (
-                <Typography variant="h6" sx={{ textAlign: 'center', py: 10 }}>
-                  Loading...
-                </Typography>
-              ) : (
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    h1: ({ ...props }) => (
-                      <Typography
-                        variant="h3"
-                        gutterBottom
-                        sx={{ fontWeight: 700, mt: 3 }}
-                        {...props}
-                      />
-                    ),
-                    h2: ({ ...props }) => (
-                      <Typography
-                        variant="h4"
-                        gutterBottom
-                        sx={{ fontWeight: 600, mt: 3 }}
-                        {...props}
-                      />
-                    ),
-                    h3: ({ ...props }) => (
-                      <Typography
-                        variant="h5"
-                        gutterBottom
-                        sx={{ fontWeight: 600, mt: 2 }}
-                        {...props}
-                      />
-                    ),
-                    p: ({ ...props }) => (
-                      <Typography
-                        variant="body1"
-                        paragraph
-                        sx={{ lineHeight: 1.8 }}
-                        {...props}
-                      />
-                    ),
-                    a: ({ ...props }) => (
-                      <a
-                        style={{
-                          color: theme.palette.primary.main,
-                          textDecoration: 'none',
-                          fontWeight: 500,
-                          borderBottom: `2px solid ${theme.palette.primary.light}`,
-                        }}
-                        {...props}
-                      />
-                    ),
-                    code: ({ inline, ...props }) =>
-                      inline ? (
-                        <code
-                          style={{
-                            backgroundColor: theme.palette.grey[100],
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            fontFamily: 'monospace',
-                            fontSize: '0.9em',
-                          }}
-                          {...props}
-                        />
-                      ) : (
-                        <pre
-                          style={{
-                            backgroundColor: theme.palette.grey[900],
-                            color: theme.palette.grey[50],
-                            padding: '16px',
-                            borderRadius: '8px',
-                            overflow: 'auto',
-                            fontFamily: 'monospace',
-                          }}
-                        >
-                          <code {...props} />
-                        </pre>
-                      ),
-                    ul: ({ ...props }) => (
-                      <ul
-                        style={{ paddingLeft: '20px', lineHeight: 1.8 }}
-                        {...props}
-                      />
-                    ),
-                    ol: ({ ...props }) => (
-                      <ol
-                        style={{ paddingLeft: '20px', lineHeight: 1.8 }}
-                        {...props}
-                      />
-                    ),
-                    blockquote: ({ ...props }) => (
-                      <Box
-                        component="blockquote"
-                        sx={{
-                          borderLeft: `4px solid ${theme.palette.primary.main}`,
-                          pl: 2,
-                          ml: 0,
-                          fontStyle: 'italic',
-                          color: theme.palette.text.secondary,
-                        }}
-                        {...props}
-                      />
-                    ),
-                  }}
-                >
-                  {markdown}
-                </ReactMarkdown>
-              )}
+              <CustomScrollbar maxHeight="100%">
+                <Box sx={{ p: isMobile ? 3 : 5 }}>
+                  {loading ? (
+                    <Typography variant="h6" sx={{ textAlign: 'center', py: 10 }}>
+                      Loading...
+                    </Typography>
+                  ) : (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({ ...props }) => (
+                          <Typography
+                            variant="h3"
+                            gutterBottom
+                            sx={{ fontWeight: 700, mt: 3 }}
+                            {...props}
+                          />
+                        ),
+                        h2: ({ ...props }) => (
+                          <Typography
+                            variant="h4"
+                            gutterBottom
+                            sx={{ fontWeight: 600, mt: 3 }}
+                            {...props}
+                          />
+                        ),
+                        h3: ({ ...props }) => (
+                          <Typography
+                            variant="h5"
+                            gutterBottom
+                            sx={{ fontWeight: 600, mt: 2 }}
+                            {...props}
+                          />
+                        ),
+                        p: ({ ...props }) => (
+                          <Typography
+                            variant="body1"
+                            paragraph
+                            sx={{ lineHeight: 1.8 }}
+                            {...props}
+                          />
+                        ),
+                        a: ({ ...props }) => (
+                          <a
+                            style={{
+                              color: theme.palette.primary.main,
+                              textDecoration: 'none',
+                              fontWeight: 500,
+                              borderBottom: `2px solid ${theme.palette.primary.light}`,
+                            }}
+                            {...props}
+                          />
+                        ),
+                        code: ({ inline, ...props }) =>
+                          inline ? (
+                            <code
+                              style={{
+                                backgroundColor: theme.palette.grey[100],
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontFamily: 'monospace',
+                                fontSize: '0.9em',
+                              }}
+                              {...props}
+                            />
+                          ) : (
+                            <pre
+                              style={{
+                                backgroundColor: theme.palette.grey[900],
+                                color: theme.palette.grey[50],
+                                padding: '16px',
+                                borderRadius: '8px',
+                                overflow: 'auto',
+                                fontFamily: 'monospace',
+                              }}
+                            >
+                              <code {...props} />
+                            </pre>
+                          ),
+                        ul: ({ ...props }) => (
+                          <ul
+                            style={{ paddingLeft: '20px', lineHeight: 1.8 }}
+                            {...props}
+                          />
+                        ),
+                        ol: ({ ...props }) => (
+                          <ol
+                            style={{ paddingLeft: '20px', lineHeight: 1.8 }}
+                            {...props}
+                          />
+                        ),
+                        blockquote: ({ ...props }) => (
+                          <Box
+                            component="blockquote"
+                            sx={{
+                              borderLeft: `4px solid ${theme.palette.primary.main}`,
+                              pl: 2,
+                              ml: 0,
+                              fontStyle: 'italic',
+                              color: theme.palette.text.secondary,
+                            }}
+                            {...props}
+                          />
+                        ),
+                      }}
+                    >
+                      {markdown}
+                    </ReactMarkdown>
+                  )}
+                </Box>
+              </CustomScrollbar>
             </Paper>
           </motion.div>
         </Container>
