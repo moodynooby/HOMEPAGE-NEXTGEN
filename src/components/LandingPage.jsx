@@ -123,7 +123,9 @@ function LandingPage() {
                   sx={{
                     p: 2,
                     borderRadius: 3,
-                    bgcolor: 'rgba(255, 255, 255, 0.7)',
+                    bgcolor: theme.palette.mode === 'dark'
+                      ? 'rgba(15, 23, 42, 0.65)'
+                      : 'rgba(255, 255, 255, 0.7)',
                     border: '1px solid',
                     borderColor: 'divider',
                   }}

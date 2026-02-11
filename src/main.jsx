@@ -139,10 +139,12 @@ const getDesignTokens = (mode) => ({
         contained: {
           boxShadow: '0 2px 8px rgba(51, 65, 85, 0.15)',
         },
-        outlined: {
+        outlined: ({ theme }) => ({
           borderWidth: 1.5,
-          borderColor: '#CBD5E1',
-        },
+          borderColor: theme.palette.mode === 'dark'
+            ? 'rgba(148, 163, 184, 0.5)'
+            : '#CBD5E1',
+        }),
       },
     },
     MuiPaper: {

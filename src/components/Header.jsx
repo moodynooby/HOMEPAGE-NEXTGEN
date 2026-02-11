@@ -95,11 +95,13 @@ export default function ButtonAppBar() {
         position="fixed"
         elevation={1}
         sx={{
-          background: 'rgba(255, 255, 255, 0.92)',
+          background: theme.palette.mode === 'dark'
+            ? 'rgba(15, 23, 42, 0.92)'
+            : 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'saturate(180%) blur(12px)',
           boxShadow: theme.shadows[2],
           borderBottom: `1px solid ${theme.palette.divider}`,
-          borderRadius: '16px 16px 16px 16px',
+          borderRadius: { xs: 0, md: 4 },
           top: { xs: 0, md: '12px' },
           left: { md: '50%' },
           transform: { md: 'translateX(-50%)' },
@@ -216,8 +218,7 @@ export default function ButtonAppBar() {
                 />
                 <Chip
                   component={Link}
-                  label="          Get your own website
-"
+                  label="Get your own website"
                   to="/services"
                   clickable
                   size="small"
@@ -298,12 +299,13 @@ export default function ButtonAppBar() {
               mt: 1,
               bgcolor: 'background.paper',
               boxShadow: theme.shadows[8],
-              minWidth: 200,
+              minWidth: 240,
               '& .MuiMenuItem-root': {
                 fontWeight: 500,
                 borderRadius: 8,
                 mx: 0.5,
                 my: 0.25,
+                whiteSpace: 'normal',
                 '&:hover': {
                   bgcolor: 'primary.light',
                 },
@@ -326,13 +328,8 @@ export default function ButtonAppBar() {
         <MenuItem
           component={Link}
           to="/services"
-          variant="contained"
-          size="large"
-          color="secondary"
-
-          sx={{
-            overflow: 'scroll',
-          }}
+          onClick={handleMenuClose}
+          sx={{ fontWeight: 600, whiteSpace: 'normal' }}
         >
           Get your own website
         </MenuItem>

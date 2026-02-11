@@ -90,7 +90,9 @@ export default function LinkTreePreview() {
                 borderRadius: 3,
                 border: '1px solid',
                 borderColor: 'divider',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.95) 100%)',
+                background: theme.palette.mode === 'dark'
+                  ? 'linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,41,59,0.98) 100%)'
+                  : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.95) 100%)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   borderColor: 'primary.main',
