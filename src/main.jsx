@@ -9,7 +9,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
-
+import { tokens } from '@/theme';
 import LandingPage from '@/components/LandingPage';
 const SpeedDial = lazy(() => import('@/components/Projects'));
 const ProjectDetail = lazy(() => import('@/components/ProjectDetail'));
@@ -20,45 +20,44 @@ let customTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#334155',
-      light: '#475569',
-      dark: '#1e293b',
-      contrastText: '#F8FAFC',
+      main: tokens.colors.primary.main,
+      light: tokens.colors.primary.light,
+      dark: tokens.colors.primary.dark,
+      contrastText: tokens.colors.primary.contrastText,
     },
     secondary: {
-      main: '#6366f1',
-      light: '#818cf8',
-      dark: '#4f46e5',
-      contrastText: '#FFFFFF',
+      main: tokens.colors.secondary.main,
+      light: tokens.colors.secondary.light,
+      dark: tokens.colors.secondary.dark,
+      contrastText: tokens.colors.secondary.contrastText,
     },
     success: {
-      main: '#10B981',
-      light: '#34D399',
-      dark: '#059669',
+      main: tokens.colors.success.main,
+      light: tokens.colors.success.light,
+      dark: tokens.colors.success.dark,
     },
     info: {
-      main: '#0EA5E9',
-      light: '#38BDF8',
-      dark: '#0284C7',
+      main: tokens.colors.info.main,
+      light: tokens.colors.info.light,
+      dark: tokens.colors.info.dark,
     },
     background: {
-      default: '#F8FAFC',
-      paper: '#FFFFFF',
+      default: tokens.colors.background.default,
+      paper: tokens.colors.background.paper,
     },
     text: {
-      primary: '#0F172A',
-      secondary: '#475569',
+      primary: tokens.colors.text.primary,
+      secondary: tokens.colors.text.secondary,
     },
-    divider: 'rgba(71, 85, 105, 0.12)',
+    divider: tokens.colors.divider,
   },
   typography: {
-    fontFamily:
-      '"Alan Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: tokens.typography.fontFamily,
     h1: {
       fontSize: '3rem',
       fontWeight: 800,
       letterSpacing: '-0.02em',
-      color: '#1e293b',
+      color: tokens.colors.primary.dark,
     },
     h2: {
       fontSize: '2.5rem',
@@ -82,19 +81,11 @@ let customTheme = createTheme({
       fontWeight: 600,
     },
   },
-  spacing: 4,
+  spacing: tokens.spacing.default,
   shape: {
-    borderRadius: 12,
+    borderRadius: tokens.borderRadius.default,
   },
-  shadows: [
-    'none',
-    '0px 1px 3px rgba(15, 23, 42, 0.08), 0px 1px 2px rgba(15, 23, 42, 0.12)',
-    '0px 3px 6px rgba(15, 23, 42, 0.09), 0px 3px 6px rgba(15, 23, 42, 0.12)',
-    '0px 10px 20px rgba(15, 23, 42, 0.12), 0px 6px 6px rgba(15, 23, 42, 0.12)',
-    '0px 14px 28px rgba(15, 23, 42, 0.15), 0px 10px 10px rgba(15, 23, 42, 0.12)',
-    '0px 19px 38px rgba(15, 23, 42, 0.20), 0px 15px 12px rgba(15, 23, 42, 0.12)',
-    ...Array(20).fill('0px 25px 50px rgba(15, 23, 42, 0.25)'),
-  ],
+  shadows: tokens.shadows,
   components: {
     MuiCssBaseline: {
       styleOverrides: `
@@ -109,11 +100,11 @@ let customTheme = createTheme({
         }
         *::-webkit-scrollbar-track {
           background: rgba(241, 245, 249, 0.5);
-          border-radius: 12px;
+          border-radius: ${tokens.borderRadius.default}px;
         }
         *::-webkit-scrollbar-thumb {
           background: rgba(148, 163, 184, 0.4);
-          border-radius: 12px;
+          border-radius: ${tokens.borderRadius.default}px;
         }
         *::-webkit-scrollbar-thumb:hover {
           background: rgba(100, 116, 139, 0.6);
@@ -123,15 +114,15 @@ let customTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: tokens.borderRadius.default,
           padding: '12px 28px',
           fontSize: '0.95rem',
           fontWeight: 600,
           height: 48,
-          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: tokens.transitions.default,
           '&:hover': {
             transform: 'translateY(-1px)',
-            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
+            boxShadow: tokens.shadows[4],
           },
         },
         contained: {
@@ -147,16 +138,16 @@ let customTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backdropFilter: 'saturate(180%) blur(20px)',
+          backdropFilter: tokens.backdropFilters.md,
         },
         elevation1: {
-          background: 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'saturate(180%) blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
+          background: tokens.colors.glass.paper,
+          backdropFilter: tokens.backdropFilters.md,
+          border: `1px solid rgba(255, 255, 255, 0.3)`,
         },
         elevation3: {
-          background: 'rgba(255, 255, 255, 0.92)',
-          backdropFilter: 'saturate(180%) blur(24px)',
+          background: tokens.colors.glass.paperHigh,
+          backdropFilter: tokens.backdropFilters.lg,
         },
       },
     },
@@ -166,21 +157,21 @@ let customTheme = createTheme({
       },
       styleOverrides: {
         root: {
-          backdropFilter: 'saturate(180%) blur(20px)',
-          background: 'rgba(255, 255, 255, 0.8)',
-          borderBottom: '1px solid rgba(226, 232, 240, 0.8)',
+          backdropFilter: tokens.backdropFilters.default,
+          background: tokens.colors.glass.appBar,
+          borderBottom: `1px solid ${tokens.colors.divider}`,
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          borderRadius: tokens.borderRadius.lg,
+          transition: tokens.transitions.medium,
           border: '1px solid rgba(226, 232, 240, 0.8)',
           '&:hover': {
             transform: 'translateY(-4px)',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            boxShadow: tokens.shadows[4],
             borderColor: '#94A3B8',
           },
         },
@@ -192,12 +183,12 @@ let customTheme = createTheme({
           height: 32,
           fontWeight: 500,
           fontSize: '0.8rem',
-          borderRadius: 8,
+          borderRadius: tokens.borderRadius.md,
         },
         filled: {
-          backgroundColor: '#F1F5F9',
+          backgroundColor: tokens.colors.chip.default,
           '&:hover': {
-            backgroundColor: '#E2E8F0',
+            backgroundColor: tokens.colors.chip.hover,
           },
         },
       },
@@ -206,10 +197,10 @@ let customTheme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiSpeedDialAction-fab': {
-            bgcolor: '#F8FAFC',
-            color: '#334155',
+            bgcolor: tokens.colors.background.default,
+            color: tokens.colors.primary.main,
             '&:hover': {
-              bgcolor: '#F1F5F9',
+              bgcolor: tokens.colors.background.paper,
             },
           },
         },
