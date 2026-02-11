@@ -124,13 +124,13 @@ export default function WebDesignServices() {
             key={i}
             component={motion.div}
             animate={{
-              y: [0, -50, 0],
-              x: [0, 30, 0],
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.6, 0.3],
+              y: [0, -30, 0],
+              x: [0, 20, 0],
+              scale: [1, 1.1, 1],
+              opacity: [0.15, 0.3, 0.15],
             }}
             transition={{
-              duration: 10 + i * 2,
+              duration: 12 + i * 2,
               repeat: Infinity,
               ease: 'easeInOut',
               delay: blob.delay,
@@ -139,11 +139,11 @@ export default function WebDesignServices() {
               position: 'absolute',
               top: blob.top,
               left: blob.left,
-              width: { xs: 300, md: 500 },
-              height: { xs: 300, md: 500 },
+              width: { xs: 250, md: 400 },
+              height: { xs: 250, md: 400 },
               borderRadius: '50%',
-              background: `radial-gradient(circle, ${blob.color}40 0%, transparent 70%)`,
-              filter: 'blur(60px)',
+              background: `radial-gradient(circle, ${blob.color}25 0%, transparent 75%)`,
+              filter: 'blur(80px)',
               transform: 'translate(-50%, -50%)',
             }}
           />
@@ -174,10 +174,10 @@ export default function WebDesignServices() {
                   fontSize: '1rem',
                   fontWeight: 600,
                   borderRadius: '50px',
-                  background: `linear-gradient(135deg, ${theme.palette.background.paper}90, ${theme.palette.background.paper}50)`,
-                  backdropFilter: 'blur(20px)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.05)',
-                  border: `1px solid ${theme.palette.divider}`,
+                  background: theme.custom.glass.bg,
+                  backdropFilter: theme.custom.glass.blur,
+                  boxShadow: theme.custom.glass.shadow,
+                  border: `1px solid ${theme.custom.glass.border}`,
                 }}
               />
             </motion.div>
@@ -273,14 +273,14 @@ export default function WebDesignServices() {
                     py: 1.5,
                     px: 5,
                     textTransform: 'none',
-                    borderWidth: '2px',
-                    borderColor: theme.palette.divider,
-                    background: 'rgba(255,255,255,0.5)',
-                    backdropFilter: 'blur(10px)',
+                    borderWidth: '1.5px',
+                    borderColor: theme.custom.glass.border,
+                    background: theme.custom.glass.bg,
+                    backdropFilter: theme.custom.glass.blur,
                     '&:hover': {
-                      borderWidth: '2px',
-                      borderColor: theme.palette.text.primary,
-                      background: 'rgba(255,255,255,0.8)',
+                      borderWidth: '1.5px',
+                      borderColor: theme.custom.glass.borderActive,
+                      background: theme.custom.glass.bgStrong,
                     },
                   }}
                 >
@@ -396,10 +396,10 @@ export default function WebDesignServices() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: 'rgba(255,255,255,0.1)',
-                            backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(255,255,255,0.2)',
-                            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                            background: 'rgba(255, 255, 255, 0.15)',
+                            backdropFilter: 'blur(12px)',
+                            border: '1px solid rgba(255, 255, 255, 0.25)',
+                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
                           }}
                         >
                           {step.icon}
@@ -515,17 +515,14 @@ export default function WebDesignServices() {
                 transition={{ delay: index * 0.2 }}
               >
                 <Paper
+                  variant="glass"
                   elevation={0}
                   sx={{
                     p: 4,
                     borderRadius: 4,
                     border: tier.highlight
                       ? `2px solid ${tier.color}`
-                      : `1px solid ${theme.palette.divider}`,
-                    background: tier.highlight
-                      ? `linear-gradient(135deg, ${tier.color}10, ${theme.palette.background.paper})`
-                      : 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(20px)',
+                      : `1px solid ${theme.custom.glass.border}`,
                     position: 'relative',
                     transform: tier.highlight ? { md: 'scale(1.1)' } : 'none',
                     zIndex: tier.highlight ? 2 : 1,
@@ -646,12 +643,10 @@ export default function WebDesignServices() {
           viewport={{ once: true }}
         >
           <Paper
+            variant="glass"
             elevation={0}
             sx={{
               p: { xs: 4, md: 8 },
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}10, ${theme.palette.info.main}10)`,
-              backdropFilter: 'blur(20px)',
-              border: `1px solid ${theme.palette.divider}`,
             }}
           >
             <Typography variant="h2" gutterBottom sx={{ fontWeight: 800 }}>

@@ -123,9 +123,11 @@ function LandingPage() {
                   sx={{
                     p: 2,
                     borderRadius: 3,
-                    bgcolor: 'rgba(255, 255, 255, 0.7)',
+                    background: theme.custom.glass.bg,
+                    backdropFilter: theme.custom.glass.blur,
                     border: '1px solid',
-                    borderColor: 'divider',
+                    borderColor: theme.custom.glass.border,
+                    boxShadow: theme.custom.glass.shadow,
                   }}
                 >
                   <Typography
@@ -214,7 +216,7 @@ function LandingPage() {
         ),
       },
     ],
-    [isMobile],
+    [isMobile, theme.custom.glass.bg, theme.custom.glass.blur, theme.custom.glass.border, theme.custom.glass.shadow],
   );
 
   useEffect(() => {
@@ -281,12 +283,13 @@ function LandingPage() {
               sx={{
                 width: { xs: '100%', md: '80%' },
                 maxWidth: '960px',
-                bgcolor: 'background.paper',
+                background: theme.custom.glass.bg,
+                backdropFilter: theme.custom.glass.blur,
                 borderRadius: 4,
                 p: { xs: 3, sm: 4, md: 6 },
-                boxShadow: currentIndex === index ? 12 : 6,
+                boxShadow: currentIndex === index ? theme.custom.glass.shadowActive : theme.custom.glass.shadow,
                 border: '1px solid',
-                borderColor: currentIndex === index ? 'primary.main' : 'divider',
+                borderColor: currentIndex === index ? theme.custom.glass.borderActive : theme.custom.glass.border,
                 position: 'relative',
                 overflow: 'hidden',
                 transition: 'all 0.3s ease',
@@ -296,8 +299,9 @@ function LandingPage() {
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: 4,
-                  background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  height: 3,
+                  background: theme.custom.glass.highlight,
+                  opacity: currentIndex === index ? 1 : 0.5,
                 },
               }}
             >
@@ -378,10 +382,11 @@ function LandingPage() {
             px: 2,
             py: 1,
             borderRadius: 999,
-            bgcolor: 'background.paper',
-            boxShadow: 6,
+            background: theme.custom.glass.bgStrong,
+            backdropFilter: theme.custom.glass.blur,
+            boxShadow: theme.custom.glass.shadow,
             border: '1px solid',
-            borderColor: 'divider',
+            borderColor: theme.custom.glass.border,
             zIndex: 1000,
           }}
         >

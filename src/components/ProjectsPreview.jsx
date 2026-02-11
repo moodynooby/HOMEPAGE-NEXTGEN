@@ -58,12 +58,12 @@ export default function ProjectsPreview() {
         {featuredProjects.map((project, index) => (
           <MotionCard
             key={project.githubName}
+            variant="glass"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.08 }}
             sx={{
               borderRadius: 3,
-              bgcolor: 'background.paper',
               flex: { xs: '0 0 240px', sm: '1 1 auto' },
               scrollSnapAlign: { xs: 'center', sm: 'unset' },
             }}
@@ -75,7 +75,7 @@ export default function ProjectsPreview() {
                   justifyContent: 'center',
                   alignItems: 'center',
                   minHeight: 120,
-                  background: `linear-gradient(135deg, ${theme.palette.primary.light}14 0%, ${theme.palette.background.paper} 100%)`,
+                  background: theme.custom.glass.highlight,
                 }}
               >
                 <CardMedia

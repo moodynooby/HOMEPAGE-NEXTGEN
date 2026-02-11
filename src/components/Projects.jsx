@@ -82,6 +82,7 @@ export default function Projects() {
             {projects.map((project, idx) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project.githubName} >
                 <MotionCard
+                  variant="glass"
                   initial={{ y: 40, opacity: 0, scale: 0.95 }}
                   animate={{ y: 0, opacity: 1, scale: 1 }}
                   transition={{
@@ -99,20 +100,7 @@ export default function Projects() {
                     height: '100%',
                     borderRadius: 3,
                     overflow: 'hidden',
-                    boxShadow: theme.shadows[3],
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    bgcolor: 'background.paper',
-                    backdropFilter: 'saturate(180%) blur(20px)',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4)',
-                      zIndex: 0,
-                    },
                   }}
                 >
                   <CardActionArea
@@ -130,8 +118,7 @@ export default function Projects() {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        bgcolor: ({ palette }) =>
-                          `linear-gradient(135deg, ${palette.primary.light}15 0%, ${palette.background.paper} 100%)`,
+                        background: theme.custom.glass.highlight,
                         p: { xs: 2, md: 3 },
                         minHeight: { xs: 140, md: 180 },
                       }}
