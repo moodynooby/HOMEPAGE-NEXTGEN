@@ -31,13 +31,6 @@ const skills = [
   'Figma',
 ];
 
-const introHighlights = [
-  'Web Apps',
-  'Embedded',
-  'ML Experiments',
-  'Open to Internships',
-];
-
 const aboutItems = [
   { label: 'Studying', value: 'CSE at Ahmedabad University' },
   { label: 'Focus', value: 'Web development, embedded systems, ML & data science' },
@@ -89,11 +82,6 @@ function LandingPage() {
               <Button component={Link} to="/projects" variant="contained" size="large">
                 See My Work
               </Button>
-            </Box>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {introHighlights.map((highlight) => (
-                <Chip key={highlight} label={highlight} color="secondary" size="small" />
-              ))}
             </Box>
           </Box>
         ),
