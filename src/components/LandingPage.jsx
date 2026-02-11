@@ -260,7 +260,6 @@ function LandingPage() {
           scrollSnapType: isMobile ? 'y proximity' : 'y mandatory',
           scrollBehavior: prefersReducedMotion ? 'auto' : 'smooth',
           scrollPaddingTop: { xs: '90px', md: '110px' },
-          touchAction: 'pan-y',
         }}
       >
         {cards.map((card, index) => (

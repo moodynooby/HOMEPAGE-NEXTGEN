@@ -106,19 +106,24 @@ const getDesignTokens = (mode) => ({
           padding: 0;
           scroll-behavior: smooth;
         }
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+        }
         *::-webkit-scrollbar {
-          width: 6px;
+          width: 8px;
+          height: 8px;
         }
         *::-webkit-scrollbar-track {
           background: rgba(241, 245, 249, 0.5);
           border-radius: 12px;
         }
         *::-webkit-scrollbar-thumb {
-          background: rgba(148, 163, 184, 0.4);
+          background: rgba(148, 163, 184, 0.5);
           border-radius: 12px;
         }
         *::-webkit-scrollbar-thumb:hover {
-          background: rgba(100, 116, 139, 0.6);
+          background: rgba(100, 116, 139, 0.7);
         }
       `,
     },

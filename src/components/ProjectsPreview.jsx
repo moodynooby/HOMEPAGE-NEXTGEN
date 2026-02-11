@@ -53,6 +53,8 @@ export default function ProjectsPreview() {
           overflowX: { xs: 'auto', sm: 'visible' },
           pb: { xs: 1, sm: 0 },
           scrollSnapType: { xs: 'x mandatory', sm: 'none' },
+          scrollPaddingInline: { xs: 16, sm: 0 },
+          touchAction: { xs: 'pan-x', sm: 'auto' },
         }}
       >
         {featuredProjects.map((project, index) => (
