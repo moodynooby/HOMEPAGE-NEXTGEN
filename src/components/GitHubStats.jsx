@@ -20,6 +20,7 @@ import {
   Group,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'motion/react';
+
 import { fetchGitHubStats, fetchAddonStats } from '@/utils/statsApi';
 import projects from '@/content/projects.json';
 
@@ -94,11 +95,11 @@ export default function GitHubStats({ username = 'moodynooby' }) {
         addonProjects.map(async (p) => {
           const s = await fetchAddonStats(p.addonId);
           return { ...s, name: p.githubName };
-        })
+        }),
       );
       setAddonStats(addonData);
     } catch (err) {
-      setError("Failed to load real-time stats");
+      setError('Failed to load real-time stats');
       console.error(err);
     } finally {
       setLoading(false);
@@ -128,9 +129,11 @@ export default function GitHubStats({ username = 'moodynooby' }) {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h4" fontWeight="700">Live Impact</Typography>
         <Tooltip title="Refresh Stats">
-          <IconButton onClick={() => loadData(true)} disabled={loading} color="primary">
-            <Refresh className={loading ? 'spin-animation' : ''} />
-          </IconButton>
+          <span>
+            <IconButton onClick={() => loadData(true)} disabled={loading} color="primary">
+              <Refresh className={loading ? 'spin-animation' : ''} />
+            </IconButton>
+          </span>
         </Tooltip>
       </Box>
 
@@ -185,7 +188,7 @@ export default function GitHubStats({ username = 'moodynooby' }) {
               <Grid container spacing={2}>
                 {stats?.recentRepos.map((repo, i) => (
                   <Grid size={{ xs: 12, md: 4 }} key={repo.name}>
-                    <Card variant="outlined" sx={{ borderRadius: 6, bgcolor: 'transparent' }}>
+                    <Card variant="outlined" sx={{ borderRadius: 1, bgcolor: 'transparent' }}>
                       <CardContent>
                         <Typography variant="subtitle1" fontWeight="700" noWrap>
                           {repo.name}
@@ -196,9 +199,9 @@ export default function GitHubStats({ username = 'moodynooby' }) {
                           display: '-webkit-box',
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: 'vertical',
-                          mb: 1
+                          mb: 1,
                         }}>
-                          {repo.description || "No description provided."}
+                          {repo.description || 'No description provided.'}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

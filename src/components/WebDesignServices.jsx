@@ -661,7 +661,7 @@ export default function WebDesignServices() {
               Let&apos;s turn your vision into reality. Get in touch today.
             </Typography>
             <Button
-              component={motion(Link)}
+              component={motion.create(Link)}
               to="/links"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

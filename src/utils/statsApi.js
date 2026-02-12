@@ -41,14 +41,14 @@ export const fetchGitHubStats = async (username) => {
           name: repo.name,
           stars: repo.stargazers_count,
           url: repo.html_url,
-          description: repo.description
-        }))
+          description: repo.description,
+        })),
     };
 
     setCachedData(cacheKey, stats);
     return stats;
   } catch (error) {
-    console.error("Error fetching GitHub stats:", error);
+    console.error('Error fetching GitHub stats:', error);
     throw error;
   }
 };

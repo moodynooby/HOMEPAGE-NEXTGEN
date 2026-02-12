@@ -13,13 +13,14 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
+import PropTypes from 'prop-types';
 
 import projects from '@/content/projects.json';
 import ButtonAppBar from '@/components/Header';
 
-const MotionCard = motion(Card);
+const MotionCard = motion.create(Card);
 
-export default function Projects() {
+export default function Projects({ limit, showAppBar = true }) {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -28,12 +29,14 @@ export default function Projects() {
     navigate(`/projects/${projectName}`);
   };
 
+  const displayedProjects = limit ? projects.slice(0, limit) : projects;
+
   return (
     <>
-      <ButtonAppBar />
+      {showAppBar && <ButtonAppBar />}
       <Box
         sx={{
-          pt: { xs: 10, md: 14 },
+          pt: showAppBar ? { xs: 10, md: 14 } : 0,
           pb: 8,
         }}
       >
@@ -79,7 +82,7 @@ export default function Projects() {
           </motion.div>
 
           <Grid container spacing={4}>
-            {projects.map((project, idx) => (
+            {displayedProjects.map((project, idx) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project.githubName} >
                 <MotionCard
                   initial={{ y: 40, opacity: 0, scale: 0.95 }}
@@ -97,7 +100,7 @@ export default function Projects() {
                   whileTap={{ scale: 0.98 }}
                   sx={{
                     height: '100%',
-                    borderRadius: 8,
+                    borderRadius: 1,
                     overflow: 'hidden',
                     boxShadow: theme.shadows[3],
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -195,21 +198,15 @@ export default function Projects() {
                 And Much More...
               </Typography>
             </Fade>
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'text.secondary',
-                textAlign: 'center',
-                fontWeight: 400,
-                maxWidth: 500,
-                mx: 'auto',
-              }}
-            >
-              Check my GitHub for complete codebase and ongoing experiments.
-            </Typography>
           </motion.div>
         </Container>
       </Box >
     </>
   );
 }
+
+Projects.propTypes = {
+  limit: PropTypes.number,
+  showAppBar: PropTypes.bool,
+};
+

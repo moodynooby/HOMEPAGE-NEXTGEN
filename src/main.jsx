@@ -8,10 +8,10 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
+
 import { ThemeContextProvider, useThemeContext } from '@/contexts/ThemeContext';
 import { getTheme } from '@/theme/theme';
 import CommandPalette from '@/components/CommandPalette';
-
 import LandingPage from '@/components/LandingPage';
 const SpeedDial = lazy(() => import('@/components/Projects'));
 const ProjectDetail = lazy(() => import('@/components/ProjectDetail'));

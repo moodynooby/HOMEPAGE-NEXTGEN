@@ -29,7 +29,7 @@ export const ThemeContextProvider = ({ children }) => {
       mode,
       toggleColorMode,
     }),
-    [mode]
+    [mode],
   );
 
   return (

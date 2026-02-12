@@ -26,9 +26,9 @@ const cards = [
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-evenly',
-          flexFlow:'column',
+          flexFlow: 'column',
           gap: '2px',
-          
+
 
         }}>
           <Button
@@ -86,23 +86,31 @@ const cards = [
       </Box>
     ),
   },
-  {
-    id: 'stats',
-    content: (
-      <GitHubStats />
-    )
-  },
+  // {
+  //   id: 'stats',
+  //   content: (
+  //     <GitHubStats />
+  //   ),
+  // },
   {
     id: 3,
     content: (
       <Box sx={{ textAlign: 'center' }}>
         <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Projects...</Typography></Box>}>
-          <Projects />
+          <Projects limit={3} showAppBar={false} />
+          <Button
+            component={Link}
+            to="/projects"
+            variant="contained"
+            size="large"
+            style={{ width: '100%' }}
+          >
+            See More..
+          </Button>
         </Suspense>
       </Box>
     ),
-  },
-  {
+  }, {
     id: 4,
     content: (
       <Box>

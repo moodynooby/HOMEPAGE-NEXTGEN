@@ -8,7 +8,6 @@ import {
   useMatches,
 } from 'kbar';
 import { useNavigate } from 'react-router-dom';
-import { useThemeContext } from '@/contexts/ThemeContext';
 import { useTheme, Box, Typography } from '@mui/material';
 import {
   Home,
@@ -20,6 +19,8 @@ import {
   LinkedIn,
   Language,
 } from '@mui/icons-material';
+
+import { useThemeContext } from '@/contexts/ThemeContext';
 
 export default function CommandPalette({ children }) {
   const navigate = useNavigate();

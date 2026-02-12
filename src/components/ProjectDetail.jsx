@@ -15,17 +15,19 @@ import { ArrowBack, ArrowForward, GitHub, Close } from '@mui/icons-material';
 import { motion } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import PropTypes from 'prop-types';
 
 import projects from '@/content/projects.json';
 
-export default function ProjectDetail() {
+export default function ProjectDetail({ limit }) {
   const { projectName } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const currentIndex = projects.findIndex((p) => p.githubName === projectName);
-  const project = projects[currentIndex];
+  const displayedProjects = limit ? projects.slice(0, limit) : projects;
+  const currentIndex = displayedProjects.findIndex((p) => p.githubName === projectName);
+  const project = displayedProjects[currentIndex];
 
   const [markdown, setMarkdown] = useState('');
   const [loading, setLoading] = useState(true);
@@ -69,13 +71,13 @@ export default function ProjectDetail() {
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      navigate(`/projects/${projects[currentIndex - 1].githubName}`);
+      navigate(`/projects/${displayedProjects[currentIndex - 1].githubName}`);
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < projects.length - 1) {
-      navigate(`/projects/${projects[currentIndex + 1].githubName}`);
+    if (currentIndex < displayedProjects.length - 1) {
+      navigate(`/projects/${displayedProjects[currentIndex + 1].githubName}`);
     }
   };
 
@@ -197,7 +199,7 @@ export default function ProjectDetail() {
               elevation={8}
               sx={{
                 p: isMobile ? 3 : 5,
-                borderRadius: 8,
+                borderRadius: 1,
                 bgcolor: theme.palette.background.paper,
                 backdropFilter: 'blur(20px)',
                 minHeight: '60vh',
@@ -357,7 +359,7 @@ export default function ProjectDetail() {
           </Fab>
         )}
 
-        {currentIndex < projects.length - 1 && (
+        {currentIndex < displayedProjects.length - 1 && (
           <Fab
             onClick={handleNext}
             sx={{
@@ -381,3 +383,8 @@ export default function ProjectDetail() {
     </Box>
   );
 }
+
+ProjectDetail.propTypes = {
+  limit: PropTypes.number,
+};
+
