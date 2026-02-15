@@ -60,7 +60,7 @@ export default function Projects({ limit, showAppBar = true }) {
                   marginTop: { xs: 2, md: 4 },
                 }}
               >
-                My Projects
+                Featured Projects
               </Typography>
             </Fade>
             <Fade in timeout={1000}>
@@ -184,20 +184,6 @@ export default function Projects({ limit, showAppBar = true }) {
             transition={{ duration: 0.8 }}
             style={{ marginTop: '4rem' }}
           >
-            <Fade in timeout={600}>
-              <Typography
-                variant={isMobile ? 'h4' : 'h3'}
-                sx={{
-                  fontWeight: 700,
-                  textAlign: 'center',
-                  color: 'text.primary',
-                  mb: 2,
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                And Much More...
-              </Typography>
-            </Fade>
           </motion.div>
         </Container>
       </Box >

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { Box, Typography, Button, IconButton, Chip } from '@mui/material';
+import { Box, Typography, Button, IconButton, Chip, Tooltip } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CodeIcon from '@mui/icons-material/Code';
@@ -14,7 +14,7 @@ const cards = [
   {
     id: 1,
     content: (
-      <Box>
+      <Box sx={{ padding:'5px' }}>
         <Typography variant="h2" gutterBottom color="primary">
           Hi, I&apos;m Manas Doshi
         </Typography>
@@ -25,9 +25,9 @@ const cards = [
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-evenly',
-          flexFlow:'column',
-          gap: '2px',
-          
+          flexFlow: 'row',
+          gap: '5px',
+
 
         }}>
           <Button
@@ -146,6 +146,7 @@ function LandingPage() {
           height: 'calc(100vh - 70px)',
           marginTop: '70px',
           overflowY: 'scroll',
+          scrollbarWidth: 0,
           scrollSnapType: 'y mandatory',
           scrollBehavior: 'smooth',
         }}
@@ -160,6 +161,8 @@ function LandingPage() {
               alignItems: 'center',
               justifyContent: 'center',
               scrollSnapAlign: 'center',
+              scrollbarWidth: 0,
+
               p: 4,
             }}
           >
@@ -184,6 +187,8 @@ function LandingPage() {
       </Box>
 
       <Box
+        component="nav"
+        aria-label="Section navigation"
         sx={{
           position: 'fixed',
           right: 32,
@@ -191,71 +196,101 @@ function LandingPage() {
           transform: 'translateY(-50%)',
           display: { xs: 'none', md: 'flex' },
           flexDirection: 'column',
+          alignItems: 'center',
           gap: 2,
           zIndex: 1000,
         }}
       >
-        <IconButton
-          onClick={() =>
-            scrollToCard(
-              currentIndex === 0 ? cards.length - 1 : currentIndex - 1,
-            )
-          }
+        <Tooltip title="Previous Section" placement="left">
+          <IconButton
+            onClick={() =>
+              scrollToCard(
+                currentIndex === 0 ? cards.length - 1 : currentIndex - 1,
+              )
+            }
+            aria-label="Go to previous section"
+            sx={{
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              '&:hover': {
+                bgcolor: 'primary.dark',
+                transform: 'scale(1.1)',
+              },
+              transition: 'all 0.2s ease-in-out',
+              boxShadow: 2,
+            }}
+          >
+            <KeyboardArrowUpIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Box
           sx={{
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-            '&:hover': { bgcolor: 'primary.dark' },
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1.5,
+            py: 2,
+            px: 1,
+            borderRadius: 4,
+            bgcolor: 'rgba(0, 0, 0, 0.05)',
+            backdropFilter: 'blur(4px)',
           }}
         >
-          <KeyboardArrowUpIcon />
-        </IconButton>
-
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          {cards.map((_, index) => (
-            <Box
-              key={index}
-              onClick={() => scrollToCard(index)}
-              sx={{
-                width: 12,
-                height: currentIndex === index ? 40 : 12,
-                borderRadius: 6,
-                bgcolor:
-                  currentIndex === index ? 'primary.main' : 'action.disabled',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-            />
+          {['Home', 'About', 'Projects', 'Connect'].map((label, index) => (
+            <Tooltip key={index} title={label} placement="left">
+              <Box
+                role="button"
+                tabIndex={0}
+                aria-label={`Go to ${label} section`}
+                aria-current={currentIndex === index ? 'step' : undefined}
+                onClick={() => scrollToCard(index)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    scrollToCard(index);
+                  }
+                }}
+                sx={{
+                  width: 12,
+                  height: currentIndex === index ? 40 : 12,
+                  borderRadius: 6,
+                  bgcolor:
+                    currentIndex === index ? 'primary.main' : 'action.disabled',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    bgcolor: currentIndex === index ? 'primary.main' : 'primary.light',
+                    transform: 'scaleX(1.2)',
+                  },
+                }}
+              />
+            </Tooltip>
           ))}
         </Box>
 
-        <IconButton
-          onClick={() =>
-            scrollToCard(
-              currentIndex === cards.length - 1 ? 0 : currentIndex + 1,
-            )
-          }
-          sx={{
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-            '&:hover': { bgcolor: 'primary.dark' },
-          }}
-        >
-          <KeyboardArrowDownIcon />
-        </IconButton>
+        <Tooltip title="Next Section" placement="left">
+          <IconButton
+            onClick={() =>
+              scrollToCard(
+                currentIndex === cards.length - 1 ? 0 : currentIndex + 1,
+              )
+            }
+            aria-label="Go to next section"
+            sx={{
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              '&:hover': {
+                bgcolor: 'primary.dark',
+                transform: 'scale(1.1)',
+              },
+              transition: 'all 0.2s ease-in-out',
+              boxShadow: 2,
+            }}
+          >
+            <KeyboardArrowDownIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
 
-      <Typography
-        variant="caption"
-        sx={{
-          position: 'sticky',
-          bottom: 16,
-          right: 16,
-          color: 'text.secondary',
-          zIndex: 999,
-        }}
-      >
-        Last updated 2026
-      </Typography>
     </div>
   );
 }

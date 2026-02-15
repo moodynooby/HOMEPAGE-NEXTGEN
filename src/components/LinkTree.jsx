@@ -40,7 +40,7 @@ function LinkButton({ link, alt, index }) {
           alignItems: 'center',
           justifyContent: 'center',
           gap: 2,
-          p: 2.5,
+          p: 2,
           textDecoration: 'none',
           color: 'text.primary',
           background: theme.palette.mode === 'light'
@@ -116,15 +116,6 @@ export default function LinkTree() {
               }}
             >
               Manas Doshi
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: '1.1rem',
-                color: 'text.secondary',
-              }}
-            >
-              Developer • Creator • Explorer
             </Typography>
           </Box>
         </motion.div>

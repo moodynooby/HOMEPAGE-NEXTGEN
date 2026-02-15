@@ -28,7 +28,7 @@ const getDesignTokens = (mode) => ({
         },
       }
       : {
-        // Warm Organic Dark Mode
+        // Rich Dark Mode with depth
         primary: {
           main: '#be7b6a', // Softer Terracotta
           light: '#efab99',
@@ -42,12 +42,12 @@ const getDesignTokens = (mode) => ({
           contrastText: '#1a1410',
         },
         background: {
-          default: '#1a1410', // Dark Coffee
-          paper: '#2d241e', // Darker Bean
+          default: '#0d0b09', // Deep Charcoal
+          paper: '#1a1512', // Dark Coffee
         },
         text: {
-          primary: '#fffaf0',
-          secondary: '#d4d3bb',
+          primary: '#f5f0e8',
+          secondary: '#b8b3a8',
         },
       }),
   },
@@ -66,8 +66,20 @@ const getDesignTokens = (mode) => ({
       styleOverrides: (theme) => ({
         body: {
           backgroundColor: theme.palette.background.default,
-          backgroundImage: 'url("https://www.transparenttextures.com/patterns/natural-paper.png")', // Subtle texture
-          transition: 'background-color 0.3s ease-in-out',
+          backgroundImage: mode === 'dark' 
+            ? 'url("https://www.transparenttextures.com/patterns/dark-leather.png")'
+            : 'url("https://www.transparenttextures.com/patterns/natural-paper.png")',
+          transition: 'background-color 0.3s ease-in-out, background-image 0.3s ease-in-out',
+        },
+        '*': {
+          transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
+        },
+        '@media (prefers-reduced-motion: reduce)': {
+          '*': {
+            animationDuration: '0.01ms !important',
+            animationIterationCount: '1 !important',
+            transitionDuration: '0.01ms !important',
+          },
         },
       }),
     },
@@ -76,6 +88,10 @@ const getDesignTokens = (mode) => ({
         root: {
           borderRadius: 32,
           padding: '10px 24px',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+          },
         },
       },
     },
@@ -84,6 +100,7 @@ const getDesignTokens = (mode) => ({
         root: {
           backgroundImage: 'none',
           borderRadius: 24,
+          transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease',
         },
       },
     },
@@ -91,10 +108,47 @@ const getDesignTokens = (mode) => ({
       styleOverrides: {
         root: {
           borderRadius: 16,
-          transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+          transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease',
           '&:hover': {
             transform: 'translateY(-4px)',
           },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          transition: 'background-color 0.2s ease, transform 0.2s ease',
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            transition: 'box-shadow 0.2s ease',
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          transition: 'background-color 0.2s ease, color 0.2s ease',
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          transition: 'background-color 0.2s ease',
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          transition: 'transform 0.3s ease',
         },
       },
     },

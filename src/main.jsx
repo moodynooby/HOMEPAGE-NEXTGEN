@@ -20,7 +20,9 @@ const WebDesignServices = lazy(() => import('@/components/WebDesignServices'));
 
 const AppContent = () => {
   const { mode } = useThemeContext();
-  const theme = getTheme(mode);
+  const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  const effectiveMode = mode === 'system' ? systemPreference : mode;
+  const theme = getTheme(effectiveMode);
 
   return (
     <ThemeProvider theme={theme}>

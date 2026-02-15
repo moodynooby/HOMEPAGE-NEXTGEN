@@ -16,6 +16,8 @@ import {
   Person,
   Settings,
   Brightness4,
+  Brightness7,
+  BrightnessAuto,
   GitHub,
   LinkedIn,
   Language,
@@ -25,7 +27,7 @@ import { useThemeContext } from '@/contexts/ThemeContext';
 
 export default function CommandPalette({ children }) {
   const navigate = useNavigate();
-  const { toggleColorMode } = useThemeContext();
+  const { setThemeMode } = useThemeContext();
   const theme = useTheme();
 
   const actions = [
@@ -62,12 +64,28 @@ export default function CommandPalette({ children }) {
       icon: <Settings />,
     },
     {
-      id: 'theme',
-      name: 'Toggle Theme',
-      shortcut: ['t'],
-      keywords: 'change-theme-dark-light',
-      perform: () => toggleColorMode(),
+      id: 'theme-light',
+      name: 'Theme: Light',
+      shortcut: ['t', 'l'],
+      keywords: 'theme-light-mode',
+      perform: () => setThemeMode('light'),
+      icon: <Brightness7 />,
+    },
+    {
+      id: 'theme-dark',
+      name: 'Theme: Dark',
+      shortcut: ['t', 'd'],
+      keywords: 'theme-dark-mode',
+      perform: () => setThemeMode('dark'),
       icon: <Brightness4 />,
+    },
+    {
+      id: 'theme-system',
+      name: 'Theme: System',
+      shortcut: ['t', 's'],
+      keywords: 'theme-system-auto',
+      perform: () => setThemeMode('system'),
+      icon: <BrightnessAuto />,
     },
     {
       id: 'github',

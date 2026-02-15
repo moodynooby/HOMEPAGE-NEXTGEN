@@ -9,6 +9,8 @@ import {
   MenuItem,
   useMediaQuery,
   Chip,
+  ToggleButtonGroup,
+  ToggleButton,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -20,6 +22,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import BrightnessMediumIcon from '@mui/icons-material/BrightnessMedium';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import { useKBar } from 'kbar';
@@ -84,7 +87,7 @@ export default function ButtonAppBar() {
   const [activeLink, setActiveLink] = React.useState('/');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { mode, toggleColorMode } = useThemeContext();
+  const { mode, setThemeMode } = useThemeContext();
   const { query } = useKBar();
 
   const handleMenuOpen = (event) => {
@@ -106,7 +109,7 @@ export default function ButtonAppBar() {
         sx={{
           background: theme.palette.mode === 'light'
             ? 'linear-gradient(135deg, rgba(255,250,240,0.95) 0%, rgba(255,245,230,0.95) 100%)'
-            : 'linear-gradient(135deg, rgba(45,36,30,0.95) 0%, rgba(60,48,40,0.95) 100%)',
+            : 'linear-gradient(135deg, rgba(26,21,18,0.95) 0%, rgba(13,11,9,0.95) 100%)',
           backdropFilter: 'saturate(180%) blur(16px)',
           boxShadow: theme.shadows[3],
           borderBottom: `1px solid ${theme.palette.divider}`,
@@ -279,9 +282,36 @@ export default function ButtonAppBar() {
               </motion.div>
             )}
 
-            <IconButton onClick={toggleColorMode} color="primary">
-              {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
-            </IconButton>
+            <ToggleButtonGroup
+              value={mode}
+              exclusive
+              onChange={(_, newMode) => newMode && setThemeMode(newMode)}
+              size="small"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  border: `1px solid ${theme.palette.divider}`,
+                  px: 1,
+                  py: 0.5,
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    },
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="light" aria-label="light mode">
+                <LightModeIcon fontSize="small" />
+              </ToggleButton>
+              <ToggleButton value="system" aria-label="system mode">
+                <BrightnessMediumIcon fontSize="small" />
+              </ToggleButton>
+              <ToggleButton value="dark" aria-label="dark mode">
+                <DarkModeIcon fontSize="small" />
+              </ToggleButton>
+            </ToggleButtonGroup>
             {isMobile ? (
               <motion.div whileTap={{ scale: 0.95 }}>
                 <IconButton
@@ -346,13 +376,6 @@ export default function ButtonAppBar() {
         </MenuItem>
         <MenuItem component={Link} to="/links" onClick={handleMenuClose}>
           Profile
-        </MenuItem>
-        <MenuItem
-          component={Link}
-          to="/services"
-          onClick={handleMenuClose}
-        >
-          Get your own website
         </MenuItem>
 
         {socialLinks.map((social, index) => {
