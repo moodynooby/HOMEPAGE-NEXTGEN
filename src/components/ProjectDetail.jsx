@@ -7,6 +7,7 @@ import {
   Typography,
   Paper,
   Fab,
+  Skeleton,
   useTheme,
   useMediaQuery,
 } from '@mui/material';
@@ -14,17 +15,19 @@ import { ArrowBack, ArrowForward, GitHub, Close } from '@mui/icons-material';
 import { motion } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import PropTypes from 'prop-types';
 
 import projects from '@/content/projects.json';
 
-export default function ProjectDetail() {
+export default function ProjectDetail({ limit }) {
   const { projectName } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const currentIndex = projects.findIndex((p) => p.githubName === projectName);
-  const project = projects[currentIndex];
+  const displayedProjects = limit ? projects.slice(0, limit) : projects;
+  const currentIndex = displayedProjects.findIndex((p) => p.githubName === projectName);
+  const project = displayedProjects[currentIndex];
 
   const [markdown, setMarkdown] = useState('');
   const [loading, setLoading] = useState(true);
@@ -68,13 +71,13 @@ export default function ProjectDetail() {
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      navigate(`/projects/${projects[currentIndex - 1].githubName}`);
+      navigate(`/projects/${displayedProjects[currentIndex - 1].githubName}`);
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < projects.length - 1) {
-      navigate(`/projects/${projects[currentIndex + 1].githubName}`);
+    if (currentIndex < displayedProjects.length - 1) {
+      navigate(`/projects/${displayedProjects[currentIndex + 1].githubName}`);
     }
   };
 
@@ -88,7 +91,9 @@ export default function ProjectDetail() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: theme.palette.mode === 'light'
+          ? `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`
+          : `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.secondary.dark} 100%)`,
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -145,7 +150,7 @@ export default function ProjectDetail() {
                 sx={{
                   width: isMobile ? 80 : 120,
                   height: isMobile ? 80 : 120,
-                  borderRadius: 3,
+                  borderRadius: 6,
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
                   bgcolor: 'white',
                   p: 2,
@@ -194,8 +199,8 @@ export default function ProjectDetail() {
               elevation={8}
               sx={{
                 p: isMobile ? 3 : 5,
-                borderRadius: 4,
-                bgcolor: 'rgba(255, 255, 255, 0.98)',
+                borderRadius: 1,
+                bgcolor: theme.palette.background.paper,
                 backdropFilter: 'blur(20px)',
                 minHeight: '60vh',
                 maxHeight: '70vh',
@@ -207,18 +212,25 @@ export default function ProjectDetail() {
                   bgcolor: 'transparent',
                 },
                 '&::-webkit-scrollbar-thumb': {
-                  bgcolor: 'rgba(0, 0, 0, 0.2)',
+                  bgcolor: theme.palette.divider,
                   borderRadius: '4px',
                   '&:hover': {
-                    bgcolor: 'rgba(0, 0, 0, 0.3)',
+                    bgcolor: theme.palette.action.hover,
                   },
                 },
               }}
             >
               {loading ? (
-                <Typography variant="h6" sx={{ textAlign: 'center', py: 10 }}>
-                  Loading...
-                </Typography>
+                <Box sx={{ py: 2 }}>
+                  <Skeleton variant="text" sx={{ fontSize: '3rem', mb: 2 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 3 }} />
+                  <Skeleton variant="text" sx={{ fontSize: '2rem', mb: 2 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                  <Skeleton variant="rectangular" height={20} sx={{ mb: 1 }} />
+                </Box>
               ) : (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
@@ -270,7 +282,7 @@ export default function ProjectDetail() {
                       inline ? (
                         <code
                           style={{
-                            backgroundColor: theme.palette.grey[100],
+                            backgroundColor: theme.palette.action.hover,
                             padding: '2px 6px',
                             borderRadius: '4px',
                             fontFamily: 'monospace',
@@ -281,10 +293,10 @@ export default function ProjectDetail() {
                       ) : (
                         <pre
                           style={{
-                            backgroundColor: theme.palette.grey[900],
-                            color: theme.palette.grey[50],
+                            backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : '#1e1e1e',
+                            color: '#fff',
                             padding: '16px',
-                            borderRadius: '8px',
+                            borderRadius: '12px',
                             overflow: 'auto',
                             fontFamily: 'monospace',
                           }}
@@ -347,7 +359,7 @@ export default function ProjectDetail() {
           </Fab>
         )}
 
-        {currentIndex < projects.length - 1 && (
+        {currentIndex < displayedProjects.length - 1 && (
           <Fab
             onClick={handleNext}
             sx={{
@@ -372,4 +384,7 @@ export default function ProjectDetail() {
   );
 }
 
-ProjectDetail.propTypes = {};
+ProjectDetail.propTypes = {
+  limit: PropTypes.number,
+};
+

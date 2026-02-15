@@ -14,22 +14,79 @@ import CodeIcon from '@mui/icons-material/Code';
 import { Link } from 'react-router-dom';
 
 import ButtonAppBar from '@/components/Header';
+import GitHubStats from '@/components/GitHubStats';
 
 const ProjectsPreview = lazy(() => import('@/components/ProjectsPreview'));
 const LinkTreePreview = lazy(() => import('@/components/LinkTreePreview'));
 
-const skills = [
-  'React',
-  'JavaScript',
-  'Python',
-  'C/C++',
-  'Node.js',
-  'Embedded Systems',
-  'Machine Learning',
-  'Data Science',
-  'MUI',
-  'Figma',
-];
+const cards = [
+  {
+    id: 1,
+    content: (
+      <Box>
+        <Typography variant="h2" gutterBottom color="primary">
+          Hi, I&apos;m Manas Doshi
+        </Typography>
+        <Typography variant="h6" sx={{ mb: 4, color: 'text.secondary' }}>
+          CSE student building web, embedded & ML projects. I create, I learn, I occasionally break things,
+          and I always fix them better than before.
+        </Typography>
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-evenly',
+          flexFlow: 'column',
+          gap: '2px',
+
+
+        }}>
+          <Button
+            variant="contained"
+            size="large"
+            href="https://flowcv.com/resume/woofkdsq4sse"
+          >
+            View My Resume
+          </Button>
+          <Button
+            component={Link}
+            to="/projects"
+            variant="contained"
+            size="large"
+
+          >
+            See My Work
+          </Button>
+        </Box>
+      </Box>
+    ),
+  },
+  {
+    id: 2,
+    content: (
+      <Box>
+        <Typography variant="h2" gutterBottom color="primary">
+          About Me
+        </Typography>
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="body1" paragraph>
+            <strong>Studying:</strong> CSE at Ahmedabad University
+          </Typography>
+          <Typography variant="body1" paragraph>
+            <strong>Focus:</strong> Web development, embedded systems, ML & data science
+          </Typography>
+          <Typography variant="body1" paragraph>
+            <strong>Involved:</strong> IEEE AU Student Chapter
+          </Typography>
+          <Typography variant="body1" paragraph>
+            <strong>Open to:</strong> Internships, hackathons, collaborations
+          </Typography>
+          <Typography variant="h4" gutterBottom color="primary" sx={{ mb: 4 }}>
+            Core Skills <CodeIcon sx={{ ml: 1, verticalAlign: 'middle' }} />
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1.5, maxWidth: 600 }}>
+            <Chip label="React" color="primary" variant="outlined" />
+            <Chip label="Python" color="secondary" variant="outlined" />
+            <Chip label="C/C++" color="primary" variant="outlined" />
+            <Chip label="Node.js" color="secondary" variant="outlined" />
 
 const introHighlights = [
   'Web Apps',
@@ -38,11 +95,44 @@ const introHighlights = [
   'Open to Internships',
 ];
 
-const aboutItems = [
-  { label: 'Studying', value: 'CSE at Ahmedabad University' },
-  { label: 'Focus', value: 'Web development, embedded systems, ML & data science' },
-  { label: 'Involved', value: 'IEEE AU Student Chapter' },
-  { label: 'Open to', value: 'Internships, hackathons, collaborations' },
+        </Box>
+      </Box>
+    ),
+  },
+  // {
+  //   id: 'stats',
+  //   content: (
+  //     <GitHubStats />
+  //   ),
+  // },
+  {
+    id: 3,
+    content: (
+      <Box sx={{ textAlign: 'center' }}>
+        <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Projects...</Typography></Box>}>
+          <Projects limit={3} showAppBar={false} />
+          <Button
+            component={Link}
+            to="/projects"
+            variant="contained"
+            size="large"
+            style={{ width: '100%' }}
+          >
+            See More..
+          </Button>
+        </Suspense>
+      </Box>
+    ),
+  }, {
+    id: 4,
+    content: (
+      <Box>
+        <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Links...</Typography></Box>}>
+          <LinkTree />
+        </Suspense>
+      </Box>
+    ),
+  },
 ];
 
 function LandingPage() {

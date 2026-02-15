@@ -17,22 +17,26 @@
   {
     "githubName": "modern-darkreader",
     "githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-darkreader/refs/heads/main/README.md",
-    "githubImg": "https://github.com/moodynooby/modern-darkreader/blob/main/src/icons/dr_128.png?raw=true"
+    "githubImg": "https://github.com/moodynooby/modern-darkreader/blob/main/src/icons/dr_128.png?raw=true",
+    "addonId": "len-dek"
   },
   {
     "githubName": "Gimme-That",
     "githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gimme-That/refs/heads/master/Readme.md",
-    "githubImg": "https://raw.githubusercontent.com/moodynooby/Gimme-That/0f6c9de0fbf95df2ffac4fba472c6edf7737630d/style/icon.svg"
+    "githubImg": "https://raw.githubusercontent.com/moodynooby/Gimme-That/0f6c9de0fbf95df2ffac4fba472c6edf7737630d/style/icon.svg",
+    "addonId": "gimmethat"
   },
   {
     "githubName": "modern-speed-controller",
     "githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/refs/heads/firefox-port/README.md",
-    "githubImg": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/4b313b9571ac782ceee98a79c240eef88ec7c4d3/icons/icon.svg"
+    "githubImg": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/4b313b9571ac782ceee98a79c240eef88ec7c4d3/icons/icon.svg",
+    "addonId": "paceplay-modern-controller"
   },
   {
     "githubName": "modern-volume-booster",
     "githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/refs/heads/master/README.md",
-    "githubImg": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/d51f7c02040e2dab79ab9f11dba255310a5183fd/icon.svg"
+    "githubImg": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/d51f7c02040e2dab79ab9f11dba255310a5183fd/icon.svg",
+    "addonId": "modern-boomslider"
   },
   {
     "githubName": "Gallery-Genie",

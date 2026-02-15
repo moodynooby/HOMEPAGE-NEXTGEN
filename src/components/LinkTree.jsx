@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Paper, Avatar } from '@mui/material';
+import { Box, Container, Typography, Paper, Avatar, useTheme } from '@mui/material';
 import { motion } from 'motion/react';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -19,6 +19,7 @@ const iconMap = {
 
 function LinkButton({ link, alt, index }) {
   const IconComponent = iconMap[alt];
+  const theme = useTheme();
 
   return (
     <motion.div
@@ -42,15 +43,18 @@ function LinkButton({ link, alt, index }) {
           p: 2.5,
           textDecoration: 'none',
           color: 'text.primary',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+          background: theme.palette.mode === 'light'
+            ? 'linear-gradient(135deg, #ffffff 0%, #fdf5e6 100%)'
+            : 'linear-gradient(135deg, #2d241e 0%, #1a1410 100%)',
           border: '2px solid',
           borderColor: 'primary.main',
+          borderRadius: 4,
           transition: 'all 0.3s ease',
           '&:hover': {
-            background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
-            color: 'white',
-            boxShadow: '0 8px 24px rgba(79, 70, 229, 0.3)',
-            borderColor: 'secondary.main',
+            background: theme.palette.primary.main,
+            color: 'primary.contrastText',
+            boxShadow: `0 8px 24px ${theme.palette.primary.main}55`,
+            borderColor: 'primary.light',
           },
         }}
       >
@@ -70,6 +74,7 @@ LinkButton.propTypes = {
 };
 
 export default function LinkTree() {
+  const theme = useTheme();
   return (
     <Box
       sx={{
@@ -91,13 +96,13 @@ export default function LinkTree() {
                 height: 120,
                 mx: 'auto',
                 mb: 3,
-                bgcolor: 'white',
+                bgcolor: 'background.paper',
                 color: 'primary.main',
                 fontSize: '3rem',
                 fontWeight: 800,
                 border: '4px solid',
-                borderColor: 'secondary.main',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+                borderColor: 'primary.main',
+                boxShadow: theme.shadows[10],
               }}
             >
               MD
@@ -107,7 +112,7 @@ export default function LinkTree() {
               fontWeight={800}
               sx={{
                 mb: 1,
-                textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                color: 'text.primary',
               }}
             >
               Manas Doshi
@@ -116,6 +121,7 @@ export default function LinkTree() {
               variant="body1"
               sx={{
                 fontSize: '1.1rem',
+                color: 'text.secondary',
               }}
             >
               Developer • Creator • Explorer
