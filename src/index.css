@@ -1,13 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&family=Winky+Sans:ital,wght@0,300..900;1,300..900&display=swap');
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
 }
 
 body, .Container {
-  background-image: 
+  background-image:
     radial-gradient(circle at 1px 1px, rgba(0,0,0,0.2) 1px, transparent 0);
   background-size: 50px 50px;
+}
+
+.LandingScroll {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 body::before {
