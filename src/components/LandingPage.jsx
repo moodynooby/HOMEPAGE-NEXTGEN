@@ -85,16 +85,16 @@ const cards = [
       </Box>
     ),
   },
-  // {
-  //   id: 3,
-  //   content: (
-  //     <Box sx={{ textAlign: 'center' }}>
-  //       <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Projects...</Typography></Box>}>
-  //         <Projects />
-  //       </Suspense>
-  //     </Box>
-  //   ),
-  // },
+  {
+    id: 3,
+    content: (
+      <Box sx={{ textAlign: 'center' }}>
+        <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Projects...</Typography></Box>}>
+          <Projects limit={3} showAppBar={false} />
+        </Suspense>
+      </Box>
+    ),
+  },
   {
     id: 4,
     content: (
@@ -254,7 +254,7 @@ function LandingPage() {
           zIndex: 999,
         }}
       >
-        Last updated 2025
+        Last updated 2026
       </Typography>
     </div>
   );

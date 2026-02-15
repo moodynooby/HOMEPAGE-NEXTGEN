@@ -9,6 +9,7 @@ import {
 } from 'kbar';
 import { useNavigate } from 'react-router-dom';
 import { useTheme, Box, Typography } from '@mui/material';
+import PropTypes from 'prop-types';
 import {
   Home,
   AccountTree,
@@ -192,3 +193,7 @@ function RenderResults() {
     />
   );
 }
+
+CommandPalette.propTypes = {
+  children: PropTypes.node,
+};

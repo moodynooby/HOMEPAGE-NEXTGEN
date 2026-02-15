@@ -20,6 +20,9 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import WebIcon from '@mui/icons-material/Web';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import SearchIcon from '@mui/icons-material/Search';
+import KeyboardIcon from '@mui/icons-material/Keyboard';
+import { useKBar } from 'kbar';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 
@@ -38,6 +41,7 @@ const iconMap = {
 
 function SocialLinksComponent() {
   return (
+
     <Box sx={{ display: 'flex', gap: 1 }}>
       {socialLinks.map((social, index) => {
         const IconComponent = iconMap[social.alt];
@@ -77,9 +81,11 @@ function SocialLinksComponent() {
 
 export default function ButtonAppBar() {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+  const [activeLink, setActiveLink] = React.useState('/');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { mode, toggleColorMode } = useThemeContext();
+  const { query } = useKBar();
 
   const handleMenuOpen = (event) => {
     setMenuAnchorEl(event.currentTarget);
@@ -88,15 +94,21 @@ export default function ButtonAppBar() {
     setMenuAnchorEl(null);
   };
 
+  React.useEffect(() => {
+    setActiveLink(window.location.pathname);
+  }, []);
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
-        elevation={1}
+        elevation={0}
         sx={{
-          background: theme.palette.mode === 'light' ? 'rgba(255, 250, 240, 0.92)' : 'rgba(45, 36, 30, 0.92)',
-          backdropFilter: 'saturate(180%) blur(12px)',
-          boxShadow: theme.shadows[2],
+          background: theme.palette.mode === 'light'
+            ? 'linear-gradient(135deg, rgba(255,250,240,0.95) 0%, rgba(255,245,230,0.95) 100%)'
+            : 'linear-gradient(135deg, rgba(45,36,30,0.95) 0%, rgba(60,48,40,0.95) 100%)',
+          backdropFilter: 'saturate(180%) blur(16px)',
+          boxShadow: theme.shadows[3],
           borderBottom: `1px solid ${theme.palette.divider}`,
           borderRadius: '16px 16px 16px 16px',
           top: { xs: 0, md: '12px' },
@@ -138,7 +150,56 @@ export default function ButtonAppBar() {
             >
               Manas Doshi
             </Typography>
+
           </motion.div>
+
+          <Box
+            onClick={query.toggle}
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+              alignItems: 'center',
+              gap: 0.5,
+              px: 1.5,
+              py: 0.75,
+              borderRadius: 2,
+              minWidth:'20vw',
+              border: `1px solid ${theme.palette.divider}`,
+              bgcolor: 'rgba(107, 114, 128, 0.08)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                bgcolor: 'primary.light',
+                borderColor: 'primary.main',
+                transform: 'scale(1.02)',
+              },
+              justifyItems:'baseline',
+              justifyContent:'space-between',
+            }}
+          >
+            <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+              Search
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.25,
+                ml: 1,
+                px: 0.75,
+                py: 0.25,
+                borderRadius: 1,
+                bgcolor: theme.palette.mode === 'light' ? 'grey.200' : 'grey.800',
+                border: `1px solid ${theme.palette.divider}`,
+              }}
+            >
+              <KeyboardIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '10px' }}>
+                K
+              </Typography>
+            </Box>
+          </Box>
+
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {!isMobile && (
@@ -154,14 +215,16 @@ export default function ButtonAppBar() {
                   label="Home"
                   clickable
                   size="small"
+                  variant={activeLink === '/' ? 'filled' : 'outlined'}
                   sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)',
-                    color: 'text.primary',
-                    fontWeight: 500,
+                    bgcolor: activeLink === '/' ? 'primary.main' : 'transparent',
+                    color: activeLink === '/' ? 'primary.contrastText' : 'text.primary',
+                    fontWeight: 600,
                     fontSize: '0.875rem',
                     borderRadius: 20,
+                    borderColor: activeLink === '/' ? 'primary.main' : 'divider',
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: activeLink === '/' ? 'primary.dark' : 'primary.light',
                       transform: 'translateY(-2px)',
                       boxShadow: theme.shadows[4],
                     },
@@ -174,14 +237,16 @@ export default function ButtonAppBar() {
                   label="Projects"
                   clickable
                   size="small"
+                  variant={activeLink === '/projects' ? 'filled' : 'outlined'}
                   sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)',
-                    color: 'text.primary',
-                    fontWeight: 500,
+                    bgcolor: activeLink === '/projects' ? 'primary.main' : 'transparent',
+                    color: activeLink === '/projects' ? 'primary.contrastText' : 'text.primary',
+                    fontWeight: 600,
                     fontSize: '0.875rem',
                     borderRadius: 20,
+                    borderColor: activeLink === '/projects' ? 'primary.main' : 'divider',
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: activeLink === '/projects' ? 'primary.dark' : 'primary.light',
                       transform: 'translateY(-2px)',
                       boxShadow: theme.shadows[4],
                     },
@@ -194,14 +259,16 @@ export default function ButtonAppBar() {
                   label="Profile"
                   clickable
                   size="small"
+                  variant={activeLink === '/links' ? 'filled' : 'outlined'}
                   sx={{
-                    bgcolor: 'rgba(107, 114, 128, 0.08)',
-                    color: 'text.primary',
-                    fontWeight: 500,
+                    bgcolor: activeLink === '/links' ? 'primary.main' : 'transparent',
+                    color: activeLink === '/links' ? 'primary.contrastText' : 'text.primary',
+                    fontWeight: 600,
                     fontSize: '0.875rem',
                     borderRadius: 20,
+                    borderColor: activeLink === '/links' ? 'primary.main' : 'divider',
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: activeLink === '/links' ? 'primary.dark' : 'primary.light',
                       transform: 'translateY(-2px)',
                       boxShadow: theme.shadows[4],
                     },
@@ -215,7 +282,6 @@ export default function ButtonAppBar() {
             <IconButton onClick={toggleColorMode} color="primary">
               {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
             </IconButton>
-
             {isMobile ? (
               <motion.div whileTap={{ scale: 0.95 }}>
                 <IconButton
