@@ -275,7 +275,7 @@ export default function WebDesignServices() {
                     textTransform: 'none',
                     borderWidth: '2px',
                     borderColor: theme.palette.divider,
-                    background: 'rgba(255,255,255,0.5)',
+                    background: 'rgba(255, 255, 255, 0.36)',
                     backdropFilter: 'blur(10px)',
                     '&:hover': {
                       borderWidth: '2px',
