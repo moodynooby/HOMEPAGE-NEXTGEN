@@ -1,298 +1,228 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { Box, Typography, Button, IconButton, Chip, Tooltip } from '@mui/material';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import CodeIcon from '@mui/icons-material/Code';
+import * as React from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Button,
+  Divider,
+} from '@mui/material';
 import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
+import PropTypes from 'prop-types';
 
 import ButtonAppBar from '@/components/Header';
 
-const LinkTree = lazy(() => import('@/components/LinkTree'));
-const Projects = lazy(() => import('@/components/Projects'));
-
-const cards = [
-  {
-    id: 1,
-    content: (
-      <Box sx={{ padding:'5px' }}>
-        <Typography variant="h2" gutterBottom color="primary">
-          Hi, I&apos;m Manas Doshi
-        </Typography>
-        <Typography variant="h6" sx={{ mb: 4, color: 'text.secondary' }}>
-          CSE student building web, embedded & ML projects. I create, I learn, I occasionally break things,
-          and I always fix them better than before.
-        </Typography>
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-evenly',
-          flexFlow: 'row',
-          gap: '5px',
-
-
-        }}>
-          <Button
-            variant="contained"
-            size="large"
-            href="https://flowcv.com/resume/woofkdsq4sse"
-          >
-            View My Resume
-          </Button>
-          <Button
-            component={Link}
-            to="/projects"
-            variant="contained"
-            size="large"
-
-          >
-            See My Work
-          </Button>
-        </Box>
-      </Box>
-    ),
-  },
-  {
-    id: 2,
-    content: (
-      <Box>
-        <Typography variant="h2" gutterBottom color="primary">
-          About Me
-        </Typography>
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="body1" paragraph>
-            <strong>Studying:</strong> CSE at Ahmedabad University
-          </Typography>
-          <Typography variant="body1" paragraph>
-            <strong>Focus:</strong> Web development, embedded systems, ML & data science
-          </Typography>
-          <Typography variant="body1" paragraph>
-            <strong>Involved:</strong> IEEE AU Student Chapter
-          </Typography>
-          <Typography variant="body1" paragraph>
-            <strong>Open to:</strong> Internships, hackathons, collaborations
-          </Typography>
-          <Typography variant="h4" gutterBottom color="primary" sx={{ mb: 4 }}>
-            Core Skills <CodeIcon sx={{ ml: 1, verticalAlign: 'middle' }} />
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1.5, maxWidth: 600 }}>
-            <Chip label="React" color="primary" variant="outlined" />
-            <Chip label="Python" color="secondary" variant="outlined" />
-            <Chip label="C/C++" color="primary" variant="outlined" />
-            <Chip label="Node.js" color="secondary" variant="outlined" />
-
-          </Box>
-
-        </Box>
-      </Box>
-    ),
-  },
-  {
-    id: 3,
-    content: (
-      <Box sx={{ textAlign: 'center' }}>
-        <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Projects...</Typography></Box>}>
-          <Projects limit={3} showAppBar={false} />
-        </Suspense>
-      </Box>
-    ),
-  },
-  {
-    id: 4,
-    content: (
-      <Box>
-        <Suspense fallback={<Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography>Loading Links...</Typography></Box>}>
-          <LinkTree />
-        </Suspense>
-      </Box>
-    ),
-  },
-];
-
-function LandingPage() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const cardRefs = useRef([]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = cardRefs.current.indexOf(entry.target);
-            if (index !== -1) setCurrentIndex(index);
-          }
-        });
-      },
-      { threshold: 0.6 },
-    );
-
-    cardRefs.current.forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const scrollToCard = (index) => {
-    cardRefs.current[index]?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    });
-  };
-
+function PullQuote({ children }) {
   return (
-    <div className="Container">
-      <ButtonAppBar />
-      <Box
-        sx={{
-          height: 'calc(100vh - 70px)',
-          marginTop: '70px',
-          overflowY: 'scroll',
-          scrollbarWidth: 0,
-          scrollSnapType: 'y mandatory',
-          scrollBehavior: 'smooth',
-        }}
-      >
-        {cards.map((card, index) => (
-          <Box
-            key={card.id}
-            ref={(el) => (cardRefs.current[index] = el)}
-            sx={{
-              minHeight: 'calc(100vh - 70px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              scrollSnapAlign: 'center',
-              scrollbarWidth: 0,
-
-              p: 4,
-            }}
-          >
-            <Box
-              sx={{
-                width: { xs: '100%', md: '80%' },
-                maxWidth: '900px',
-                bgcolor: 'background.paper',
-                borderRadius: 4,
-                p: { xs: 4, md: 6 },
-                boxShadow: currentIndex === index ? 12 : 6,
-                border: '1px solid',
-                borderColor:
-                  currentIndex === index ? 'primary.main' : 'divider',
-                transition: 'all 0.3s ease',
-              }}
-            >
-              {card.content}
-            </Box>
-          </Box>
-        ))}
-      </Box>
-
-      <Box
-        component="nav"
-        aria-label="Section navigation"
-        sx={{
-          position: 'fixed',
-          right: 32,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          display: { xs: 'none', md: 'flex' },
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 2,
-          zIndex: 1000,
-        }}
-      >
-        <Tooltip title="Previous Section" placement="left">
-          <IconButton
-            onClick={() =>
-              scrollToCard(
-                currentIndex === 0 ? cards.length - 1 : currentIndex - 1,
-              )
-            }
-            aria-label="Go to previous section"
-            sx={{
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              '&:hover': {
-                bgcolor: 'primary.dark',
-                transform: 'scale(1.1)',
-              },
-              transition: 'all 0.2s ease-in-out',
-              boxShadow: 2,
-            }}
-          >
-            <KeyboardArrowUpIcon />
-          </IconButton>
-        </Tooltip>
-
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1.5,
-            py: 2,
-            px: 1,
-            borderRadius: 4,
-            bgcolor: 'rgba(0, 0, 0, 0.05)',
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          {['Home', 'About', 'Projects', 'Connect'].map((label, index) => (
-            <Tooltip key={index} title={label} placement="left">
-              <Box
-                role="button"
-                tabIndex={0}
-                aria-label={`Go to ${label} section`}
-                aria-current={currentIndex === index ? 'step' : undefined}
-                onClick={() => scrollToCard(index)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    scrollToCard(index);
-                  }
-                }}
-                sx={{
-                  width: 12,
-                  height: currentIndex === index ? 40 : 12,
-                  borderRadius: 6,
-                  bgcolor:
-                    currentIndex === index ? 'primary.main' : 'action.disabled',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    bgcolor: currentIndex === index ? 'primary.main' : 'primary.light',
-                    transform: 'scaleX(1.2)',
-                  },
-                }}
-              />
-            </Tooltip>
-          ))}
-        </Box>
-
-        <Tooltip title="Next Section" placement="left">
-          <IconButton
-            onClick={() =>
-              scrollToCard(
-                currentIndex === cards.length - 1 ? 0 : currentIndex + 1,
-              )
-            }
-            aria-label="Go to next section"
-            sx={{
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              '&:hover': {
-                bgcolor: 'primary.dark',
-                transform: 'scale(1.1)',
-              },
-              transition: 'all 0.2s ease-in-out',
-              boxShadow: 2,
-            }}
-          >
-            <KeyboardArrowDownIcon />
-          </IconButton>
-        </Tooltip>
-      </Box>
-
-    </div>
+    <Box
+      className="pull-quote"
+      sx={{
+        maxWidth: '800px',
+        mx: 'auto',
+        my: 8,
+        textAlign: 'center',
+        borderLeft: 'none',
+        position: 'relative',
+        '&::before, &::after': {
+          content: '""',
+          display: 'block',
+          width: '60px',
+          height: '2px',
+          bgcolor: 'secondary.main',
+          mx: 'auto',
+          my: 2,
+        },
+      }}
+    >
+      <Typography variant="h2" sx={{ fontStyle: 'italic' }}>
+        {children}
+      </Typography>
+    </Box>
   );
 }
 
-export default LandingPage;
+function EditorialSection({ title, children, sideContent }) {
+  return (
+    <Box sx={{ my: 8 }}>
+      <Typography variant="h3" sx={{ mb: 2, borderBottom: '2px solid black', display: 'inline-block' }}>
+        {title.toUpperCase()}
+      </Typography>
+      <Grid container spacing={6}>
+        <Grid item xs={12} md={8}>
+          <Box sx={{
+            columnCount: { xs: 1, md: 2 },
+            columnGap: '2rem',
+            textAlign: 'justify',
+            '& p': { mb: 2 },
+          }}>
+            {children}
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Box sx={{
+            p: 3,
+            bgcolor: 'background.paper',
+            border: '1px solid black',
+            height: '100%',
+          }}>
+            {sideContent}
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+}
+
+PullQuote.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+EditorialSection.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  sideContent: PropTypes.node,
+};
+
+export default function LandingPage() {
+  return (
+    <Box sx={{ minHeight: '100vh', pb: 8 }}>
+      <ButtonAppBar />
+
+      <Container maxWidth="lg" sx={{ mt: 6 }}>
+        {/* HERO AREA - ASYMMETRICAL EDITORIAL LAYOUT */}
+        <Grid container spacing={4} alignItems="center">
+          <Grid item xs={12} md={7}>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: '2.5rem', md: '4rem' },
+                  lineHeight: 1.1,
+                  mb: 4,
+                  fontWeight: 800,
+                }}
+              >
+                THE ARCHIVE OF A DIGITAL CRAFTSMAN.
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 4, maxWidth: '600px', fontSize: '1.25rem' }}>
+                Manas Doshi presents a collection of work at the intersection of web, machine learning, and hardware.
+                A curated dossier of projects that redefine the digital experience.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={Link}
+                  to="/projects"
+                >
+                  READ THE DOSSIER
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  href="/resume.pdf"
+                  target="_blank"
+                >
+                  CURRICULUM VITAE
+                </Button>
+              </Box>
+            </motion.div>
+          </Grid>
+          <Grid item xs={12} md={5}>
+            <Box
+              sx={{
+                border: '1px solid black',
+                p: 1,
+                bgcolor: 'white',
+                transform: { md: 'rotate(2deg)' },
+                boxShadow: '10px 10px 0px rgba(0,0,0,0.1)',
+              }}
+            >
+              <Box
+                component="img"
+                src="https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&q=80&w=800"
+                sx={{ width: '100%', filter: 'sepia(0.5) contrast(1.2) grayscale(1)' }}
+              />
+              <Typography variant="caption" sx={{ mt: 1, display: 'block', textAlign: 'center' }}>
+                FIG. 1 — THE ARCHIVAL OVERVIEW
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+
+        <Divider sx={{ my: 10, borderColor: 'text.primary', borderWidth: '2px' }} />
+
+        {/* FEATURED STORY */}
+        <EditorialSection
+          title="The Core Mission"
+          sideContent={
+            <>
+              <Typography variant="h6" sx={{ mb: 2 }}>QUICK FACTS</Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}><strong>SPECIALIZATION:</strong> FULL-STACK ARCHITECTURE</Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}><strong>INTERESTS:</strong> ML, EMBEDDED SYSTEMS, EDITORIAL DESIGN</Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}><strong>EDITION:</strong> 2024.03</Typography>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                &quot;Code is the ink of the modern age. We must write it with the same care as a first edition manuscript.&quot;
+              </Typography>
+            </>
+          }
+        >
+          <p>
+            In an era of fleeting digital interfaces and disposable software, we strive for something more permanent.
+            The philosophy of &quot;The Living Archive&quot; centers on building systems that possess the tactile authority of print
+            while leveraging the dynamic capabilities of the modern web.
+          </p>
+          <p>
+            Each project in this collection is treated as an editorial dispatch—a documented exploration of technical
+            boundaries. From low-level firmware optimizations to high-level reactive interfaces, the goal remains
+            consistent: clarity, authority, and human-centric design.
+          </p>
+          <p>
+            We reject the homogenization of the web. Instead, we embrace the &quot;paper-first&quot; methodology, where
+            information hierarchy is dictated by typography rather than containerized blocks. This is the
+            archive of Manas Doshi.
+          </p>
+        </EditorialSection>
+
+        <PullQuote>
+          &quot;THE UI IS NOT A SCREEN, IT IS A SERIES OF INK-PRESSED LAYERS.&quot;
+        </PullQuote>
+
+        {/* LATEST DISPATCHES PREVIEW */}
+        <Box sx={{ mb: 12 }}>
+          <Typography variant="h3" sx={{ mb: 4, textAlign: 'center' }}>RECENT DISPATCHES</Typography>
+          <Grid container spacing={4}>
+            {[
+              { title: 'MODERN BOOMSLIDER', category: 'UX/UI', desc: 'A re-imagining of the volume control interface.' },
+              { title: 'GIMME THAT', category: 'DEV TOOLS', desc: 'Streamlining asset acquisition for developers.' },
+              { title: 'PACEPLAY', category: 'EMBEDDED', desc: 'Hardware-level control for modern gaming.' },
+            ].map((item, idx) => (
+              <Grid item xs={12} md={4} key={idx}>
+                <Box sx={{ borderTop: '4px solid black', pt: 2 }}>
+                  <Typography variant="caption" color="secondary">{item.category}</Typography>
+                  <Typography variant="h5" sx={{ my: 1 }}>{item.title}</Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>{item.desc}</Typography>
+                  <Button variant="text" size="small" component={Link} to="/projects">READ MORE →</Button>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+      </Container>
+
+      {/* FOOTER */}
+      <Box sx={{ borderTop: '1px solid black', py: 6, textAlign: 'center', mt: 10 }}>
+        <Typography variant="overline" sx={{ fontWeight: 800 }}>
+          © 2024 MANAS DOSHI — ALL RIGHTS RESERVED
+        </Typography>
+      </Box>
+    </Box>
+  );
+}

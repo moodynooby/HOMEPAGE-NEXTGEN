@@ -1,158 +1,191 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, alpha } from '@mui/material/styles';
 
-const getDesignTokens = (mode) => ({
-  palette: {
-    mode,
-    ...(mode === 'light'
-      ? {
-        // Warm Organic Light Mode
-        primary: {
-          main: '#8c4b3e', // Terracotta
-          light: '#be7b6a',
-          dark: '#5c1f17',
-          contrastText: '#fffaf0', // Floral White
+const getDesignTokens = (mode) => {
+  const isLight = mode === 'light';
+
+  return {
+    palette: {
+      mode,
+      primary: {
+        main: '#5f5e5e', // Iron-gall ink
+        dark: '#38392e', // Deep ink
+        contrastText: '#fdffda', // Surface parchment
+      },
+      secondary: {
+        main: '#7d5d53', // Sepia
+      },
+      background: {
+        default: isLight ? '#fdffda' : '#38392e',
+        paper: isLight ? '#fdffda' : '#38392e',
+      },
+      text: {
+        primary: isLight ? '#38392e' : '#fdffda',
+        secondary: '#7d5d53',
+      },
+      divider: 'rgba(56, 57, 46, 0.1)', // Ghost Border rule
+    },
+    typography: {
+      fontFamily: '"Noto Serif", serif',
+      h1: {
+        fontFamily: '"Newsreader", serif',
+        fontWeight: 800,
+        letterSpacing: '-0.04em',
+      },
+      h2: {
+        fontFamily: '"Newsreader", serif',
+        fontWeight: 700,
+        letterSpacing: '-0.02em',
+      },
+      h3: {
+        fontFamily: '"Newsreader", serif',
+        fontWeight: 700,
+      },
+      h4: {
+        fontFamily: '"Newsreader", serif',
+        fontWeight: 600,
+      },
+      h5: {
+        fontFamily: '"Newsreader", serif',
+        fontWeight: 600,
+      },
+      h6: {
+        fontFamily: '"Newsreader", serif',
+        fontWeight: 600,
+      },
+      body1: {
+        fontFamily: '"Noto Serif", serif',
+        fontSize: '1.1rem',
+        lineHeight: 1.7,
+      },
+      body2: {
+        fontFamily: '"Noto Serif", serif',
+        lineHeight: 1.6,
+      },
+      button: {
+        fontFamily: '"Work Sans Variable", sans-serif',
+        fontWeight: 600,
+        textTransform: 'none',
+        letterSpacing: '0.05em',
+      },
+      caption: {
+        fontFamily: '"Work Sans Variable", sans-serif',
+      },
+      overline: {
+        fontFamily: '"Work Sans Variable", sans-serif',
+      },
+    },
+    shape: {
+      borderRadius: 0, // No Rounded Corners rule
+    },
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: (theme) => ({
+          body: {
+            backgroundColor: theme.palette.background.default,
+            color: theme.palette.text.primary,
+            transition: 'background-color 0.4s ease, color 0.4s ease',
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
+            backgroundBlendMode: 'soft-light',
+          },
+        }),
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: () => ({
+            borderRadius: 0,
+            padding: '8px 20px',
+            boxShadow: 'none',
+            '&:hover': {
+              boxShadow: 'none',
+              transform: 'translateY(-1px)',
+            },
+          }),
+          containedPrimary: ({ theme }) => ({
+            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+            '&:hover': {
+              background: theme.palette.primary.dark,
+            },
+          }),
+          outlined: ({ theme }) => ({
+            borderColor: alpha(theme.palette.primary.main, 0.2),
+            color: theme.palette.primary.main,
+            '&:hover': {
+              borderColor: theme.palette.primary.main,
+              backgroundColor: alpha(theme.palette.primary.main, 0.05),
+            },
+          }),
+          text: ({ theme }) => ({
+            borderBottom: '1px solid transparent',
+            '&:hover': {
+              borderBottom: `1px solid ${theme.palette.primary.main}`,
+              backgroundColor: 'transparent',
+            },
+          }),
         },
-        secondary: {
-          main: '#6b705c', // Sage/Olive
-          light: '#9ba08b',
-          dark: '#3f4331',
-          contrastText: '#fffaf0',
-        },
-        background: {
-          default: '#fffaf0', // Creamy/Floral White
-          paper: '#fdf5e6', // Old Lace
-        },
-        text: {
-          primary: '#2d241e',
-          secondary: '#5c524b',
-        },
-      }
-      : {
-        // Rich Dark Mode with depth
-        primary: {
-          main: '#be7b6a', // Softer Terracotta
-          light: '#efab99',
-          dark: '#8c4b3e',
-          contrastText: '#1a1410',
-        },
-        secondary: {
-          main: '#a5a58d', // Lighter Sage
-          light: '#d4d3bb',
-          dark: '#797a61',
-          contrastText: '#1a1410',
-        },
-        background: {
-          default: '#0d0b09', // Deep Charcoal
-          paper: '#1a1512', // Dark Coffee
-        },
-        text: {
-          primary: '#f5f0e8',
-          secondary: '#b8b3a8',
-        },
-      }),
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h1: { fontWeight: 800 },
-    h2: { fontWeight: 700 },
-    h3: { fontWeight: 700 },
-    button: { textTransform: 'none', fontWeight: 600 },
-  },
-  shape: {
-    borderRadius: 24, // Organic/Soft
-  },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: (theme) => ({
-        body: {
-          backgroundColor: theme.palette.background.default,
-          backgroundImage: mode === 'dark' 
-            ? 'url("https://www.transparenttextures.com/patterns/dark-leather.png")'
-            : 'url("https://www.transparenttextures.com/patterns/natural-paper.png")',
-          transition: 'background-color 0.3s ease-in-out, background-image 0.3s ease-in-out',
-        },
-        '*': {
-          transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
-        },
-        '@media (prefers-reduced-motion: reduce)': {
-          '*': {
-            animationDuration: '0.01ms !important',
-            animationIterationCount: '1 !important',
-            transitionDuration: '0.01ms !important',
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            backgroundImage: 'none',
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: 'none',
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`, // Ghost Border
+          }),
+          elevation1: {
+            boxShadow: 'none',
           },
         },
-      }),
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 32,
-          padding: '10px 24px',
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-          '&:hover': {
-            transform: 'translateY(-2px)',
-          },
+      },
+      MuiAppBar: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            backgroundColor: alpha(theme.palette.background.default, 0.85),
+            backdropFilter: 'blur(12px)',
+            backgroundImage: 'none',
+            color: theme.palette.text.primary,
+            borderBottom: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+            boxShadow: 'none',
+          }),
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: ({ theme: _theme }) => ({
+            borderRadius: 0,
+            border: `1px solid ${alpha(_theme.palette.primary.main, 0.1)}`,
+            backgroundColor: _theme.palette.background.paper,
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              borderColor: alpha(_theme.palette.primary.main, 0.3),
+              backgroundColor: alpha(_theme.palette.primary.main, 0.02),
+            },
+          }),
+        },
+      },
+      MuiChip: {
+        styleOverrides: {
+          root: ({ theme: _theme }) => ({
+            borderRadius: 0,
+            fontFamily: '"Work Sans Variable", sans-serif',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+          }),
+        },
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: ({ theme: _theme }) => ({
+            fontFamily: '"Noto Serif", serif',
+            '&:after': {
+              borderBottomColor: _theme.palette.primary.main,
+            },
+          }),
         },
       },
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-          borderRadius: 24,
-          transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease',
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 16,
-          transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease',
-          '&:hover': {
-            transform: 'translateY(-4px)',
-          },
-        },
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          transition: 'background-color 0.2s ease, transform 0.2s ease',
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            transition: 'box-shadow 0.2s ease',
-          },
-        },
-      },
-    },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          transition: 'background-color 0.2s ease, color 0.2s ease',
-        },
-      },
-    },
-    MuiListItemButton: {
-      styleOverrides: {
-        root: {
-          transition: 'background-color 0.2s ease',
-        },
-      },
-    },
-    MuiDrawer: {
-      styleOverrides: {
-        paper: {
-          transition: 'transform 0.3s ease',
-        },
-      },
-    },
-  },
-});
+  };
+};
 
 export const getTheme = (mode) => createTheme(getDesignTokens(mode));

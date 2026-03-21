@@ -1,6 +1,5 @@
 import { StrictMode, lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import './index.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import {
   ThemeProvider,
@@ -9,6 +8,15 @@ import {
   CircularProgress,
 } from '@mui/material';
 
+import '@fontsource/newsreader/400.css';
+import '@fontsource/newsreader/700.css';
+import '@fontsource/newsreader/800.css';
+import '@fontsource/newsreader/400-italic.css';
+import '@fontsource/noto-serif/400.css';
+import '@fontsource/noto-serif/700.css';
+import '@fontsource-variable/work-sans';
+
+import './index.css';
 import { ThemeContextProvider, useThemeContext } from '@/contexts/ThemeContext';
 import { getTheme } from '@/theme/theme';
 import CommandPalette from '@/components/CommandPalette';
