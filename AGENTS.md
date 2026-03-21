@@ -3,7 +3,7 @@
 ## Build & Commands
 - **Dev**: `bun dev` (Vite dev server)
 - **Build**: `bun build` (Vite production build to `dist/`)
-- **Lint**: `eslint .` (check) or `eslint . --fix` (auto-fix)
+- **Lint**: `biome .` (check) or `biome . --fix` (auto-fix)
 - **Preview**: `bun run preview` (Vite preview of built output)
 
 ## Architecture & Structure
@@ -26,6 +26,6 @@
 - **Prop validation**: PropTypes required on all components (`react/prop-types: error`)
 - **Unused vars**: Error, except args starting with `_`
 - **Spacing**: Always in object braces (`{ }`) and around arrows
-- **Hooks**: ESLint enforces Rules of Hooks; deps checked via `exhaustive-deps` (warn)
+- **Hooks**: biome enforces Rules of Hooks; deps checked via `exhaustive-deps` (warn)
 - **React Refresh**: Exports must be components/const unless `allowConstantExport: true`
 - **No console**: Warn (remove debug logs before commit)
