@@ -19,7 +19,6 @@ body {
   position: relative;
 }
 
-/* Signature Grain Texture */
 body::before {
   content: "";
   position: fixed;
@@ -34,7 +33,6 @@ body::before {
   mix-blend-mode: soft-light;
 }
 
-/* The Vellum Effect */
 .vellum {
   background: rgba(253, 255, 218, 0.85);
   backdrop-filter: blur(12px);
@@ -42,7 +40,6 @@ body::before {
   border: 1px solid var(--ghost-border);
 }
 
-/* Hairline Rules */
 .hairline-rule {
   border: 0;
   border-top: 1px solid var(--hairline-rule);
@@ -53,7 +50,6 @@ body::before {
   border-top: 2px solid var(--ink);
 }
 
-/* Pull Quote Styling */
 .pull-quote {
   font-family: 'Newsreader', serif;
   font-style: italic;
@@ -65,7 +61,6 @@ body::before {
   color: var(--ink);
 }
 
-/* Multi-column editorial layout */
 .editorial-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -86,7 +81,6 @@ body::before {
   }
 }
 
-/* Editorial Links */
 a {
   color: inherit;
   text-decoration-color: var(--hairline-rule);
@@ -98,13 +92,11 @@ a:hover {
   text-decoration-color: var(--ink);
 }
 
-/* Command Palette Customization */
 [kbar-portal] {
   --kbar-bg-color: var(--surface) !important;
   --kbar-primary-color: var(--ink) !important;
 }
 
-/* Custom Scrollbar for Newspaper Feel */
 ::-webkit-scrollbar {
   width: 8px;
 }

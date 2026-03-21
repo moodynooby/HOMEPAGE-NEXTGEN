@@ -29,7 +29,6 @@ import { Link } from 'react-router-dom';
 import socialLinks from '@/content/socialLinks.json';
 import { useThemeContext } from '@/contexts/ThemeContext';
 
-// Icon mapping for social links
 const iconMap = {
   LinkedIn: LinkedInIcon,
   GitHub: GitHubIcon,
@@ -89,7 +88,6 @@ export default function ButtonAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {/* The Masthead Top Section */}
       <Box
         sx={{
           pt: 4,
@@ -117,7 +115,6 @@ export default function ButtonAppBar() {
           MANAS DOSHI
         </Typography>
 
-        {/* Masthead Hairline Rules & Metadata */}
         <Box
           sx={{
             borderTop: `2px solid ${theme.palette.text.primary}`,
@@ -143,7 +140,6 @@ export default function ButtonAppBar() {
         </Box>
       </Box>
 
-      {/* Floating Navigation (Vellum Effect) */}
       <AppBar
         position="sticky"
         elevation={0}

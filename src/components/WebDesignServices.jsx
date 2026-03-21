@@ -292,7 +292,6 @@ export default function WebDesignServices() {
         </motion.div>
       </Container>
 
-      {/* Process Section */}
       <Box
         sx={{
           bgcolor: 'secondary.main',
@@ -330,7 +329,7 @@ export default function WebDesignServices() {
           </motion.div>
 
           <Box sx={{ position: 'relative' }}>
-            {/* Connection Line */}
+            
             <Box
               sx={{
                 position: 'absolute',
@@ -425,7 +424,7 @@ export default function WebDesignServices() {
           </Box>
         </Container>
       </Box>
-      {/* Pricing Section */}
+      
       <Container
         maxWidth="lg"
         sx={{ pb: 15, position: 'relative', zIndex: 1, marginTop: '100px' }}
@@ -532,7 +531,7 @@ export default function WebDesignServices() {
                     overflow: 'visible',
                   }}
                 >
-                  {/* Save Badge */}
+                  
                   <Box
                     sx={{
                       position: 'absolute',
@@ -638,7 +637,7 @@ export default function WebDesignServices() {
         </Grid>
       </Container>
 
-      {/* CTA Section */}
+      
       <Container maxWidth="md" sx={{ py: 20, textAlign: 'center' }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}

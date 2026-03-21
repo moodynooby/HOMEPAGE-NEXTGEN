@@ -7,12 +7,12 @@ const getDesignTokens = (mode) => {
     palette: {
       mode,
       primary: {
-        main: '#5f5e5e', // Iron-gall ink
-        dark: '#38392e', // Deep ink
-        contrastText: '#fdffda', // Surface parchment
+        main: '#5f5e5e', 
+        dark: '#38392e', 
+        contrastText: '#fdffda', 
       },
       secondary: {
-        main: '#7d5d53', // Sepia
+        main: '#7d5d53', 
       },
       background: {
         default: isLight ? '#fdffda' : '#38392e',
@@ -22,7 +22,7 @@ const getDesignTokens = (mode) => {
         primary: isLight ? '#38392e' : '#fdffda',
         secondary: '#7d5d53',
       },
-      divider: 'rgba(56, 57, 46, 0.1)', // Ghost Border rule
+      divider: 'rgba(56, 57, 46, 0.1)', 
     },
     typography: {
       fontFamily: '"Noto Serif", serif',
@@ -75,7 +75,7 @@ const getDesignTokens = (mode) => {
       },
     },
     shape: {
-      borderRadius: 0, // No Rounded Corners rule
+      borderRadius: 0, 
     },
     components: {
       MuiCssBaseline: {
@@ -129,7 +129,7 @@ const getDesignTokens = (mode) => {
             backgroundImage: 'none',
             backgroundColor: theme.palette.background.paper,
             boxShadow: 'none',
-            border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`, // Ghost Border
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`, 
           }),
           elevation1: {
             boxShadow: 'none',

@@ -90,7 +90,7 @@ export default function LandingPage() {
       <ButtonAppBar />
 
       <Container maxWidth="lg" sx={{ mt: 6 }}>
-        {/* HERO AREA - ASYMMETRICAL EDITORIAL LAYOUT */}
+        
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={12} md={7}>
             <motion.div
@@ -157,7 +157,7 @@ export default function LandingPage() {
 
         <Divider sx={{ my: 10, borderColor: 'text.primary', borderWidth: '2px' }} />
 
-        {/* FEATURED STORY */}
+        
         <EditorialSection
           title="The Core Mission"
           sideContent={
@@ -217,7 +217,7 @@ export default function LandingPage() {
 
       </Container>
 
-      {/* FOOTER */}
+      
       <Box sx={{ borderTop: '1px solid black', py: 6, textAlign: 'center', mt: 10 }}>
         <Typography variant="overline" sx={{ fontWeight: 800 }}>
           © 2024 MANAS DOSHI — ALL RIGHTS RESERVED
