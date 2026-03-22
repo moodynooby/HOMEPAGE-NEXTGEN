@@ -1,29 +1,22 @@
 [
-  {
-    "link": "https://github.com/moodynooby",
-    "img": "src/assets/github-color-svgrepo-com.svg",
-    "alt": "GitHub"
-  },
-  {
-    "link": "https://www.linkedin.com/in/manas-doshi-644751363",
-    "img": "src/assets/linkedin-color-svgrepo-com.svg",
-    "alt": "LinkedIn"
-  },
-  {
-    "link": "https://www.instagram.com/doshimanas__/",
-    "img": "src/assets/instagram-color-svgrepo-com.svg",
-    "alt": "Instagram"
-  },
-    {
-    "link": "https://addons.mozilla.org/en-US/firefox/user/17859963/",
-    "img": "src/assets/firefox-color-svgrepo-com.svg",
-    "alt": "Addons Profile"
-  },
-    {
-    "link": "mailto:doshimanas27@gmail.com",
-    "img": "src/assets/gmail-svgrepo-com.svg",
-    "alt": "Email"
-  }
-
-
+	{
+		"link": "https://github.com/moodynooby",
+		"alt": "GitHub"
+	},
+	{
+		"link": "https://www.linkedin.com/in/manas-doshi-644751363",
+		"alt": "LinkedIn"
+	},
+	{
+		"link": "https://www.instagram.com/doshimanas__/",
+		"alt": "Instagram"
+	},
+	{
+		"link": "https://addons.mozilla.org/en-US/firefox/user/17859963/",
+		"alt": "Addons Profile"
+	},
+	{
+		"link": "mailto:doshimanas27@gmail.com",
+		"alt": "Email"
+	}
 ]

@@ -1,115 +1,15 @@
 :root {
-  --surface: #fdffda;
-  --surface-container-high: #eae9d9;
-  --ink: #38392e;
-  --sepia: #7d5d53;
-  --ghost-border: rgba(56, 57, 46, 0.1);
-  --hairline-rule: rgba(56, 57, 46, 0.2);
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--surface);
-  color: var(--ink);
-  overflow-x: hidden;
-  position: relative;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.15;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  mix-blend-mode: soft-light;
-}
-
-.vellum {
-  background: rgba(253, 255, 218, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--ghost-border);
-}
-
-.hairline-rule {
-  border: 0;
-  border-top: 1px solid var(--hairline-rule);
-  margin: 1.5rem 0;
-}
-
-.hairline-rule.thick {
-  border-top: 2px solid var(--ink);
-}
-
-.pull-quote {
-  font-family: 'Newsreader', serif;
-  font-style: italic;
-  font-size: 1.5rem;
-  padding: 1rem 1.5rem;
-  border-left: 3px solid var(--sepia);
-  margin: 2rem 0;
-  line-height: 1.4;
-  color: var(--ink);
-}
-
-.editorial-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 2rem;
-}
-
-.editorial-col-main {
-  grid-column: span 8;
-}
-
-.editorial-col-side {
-  grid-column: span 4;
-}
-
-@media (max-width: 900px) {
-  .editorial-col-main, .editorial-col-side {
-    grid-column: span 12;
-  }
+	--sepia: #7d5d53;
+	--hairline-rule: rgba(56, 57, 46, 0.2);
 }
 
 a {
-  color: inherit;
-  text-decoration-color: var(--hairline-rule);
-  text-underline-offset: 4px;
-  transition: all 0.2s ease;
+	color: inherit;
+	text-decoration-color: var(--hairline-rule);
+	text-underline-offset: 4px;
+	transition: all 0.2s ease;
 }
 
 a:hover {
-  text-decoration-color: var(--ink);
-}
-
-[kbar-portal] {
-  --kbar-bg-color: var(--surface) !important;
-  --kbar-primary-color: var(--ink) !important;
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--surface);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--sepia);
-  border: 2px solid var(--surface);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--ink);
+	text-decoration-color: #38392e;
 }
