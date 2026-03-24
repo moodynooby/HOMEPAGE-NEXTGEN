@@ -7,22 +7,22 @@ const getDesignTokens = (mode) => {
 		palette: {
 			mode,
 			primary: {
-				main: "#5f5e5e",
-				dark: "#38392e",
-				contrastText: "#fdffda",
+				main: isLight ? "#5f5e5e" : "#fdffda",
+				dark: isLight ? "#38392e" : "#f1f3c3",
+				contrastText: isLight ? "#fdffda" : "#38392e",
 			},
 			secondary: {
-				main: "#7d5d53",
+				main: isLight ? "#7d5d53" : "#a6827a",
 			},
 			background: {
-				default: isLight ? "#fdffda" : "#38392e",
-				paper: isLight ? "#fdffda" : "#38392e",
+				default: isLight ? "#fdffda" : "#282a21",
+				paper: isLight ? "#fdffda" : "#282a21",
 			},
 			text: {
 				primary: isLight ? "#38392e" : "#fdffda",
-				secondary: "#7d5d53",
+				secondary: isLight ? "#7d5d53" : "#a6827a",
 			},
-			divider: "rgba(56, 57, 46, 0.1)",
+			divider: isLight ? "rgba(56, 57, 46, 0.1)" : "rgba(253, 255, 218, 0.15)",
 		},
 		typography: {
 			fontFamily: '"Noto Serif", serif',
@@ -157,7 +157,7 @@ const getDesignTokens = (mode) => {
 						backgroundImage: "none",
 						backgroundColor: theme.palette.background.paper,
 						boxShadow: "none",
-						border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+						border: `1px solid ${theme.palette.divider}`,
 					}),
 					elevation1: {
 						boxShadow: "none",
@@ -171,7 +171,7 @@ const getDesignTokens = (mode) => {
 						backdropFilter: "blur(12px)",
 						backgroundImage: "none",
 						color: theme.palette.text.primary,
-						borderBottom: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+						borderBottom: `1px solid ${theme.palette.divider}`,
 						boxShadow: "none",
 					}),
 				},
@@ -180,13 +180,13 @@ const getDesignTokens = (mode) => {
 				styleOverrides: {
 					root: ({ theme: _theme }) => ({
 						borderRadius: 0,
-						border: `1px solid ${alpha(_theme.palette.primary.main, 0.1)}`,
+						border: `1px solid ${_theme.palette.divider}`,
 						backgroundColor: _theme.palette.background.paper,
 						transition:
 							"border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease",
 						"&:hover": {
 							borderColor: alpha(_theme.palette.primary.main, 0.3),
-							backgroundColor: alpha(_theme.palette.primary.main, 0.02),
+							backgroundColor: alpha(_theme.palette.divider, 0.05),
 						},
 					}),
 				},

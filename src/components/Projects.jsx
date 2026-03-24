@@ -1,30 +1,72 @@
 import {
 	Box,
-	Card,
-	CardActionArea,
-	CardContent,
-	CardMedia,
 	Container,
-	Fade,
-	Grid,
 	Typography,
 	useMediaQuery,
 	useTheme,
+	CircularProgress,
+	Link,
 } from "@mui/material";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
-import projects from "@/content/projects.json";
+import projectsData from "@/content/projects.json";
+import { fetchRepoMetadata, groupProjectsByYear } from "@/utils/githubUtils";
 
-const MotionCard = motion.create(Card);
+const MotionBox = motion.create(Box);
 
 export default function Projects({ limit, showAppBar = true }) {
 	const navigate = useNavigate();
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+	const [projects, setProjects] = useState([]);
+	const [loading, setLoading] = useState(true);
 
-	const displayedProjects = limit ? projects.slice(0, limit) : projects;
+	useEffect(() => {
+		async function loadProjects() {
+			const projectsWithMetadata = await Promise.all(
+				projectsData.map(async (project) => {
+					const metadata = await fetchRepoMetadata(project.githubName);
+					return {
+						...project,
+						year: metadata?.year || new Date().getFullYear(),
+						date: metadata?.created_at || "",
+					};
+				}),
+			);
+			const sortedProjects = projectsWithMetadata.sort(
+				(a, b) => new Date(b.date) - new Date(a.date),
+			);
+
+			setProjects(limit ? sortedProjects.slice(0, limit) : sortedProjects);
+			setLoading(false);
+		}
+		loadProjects();
+	}, [limit]);
+
+	if (loading) {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					minHeight: "60vh",
+				}}
+			>
+				<CircularProgress color="primary" />
+			</Box>
+		);
+	}
+
+	const groupedProjects = groupProjectsByYear(projects);
+	const years = Object.keys(groupedProjects).sort((a, b) => {
+		if (a === "Unknown") return 1;
+		if (b === "Unknown") return -1;
+		return Number(b) - Number(a);
+	});
 
 	return (
 		<>
@@ -33,156 +75,261 @@ export default function Projects({ limit, showAppBar = true }) {
 				sx={{
 					pt: showAppBar ? { xs: 10, md: 14 } : 0,
 					pb: 8,
+					position: "relative",
+					minHeight: "100vh",
 				}}
 			>
 				<Container maxWidth="lg">
 					<motion.div
-						initial={{ y: -30, opacity: 0 }}
-						animate={{ y: 0, opacity: 1 }}
-						transition={{ duration: 0.8, ease: "easeOut" }}
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.8 }}
 					>
-						<Fade in timeout={800}>
-							<Typography
-								variant={isMobile ? "h3" : "h2"}
-								sx={{
-									fontWeight: 800,
-									textAlign: "center",
-									mb: 2,
-									background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 50%, ${theme.palette.text.primary} 100%)`,
-									WebkitBackgroundClip: "text",
-									WebkitTextFillColor: "transparent",
-									backgroundClip: "text",
-									marginTop: { xs: 2, md: 4 },
-								}}
-							>
-								Featured Projects
-							</Typography>
-						</Fade>
-						<Fade in timeout={1000}>
-							<Typography
-								variant="h6"
-								sx={{
-									color: "text.secondary",
-									textAlign: "center",
-									mb: 8,
-									fontWeight: 400,
-									mx: "auto",
-									lineHeight: 1.6,
-								}}
-							>
-								Explore my latest work across web development, embedded systems,
-								machine learning, and more. Click any project for full details.
-							</Typography>
-						</Fade>
+						<Typography
+							variant="h2"
+							sx={{
+								textAlign: "center",
+								mb: 12,
+								fontFamily: '"Newsreader", serif',
+								fontWeight: 800,
+								textTransform: "uppercase",
+								letterSpacing: "-0.02em",
+							}}
+						>
+							The Project Ledger
+						</Typography>
 					</motion.div>
 
-					<Grid container spacing={4}>
-						{displayedProjects.map((project, idx) => (
-							<Grid size={{ xs: 12, sm: 6, md: 4 }} key={project.githubName}>
-								<MotionCard
-									initial={{ y: 40, opacity: 0, scale: 0.95 }}
-									animate={{ y: 0, opacity: 1, scale: 1 }}
-									transition={{
-										delay: idx * 0.1 + 0.3,
-										duration: 0.6,
-										ease: "easeOut",
-									}}
-									whileHover={{
-										y: -8,
-										scale: 1.02,
-										transition: { duration: 0.3, ease: "easeOut" },
-									}}
-									whileTap={{ scale: 0.98 }}
+					<Box sx={{ position: "relative" }}>
+						{!isMobile && (
+							<Box
+								sx={{
+									position: "absolute",
+									left: "50%",
+									top: 0,
+									bottom: 0,
+									width: "1px",
+									bgcolor: "rgba(187, 186, 172, 0.3)",
+									transform: "translateX(-50%)",
+								}}
+							/>
+						)}
+
+						{years.map((year) => (
+							<Box
+								key={year}
+								sx={{
+									mb: 12,
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "center",
+									position: "relative",
+								}}
+							>
+								<MotionBox
+									initial={{ scale: 0.8, opacity: 0 }}
+									whileInView={{ scale: 1, opacity: 1 }}
+									viewport={{ once: true }}
 									sx={{
-										height: "100%",
-										borderRadius: 1,
-										overflow: "hidden",
-										boxShadow: theme.shadows[3],
-										transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-										bgcolor: "background.paper",
-										border: `1px solid ${theme.palette.divider}`,
+										bgcolor: "background.default",
+										px: 4,
+										py: 1,
+										mb: 8,
+										zIndex: 2,
+										border: "1px solid",
+										borderColor: "divider",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										width: 140,
+										height: 140,
+										borderRadius: "50%",
 									}}
 								>
-									<CardActionArea
-										onClick={() => navigate(`/projects/${project.githubName}`)}
+									<Typography
+										variant="h3"
 										sx={{
-											height: "100%",
-											p: 0,
-											position: "relative",
-											zIndex: 1,
+											fontFamily: '"Newsreader", serif',
+											fontStyle: "italic",
+											color: "secondary.main",
+											fontWeight: 300,
 										}}
 									>
-										<Box
-											sx={{
-												position: "relative",
-												display: "flex",
-												justifyContent: "center",
-												alignItems: "center",
-												bgcolor:
-													theme.palette.mode === "light"
-														? "#fdf5e6"
-														: "#2d241e",
-												p: { xs: 2, md: 3 },
-												minHeight: { xs: 140, md: 180 },
-											}}
-										>
-											<motion.div
-												whileHover={{ scale: 1.05 }}
-												transition={{ duration: 0.3 }}
-											>
-												<CardMedia
-													component="img"
-													image={project.githubImg}
-													alt={project.githubName}
-													loading="lazy"
-													sx={{
-														width: "auto",
-														height: { xs: 80, md: 100 },
-														objectFit: "contain",
-														filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.15))",
-													}}
-												/>
-											</motion.div>
-										</Box>
-										<CardContent sx={{ p: { xs: 2.5, md: 3 }, pt: 0 }}>
-											<Typography
-												variant="h6"
-												sx={{
-													fontWeight: 700,
-													color: "text.primary",
-													textAlign: "center",
-													mb: 1.5,
-													lineHeight: 1.3,
-													mt: 2,
-												}}
-											>
-												{project.githubName}
-											</Typography>
-											<Typography
-												variant="body2"
-												sx={{
-													color: "text.secondary",
-													textAlign: "center",
-													lineHeight: 1.5,
-													fontWeight: 400,
-												}}
-											>
-												Explore details →
-											</Typography>
-										</CardContent>
-									</CardActionArea>
-								</MotionCard>
-							</Grid>
-						))}
-					</Grid>
+										{year}
+									</Typography>
+								</MotionBox>
 
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.8 }}
-						style={{ marginTop: "4rem" }}
-					></motion.div>
+								<Box sx={{ width: "100%" }}>
+									{groupedProjects[year].map((project, idx) => {
+										const isEven = idx % 2 === 0;
+										return (
+											<Box
+												key={project.githubName}
+												sx={{
+													display: "flex",
+													flexDirection: isMobile ? "column" : "row",
+													mb: 8,
+													width: "100%",
+												}}
+											>
+												{!isMobile && isEven && <Box sx={{ flex: 1, px: 4 }} />}
+
+												<MotionBox
+													initial={{
+														x: isMobile ? 0 : isEven ? 50 : -50,
+														opacity: 0,
+													}}
+													whileInView={{ x: 0, opacity: 1 }}
+													viewport={{ once: true }}
+													transition={{ duration: 0.6, delay: 0.1 }}
+													sx={{
+														flex: 1,
+														px: { xs: 0, md: 8 },
+														display: "flex",
+														flexDirection: "column",
+														alignItems: isMobile
+															? "start"
+															: isEven
+																? "start"
+																: "end",
+														textAlign: isMobile
+															? "left"
+															: isEven
+																? "left"
+																: "right",
+													}}
+												>
+													<Box
+														component="article"
+														sx={{
+															maxWidth: 500,
+															width: "100%",
+															cursor: "pointer",
+														}}
+														onClick={() =>
+															navigate(`/projects/${project.githubName}`)
+														}
+													>
+														<Box
+															sx={{
+																width: "100%",
+																aspectRatio: "4/3",
+																bgcolor: "rgba(187, 186, 172, 0.1)",
+																mb: 3,
+																position: "relative",
+																overflow: "hidden",
+															}}
+														>
+															<Box
+																component="img"
+																src={project.githubImg}
+																alt={project.githubName}
+																sx={{
+																	width: "100%",
+																	height: "100%",
+																	objectFit: "contain",
+																	opacity: 0.8,
+																	filter: "grayscale(100%) contrast(120%)",
+																	transition: "all 0.6s ease-in-out",
+																	"&:hover": {
+																		opacity: 1,
+																		filter: "grayscale(0%) contrast(100%)",
+																		transform: "scale(1.02)",
+																	},
+																	p: 4,
+																}}
+															/>
+														</Box>
+														<Typography
+															variant="h4"
+															sx={{
+																fontFamily: '"Newsreader", serif',
+																mb: 1,
+																color: "text.primary",
+															}}
+														>
+															{project.githubName}
+														</Typography>
+														<Typography
+															variant="body2"
+															sx={{
+																mb: 3,
+																color: "text.primary",
+																opacity: 0.8,
+																fontFamily: '"Noto Serif", serif',
+																lineHeight: 1.8,
+															}}
+														>
+															Explore the archival details and technical
+															blueprints for {project.githubName}. This dispatch
+															curates the evolution of the project.
+														</Typography>
+														<Link
+															sx={{
+																fontFamily: '"Newsreader", serif',
+																fontStyle: "italic",
+																color: "secondary.main",
+																textDecoration: "none",
+																borderBottom: "1px solid",
+																borderColor: "rgba(125, 93, 83, 0.3)",
+																paddingBottom: "2px",
+																"&:hover": {
+																	borderColor: "secondary.main",
+																},
+															}}
+														>
+															Read the full dispatch
+														</Link>
+													</Box>
+												</MotionBox>
+
+												{!isMobile && !isEven && (
+													<Box sx={{ flex: 1, px: 4 }} />
+												)}
+											</Box>
+										);
+									})}
+								</Box>
+							</Box>
+						))}
+					</Box>
+
+					<Box
+						sx={{
+							mt: 16,
+							pt: 8,
+							pb: 8,
+							borderTop: "0.5px solid",
+							borderBottom: "0.5px solid",
+							borderColor: "rgba(187, 186, 172, 0.3)",
+							textAlign: "center",
+						}}
+					>
+						<Typography
+							variant="h4"
+							sx={{
+								fontFamily: '"Newsreader", serif',
+								fontStyle: "italic",
+								mb: 4,
+								maxWidth: 800,
+								mx: "auto",
+							}}
+						>
+							"Design is the silent ambassador of your brand, an archive of
+							thought etched in pixels."
+						</Typography>
+						<Typography
+							variant="overline"
+							sx={{
+								display: "block",
+								fontSize: "10px",
+								letterSpacing: "0.3em",
+								color: "text.secondary",
+							}}
+						>
+							— Editorial Note, MCMXCIV – MMXXV
+						</Typography>
+					</Box>
 				</Container>
 			</Box>
 		</>

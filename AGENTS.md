@@ -1,10 +1,10 @@
 # AGENTS.md
 
 ## Build & Commands
-- **Dev**: `bun dev` (Vite dev server)
-- **Build**: `bun build` (Vite production build to `dist/`)
+- **Dev**: `pnpm dev` (Vite dev server)
+- **Build**: `pnpm build` (Vite production build to `dist/`)
 - **Lint**: `biome .` (check) or `biome . --fix` (auto-fix)
-- **Preview**: `bun run preview` (Vite preview of built output)
+- **Preview**: `pnpm run preview` (Vite preview of built output)
 
 ## Architecture & Structure
 **Frontend**: React 19.2 + Vite 7 SPA with React Router v7
