@@ -1,12 +1,5 @@
 import PropTypes from "prop-types";
-import {
-	createContext,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext();
 
@@ -48,22 +41,19 @@ export const ThemeContextProvider = ({ children }) => {
 		return () => mediaQuery.removeEventListener("change", handleChange);
 	}, []);
 
-	const toggleColorMode = useCallback(() => {
+	const toggleColorMode = () => {
 		setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-	}, []);
+	};
 
-	const setThemeMode = useCallback((newMode) => {
+	const setThemeMode = (newMode) => {
 		setMode(newMode);
-	}, []);
+	};
 
-	const value = useMemo(
-		() => ({
-			mode,
-			toggleColorMode,
-			setThemeMode,
-		}),
-		[mode, toggleColorMode, setThemeMode],
-	);
+	const value = {
+		mode,
+		toggleColorMode,
+		setThemeMode,
+	};
 
 	return (
 		<ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

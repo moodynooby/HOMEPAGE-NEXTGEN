@@ -72,7 +72,7 @@ function EditorialSection({ title, children, sideContent }) {
 				{title.toUpperCase()}
 			</Typography>
 			<Grid container spacing={6}>
-				<Grid item xs={12} md={8}>
+				<Grid size={{ xs: 12, md: 8 }}>
 					<Box
 						sx={{
 							columnCount: { xs: 1, md: 2 },
@@ -84,7 +84,7 @@ function EditorialSection({ title, children, sideContent }) {
 						{children}
 					</Box>
 				</Grid>
-				<Grid item xs={12} md={4}>
+				<Grid size={{ xs: 12, md: 4 }}>
 					<Box
 						sx={{
 							p: 3,
@@ -118,7 +118,7 @@ export default function LandingPage() {
 
 			<Container maxWidth="lg" sx={{ mt: 6 }}>
 				<Grid container spacing={4} alignItems="center">
-					<Grid item xs={12} md={7}>
+					<Grid size={{ xs: 12, md: 7 }}>
 						<motion.div
 							initial={{ opacity: 0, y: 30 }}
 							animate={{ opacity: 1, y: 0 }}
@@ -163,7 +163,7 @@ export default function LandingPage() {
 							</Box>
 						</motion.div>
 					</Grid>
-					<Grid item xs={12} md={5}>
+					<Grid size={{ xs: 12, md: 5 }}>
 						<Box
 							sx={{
 								border: "1px solid black",
@@ -254,7 +254,7 @@ export default function LandingPage() {
 					</Typography>
 					<Grid container spacing={4}>
 						{recentDispatchItems.map((item) => (
-							<Grid item xs={12} md={4} key={item.id}>
+							<Grid size={{ xs: 12, md: 4 }} key={item.id}>
 								<Box sx={{ borderTop: "4px solid black", pt: 2 }}>
 									<Typography variant="caption" color="secondary">
 										{item.category}

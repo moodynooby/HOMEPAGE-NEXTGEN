@@ -1,12 +1,7 @@
 import { StrictMode, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import {
-	ThemeProvider,
-	CssBaseline,
-	Box,
-	CircularProgress,
-} from "@mui/material";
+import { ThemeProvider, CssBaseline } from "@mui/material";
 
 import "@fontsource/newsreader/400.css";
 import "@fontsource/newsreader/700.css";
@@ -21,6 +16,8 @@ import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
 import { getTheme } from "@/theme/theme";
 import CommandPalette from "@/components/CommandPalette";
 import LandingPage from "@/components/LandingPage";
+import RouteLoader from "@/components/RouteLoader";
+
 const SpeedDial = lazy(() => import("@/components/Projects"));
 const ProjectDetail = lazy(() => import("@/components/ProjectDetail"));
 const LinkTree = lazy(() => import("@/components/LinkTree"));
@@ -40,25 +37,7 @@ const AppContent = () => {
 			<CssBaseline />
 			<BrowserRouter>
 				<CommandPalette>
-					<Suspense
-						fallback={
-							<Box
-								sx={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									minHeight: "100vh",
-									bgcolor: "background.default",
-								}}
-							>
-								<CircularProgress
-									size={48}
-									thickness={4}
-									sx={{ color: "secondary.main" }}
-								/>
-							</Box>
-						}
-					>
+					<Suspense fallback={<RouteLoader />}>
 						<Routes>
 							<Route path="/" element={<LandingPage />} />
 							<Route path="/projects" element={<SpeedDial />} />

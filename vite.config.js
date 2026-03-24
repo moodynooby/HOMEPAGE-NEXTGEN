@@ -36,7 +36,31 @@ export default defineConfig({
 		sourcemap: process.env.NODE_ENV === "development",
 		minify: "lightningcss",
 		cssMinify: true,
-		chunkSizeWarningLimit: 600,
+		chunkSizeWarningLimit: 500,
+		rolldownOptions: {
+			output: {
+				manualChunks: (id) => {
+					if (id.includes("node_modules")) {
+						if (
+							id.includes("react") ||
+							id.includes("react-dom") ||
+							id.includes("react-router")
+						) {
+							return "vendor-core";
+						}
+						if (id.includes("@mui") || id.includes("@emotion")) {
+							return "vendor-mui";
+						}
+						if (id.includes("motion")) {
+							return "vendor-motion";
+						}
+						if (id.includes("react-markdown") || id.includes("remark")) {
+							return "vendor-markdown";
+						}
+					}
+				},
+			},
+		},
 	},
 	optimizeDeps: {
 		include: ["react", "react-dom", "react-router-dom"],
