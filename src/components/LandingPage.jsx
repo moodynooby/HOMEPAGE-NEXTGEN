@@ -133,15 +133,14 @@ export default function LandingPage() {
 									fontWeight: 800,
 								}}
 							>
-								THE ARCHIVE OF A DIGITAL CRAFTSMAN.
+								BUILDER OF DIGITAL EXPERIENCES.
 							</Typography>
 							<Typography
 								variant="body1"
 								sx={{ mb: 4, maxWidth: "600px", fontSize: "1.25rem" }}
 							>
-								Manas Doshi presents a collection of work at the intersection of
-								web, machine learning, and hardware. A curated dossier of
-								projects that redefine the digital experience.
+								Hi, I'm Manas. I build web apps, explore machine learning, and
+								tinker with hardware specially the interation of hardware and software. Here's some of my recent work.
 							</Typography>
 							<Box sx={{ display: "flex", gap: 2 }}>
 								<Button
@@ -150,15 +149,15 @@ export default function LandingPage() {
 									component={Link}
 									to="/projects"
 								>
-									READ THE DOSSIER
+									VIEW PROJECTS
 								</Button>
 								<Button
 									variant="outlined"
 									color="primary"
-									href="/resume.pdf"
+									href="https://flowcv.com/resume/woofkdsq4sse"
 									target="_blank"
 								>
-									CURRICULUM VITAE
+									VIEW RESUME
 								</Button>
 							</Box>
 						</motion.div>
@@ -186,7 +185,7 @@ export default function LandingPage() {
 								variant="caption"
 								sx={{ mt: 1, display: "block", textAlign: "center" }}
 							>
-								FIG. 1 — THE ARCHIVAL OVERVIEW
+								MY WORK IN BRIEF
 							</Typography>
 						</Box>
 					</Grid>
@@ -197,60 +196,52 @@ export default function LandingPage() {
 				/>
 
 				<EditorialSection
-					title="The Core Mission"
+					title="About Me"
 					sideContent={
 						<>
 							<Typography variant="h6" sx={{ mb: 2 }}>
 								QUICK FACTS
 							</Typography>
 							<Typography variant="body2" sx={{ mb: 1 }}>
-								<strong>SPECIALIZATION:</strong> FULL-STACK ARCHITECTURE
+								<strong>ROLE:</strong> FULL-STACK DEVELOPER
 							</Typography>
 							<Typography variant="body2" sx={{ mb: 1 }}>
-								<strong>INTERESTS:</strong> ML, EMBEDDED SYSTEMS, EDITORIAL
-								DESIGN
+								<strong>FOCUS:</strong> WEB APPS, ML, HARDWARE
 							</Typography>
 							<Typography variant="body2" sx={{ mb: 1 }}>
-								<strong>EDITION:</strong> 2024.03
+								<strong>YEAR:</strong> 2024
 							</Typography>
 							<Divider sx={{ my: 2 }} />
 							<Typography variant="body2" sx={{ fontStyle: "italic" }}>
-								&quot;Code is the ink of the modern age. We must write it with
-								the same care as a first edition manuscript.&quot;
+								I believe good software should be clear, reliable, and
+								actually useful to people.
 							</Typography>
 						</>
 					}
 				>
 					<p>
-						In an era of fleeting digital interfaces and disposable software, we
-						strive for something more permanent. The philosophy of &quot;The
-						Living Archive&quot; centers on building systems that possess the
-						tactile authority of print while leveraging the dynamic capabilities
-						of the modern web.
+						I build web applications and explore different areas of technology—
+						from machine learning to embedded systems. My focus is on creating
+						software that works well and feels intuitive to use.
 					</p>
 					<p>
-						Each project in this collection is treated as an editorial
-						dispatch—a documented exploration of technical boundaries. From
-						low-level firmware optimizations to high-level reactive interfaces,
-						the goal remains consistent: clarity, authority, and human-centric
-						design.
+						Each project here represents something I've learned or built along
+						the way. I enjoy tackling technical problems and turning ideas into
+						working products.
 					</p>
 					<p>
-						We reject the homogenization of the web. Instead, we embrace the
-						&quot;paper-first&quot; methodology, where information hierarchy is
-						dictated by typography rather than containerized blocks. This is the
-						archive of Manas Doshi.
+						I care about writing clean code and building things that last. This
+						site showcases my recent work and experiments.
 					</p>
 				</EditorialSection>
 
 				<PullQuote>
-					&quot;THE UI IS NOT A SCREEN, IT IS A SERIES OF INK-PRESSED
-					LAYERS.&quot;
+					GOOD DESIGN IS WHEN EVERYTHING JUST FEELS RIGHT.
 				</PullQuote>
 
 				<Box sx={{ mb: 12 }}>
 					<Typography variant="h3" sx={{ mb: 4, textAlign: "center" }}>
-						RECENT DISPATCHES
+						RECENT PROJECTS
 					</Typography>
 					<Grid container spacing={4}>
 						{recentDispatchItems.map((item) => (
@@ -271,7 +262,7 @@ export default function LandingPage() {
 										component={Link}
 										to="/projects"
 									>
-										READ MORE →
+										MORE →
 									</Button>
 								</Box>
 							</Grid>

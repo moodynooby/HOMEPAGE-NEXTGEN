@@ -107,7 +107,7 @@ export default function ButtonAppBar() {
 						"&:hover": { opacity: 0.9 },
 					}}
 				>
-					MANAS DOSHI
+					MANAS DOSHI TIMES
 				</Typography>
 
 				<Box
@@ -124,7 +124,7 @@ export default function ButtonAppBar() {
 					}}
 				>
 					<Typography variant="overline" sx={{ fontWeight: 800 }}>
-						VOL. I — NO. 1
+						MANAS DOSHI
 					</Typography>
 					<Typography
 						variant="overline"
@@ -133,7 +133,7 @@ export default function ButtonAppBar() {
 						{currentDate.toUpperCase()}
 					</Typography>
 					<Typography variant="overline" sx={{ fontWeight: 800 }}>
-						LATE EDITION
+						DEV
 					</Typography>
 				</Box>
 			</Box>
@@ -160,13 +160,13 @@ export default function ButtonAppBar() {
 					{!isMobile ? (
 						<>
 							<Button component={Link} to="/" color="inherit">
-								Dispatch
+								Home
 							</Button>
 							<Button component={Link} to="/projects" color="inherit">
-								The Portfolio
+								Projects
 							</Button>
 							<Button component={Link} to="/links" color="inherit">
-								The Dossier
+								Links
 							</Button>
 							<Box
 								sx={{ width: "1px", height: "24px", bgcolor: "divider", mx: 2 }}
@@ -230,21 +230,21 @@ export default function ButtonAppBar() {
 				}}
 			>
 				<MenuItem component={Link} to="/" onClick={() => setMenuAnchorEl(null)}>
-					Dispatch
+					Home
 				</MenuItem>
 				<MenuItem
 					component={Link}
 					to="/projects"
 					onClick={() => setMenuAnchorEl(null)}
 				>
-					The Portfolio
+					Projects
 				</MenuItem>
 				<MenuItem
 					component={Link}
 					to="/links"
 					onClick={() => setMenuAnchorEl(null)}
 				>
-					The Dossier
+					Links
 				</MenuItem>
 			</Menu>
 		</Box>
