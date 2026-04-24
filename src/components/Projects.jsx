@@ -260,9 +260,7 @@ export default function Projects({ limit, showAppBar = true }) {
 																lineHeight: 1.8,
 															}}
 														>
-															Explore the archival details and technical
-															blueprints for {project.githubName}. This dispatch
-															curates the evolution of the project.
+															Check the README to see what this project does.
 														</Typography>
 														<Link
 															sx={{
@@ -278,7 +276,7 @@ export default function Projects({ limit, showAppBar = true }) {
 																},
 															}}
 														>
-															Read the full dispatch
+															See on GitHub
 														</Link>
 													</Box>
 												</MotionBox>
@@ -292,43 +290,6 @@ export default function Projects({ limit, showAppBar = true }) {
 								</Box>
 							</Box>
 						))}
-					</Box>
-
-					<Box
-						sx={{
-							mt: 16,
-							pt: 8,
-							pb: 8,
-							borderTop: "0.5px solid",
-							borderBottom: "0.5px solid",
-							borderColor: "rgba(187, 186, 172, 0.3)",
-							textAlign: "center",
-						}}
-					>
-						<Typography
-							variant="h4"
-							sx={{
-								fontFamily: '"Newsreader", serif',
-								fontStyle: "italic",
-								mb: 4,
-								maxWidth: 800,
-								mx: "auto",
-							}}
-						>
-							"Design is the silent ambassador of your brand, an archive of
-							thought etched in pixels."
-						</Typography>
-						<Typography
-							variant="overline"
-							sx={{
-								display: "block",
-								fontSize: "10px",
-								letterSpacing: "0.3em",
-								color: "text.secondary",
-							}}
-						>
-							— Editorial Note, MCMXCIV – MMXXV
-						</Typography>
 					</Box>
 				</Container>
 			</Box>
