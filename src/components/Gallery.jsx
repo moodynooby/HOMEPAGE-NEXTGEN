@@ -13,16 +13,65 @@ import { AdvancedImage, AdvancedVideo } from "@cloudinary/react";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { format, quality } from "@cloudinary/url-gen/actions/delivery";
+import Lightbox from "yet-another-react-lightbox";
+import Video from "yet-another-react-lightbox/plugins/video";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
 import { cld, fetchAllMediaByTag } from "@/utils/cloudinary";
 import ButtonAppBar from "@/components/Header";
 
 const MotionBox = motion.create(Box);
+
+const SUBTLE_CONTAINER_COLORS = [
+	"rgba(253, 255, 218, 0.3)",
+	"rgba(187, 186, 172, 0.2)",
+	"rgba(200, 220, 240, 0.3)",
+	"rgba(220, 200, 240, 0.3)",
+	"rgba(200, 240, 200, 0.3)",
+];
 
 export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 	const [media, setMedia] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [lightboxOpen, setLightboxOpen] = useState(false);
+	const [lightboxIndex, setLightboxIndex] = useState(0);
+
+	const slides = media.map((item) => {
+		if (item.resource_type === "image") {
+			return {
+				src: cld
+					.image(item.public_id)
+					.resize(fill().width(1920).height(1080))
+					.delivery(format("auto"))
+					.delivery(quality("auto"))
+					.toURL(),
+			};
+		} else {
+			return {
+				type: "video",
+				sources: [
+					{
+						src: cld.video(item.public_id).delivery(format("mp4")).toURL(),
+						type: "video/mp4",
+					},
+				],
+				poster: cld
+					.image(`${item.public_id}.jpg`)
+					.resize(fill().width(1920).height(1080))
+					.delivery(format("auto"))
+					.delivery(quality("auto"))
+					.toURL(),
+			};
+		}
+	});
+
+	const handleMediaClick = (index) => {
+		setLightboxIndex(index);
+		setLightboxOpen(true);
+	};
 
 	useEffect(() => {
 		async function loadMedia() {
@@ -114,6 +163,8 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 							const isLarge =
 								!isMobile && (index % 7 === 0 || index % 11 === 0);
 							const isTall = !isMobile && index % 5 === 0;
+							const _containerColor =
+								SUBTLE_CONTAINER_COLORS[index % SUBTLE_CONTAINER_COLORS.length];
 
 							const cldMedia = cld
 								.image(item.public_id)
@@ -133,6 +184,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 									whileInView={{ opacity: 1, scale: 1 }}
 									viewport={{ once: true }}
 									transition={{ duration: 0.6, delay: index * 0.05 }}
+									onClick={() => handleMediaClick(index)}
 									sx={{
 										gridColumn: isLarge ? "span 2" : "span 1",
 										gridRow: isTall ? "span 2" : "span 1",
@@ -142,6 +194,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 										border: "1px solid",
 										borderColor: "rgba(187, 186, 172, 0.15)",
 										aspectRatio: isLarge ? "16/9" : isTall ? "3/4" : "1/1",
+										cursor: "pointer",
 										"&:hover img, &:hover video": {
 											filter: "grayscale(0%) contrast(100%)",
 											transform: "scale(1.03)",
@@ -154,7 +207,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 											style={{
 												width: "100%",
 												height: "100%",
-												objectFit: "cover",
+												objectFit: "contain",
 												filter: "grayscale(100%) contrast(110%)",
 												transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
 											}}
@@ -169,7 +222,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 											style={{
 												width: "100%",
 												height: "100%",
-												objectFit: "cover",
+												objectFit: "contain",
 												filter: "grayscale(100%) contrast(110%)",
 												transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
 											}}
@@ -238,6 +291,21 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 						})}
 					</Box>
 				</Container>
+				<Lightbox
+					open={lightboxOpen}
+					close={() => setLightboxOpen(false)}
+					index={lightboxIndex}
+					slides={slides}
+					plugins={[Video, Thumbnails]}
+					thumbnails={{ position: "bottom", width: 120, height: 80 }}
+					video={{
+						controls: true,
+						autoPlay: false,
+						loop: false,
+						muted: false,
+						playsInline: true,
+					}}
+				/>
 			</Box>
 		</>
 	);

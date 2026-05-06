@@ -3,7 +3,8 @@ import { Cloudinary } from "@cloudinary/url-gen";
 export const cloudName = "dirxi2gqz";
 
 export const cld = new Cloudinary({
-  cloud: { cloudName: cloudName }});
+	cloud: { cloudName: cloudName },
+});
 
 /**
  * Fetches a list of resources from Cloudinary by tag.
@@ -18,7 +19,9 @@ export async function fetchResourcesByTag(tag, resourceType = "image") {
 			`https://res.cloudinary.com/${cloudName}/${resourceType}/list/${tag}.json`,
 		);
 		if (!response.ok) {
-			throw new Error(`Failed to fetch ${resourceType} resources (Status: ${response.status}). Ensure 'Resource List' is enabled in Cloudinary Security settings and the tag '${tag}' exists.`);
+			throw new Error(
+				`Failed to fetch ${resourceType} resources (Status: ${response.status}). Ensure 'Resource List' is enabled in Cloudinary Security settings and the tag '${tag}' exists.`,
+			);
 		}
 		const data = await response.json();
 		return data.resources.map((res) => ({
