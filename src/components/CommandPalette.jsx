@@ -64,6 +64,14 @@ export default function CommandPalette({ children }) {
 			icon: <Settings />,
 		},
 		{
+			id: "gallery",
+			name: "Media Gallery",
+			shortcut: ["g"],
+			keywords: "go-gallery-photos-videos",
+			perform: () => navigate("/gallery"),
+			icon: <AccountTree />,
+		},
+		{
 			id: "theme-light",
 			name: "Theme: Light",
 			shortcut: ["t", "l"],

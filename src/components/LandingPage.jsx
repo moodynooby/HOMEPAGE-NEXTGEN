@@ -7,37 +7,10 @@ import {
 	Typography,
 } from "@mui/material";
 import { motion } from "motion/react";
-import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
 import ButtonAppBar from "@/components/Header";
-
-const recentDispatchItems = [
-	{
-		id: "modern-boomslider",
-		title: "MODERN BOOMSLIDER",
-		category: "BROWSER EXT",
-		desc: "Volume slider that doesn't suck.",
-	},
-	{
-		id: "gimme-that",
-		title: "GIMME THAT",
-		category: "DEV TOOLS",
-		desc: "Grab any npm package as a file.",
-	},
-	{
-		id: "paceplay",
-		title: "PACEPLAY",
-		category: "EMBEDDED",
-		desc: "Gamepad input library for embedded systems.",
-	},
-];
-
-// EditorialSection.propTypes = {
-// 	title: PropTypes.string.isRequired,
-// 	children: PropTypes.node.isRequired,
-// 	sideContent: PropTypes.node,
-// };	
+import Gallery from "@/components/Gallery";
 
 export default function LandingPage() {
 	return (
@@ -55,7 +28,7 @@ export default function LandingPage() {
 							<Typography
 								variant="h2"
 								sx={{
-									fontSize: { xs: '2.5rem', md: '4rem' },
+									fontSize: { xs: "2.5rem", md: "4rem" },
 									lineHeight: 1.1,
 									mb: 4,
 									fontWeight: 800,
@@ -65,13 +38,13 @@ export default function LandingPage() {
 							</Typography>
 							<Typography
 								variant="body1"
-								sx={{ mb: 4, maxWidth: '600px', fontSize: '1.25rem' }}
+								sx={{ mb: 4, maxWidth: "600px", fontSize: "1.25rem" }}
 							>
 								Hi, I'm Manas. I build browser extensions, tinker with
 								hardware-software integration, and occasionally break things
 								trying to learn.
 							</Typography>
-							<Box sx={{ display: 'flex', gap: 2 }}>
+							<Box sx={{ display: "flex", gap: 2 }}>
 								<Button
 									variant="contained"
 									color="primary"
@@ -97,72 +70,36 @@ export default function LandingPage() {
 					sx={{ my: 10, borderColor: "text.primary", borderWidth: "2px" }}
 				/>
 
-				{/* <EditorialSection
-					title="About Me"
-					sideContent={
-						<>
-							<Typography variant="h6" sx={{ mb: 2 }}>
-								STUFF
-							</Typography>
-							<Typography variant="body2" sx={{ mb: 1 }}>
-								<strong>BUILDING:</strong> BROWSER EXTENSIONS, HARDWARE PROJECTS
-							</Typography>
-							<Typography variant="body2" sx={{ mb: 1 }}>
-								<strong>YEAR:</strong> 2024
-							</Typography>
-							<Divider sx={{ my: 2 }} />
-							<Typography variant="body2" sx={{ fontStyle: "italic" }}>
-								Currently working on embedded systems and browser tooling.
-							</Typography>
-						</>
-					}
-				>
-					<p>
-						I build things that solve problems I actually have. Most of my
-						projects are browser extensions or hardware-related — that's where I
-						find the most interesting challenges.
-					</p>
-					<p>
-						Currently in my final year, trying to ship useful things before
-						graduation. Everything here is something I built because I needed it
-						or wanted to understand how it works.
-					</p>
-					<p>
-						I write most of my code in Rust and JavaScript. Currently figuring
-						out USB HID drivers for gamepads.
-					</p>
-				</EditorialSection> */}
-
-				{/* <Box sx={{ mb: 12 }}>
-					<Typography variant="h3" sx={{ mb: 4, textAlign: "center" }}>
-						RECENT PROJECTS
+				<Box sx={{ mt: 16 }}>
+					<Typography
+						variant="h3"
+						sx={{
+							fontFamily: '"Newsreader", serif',
+							fontWeight: 800,
+							textAlign: "center",
+							mb: 6,
+							textTransform: "uppercase",
+						}}
+					>
+						The Visual Dispatch
 					</Typography>
-					<Grid container spacing={4}>
-						{recentDispatchItems.map((item) => (
-							<Grid size={{ xs: 12, md: 4 }} key={item.id}>
-								<Box sx={{ borderTop: "4px solid black", pt: 2 }}>
-									<Typography variant="caption" color="secondary">
-										{item.category}
-									</Typography>
-									<Typography variant="h5" sx={{ my: 1 }}>
-										{item.title}
-									</Typography>
-									<Typography variant="body2" sx={{ mb: 2 }}>
-										{item.desc}
-									</Typography>
-									<Button
-										variant="text"
-										size="small"
-										component={Link}
-										to="/projects"
-									>
-										MORE →
-									</Button>
-								</Box>
-							</Grid>
-						))}
-					</Grid>
-				</Box> */}
+					<Gallery limit={4} showAppBar={false} tag="gallery" />
+					<Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+						<Button
+							variant="outlined"
+							color="primary"
+							component={Link}
+							to="/gallery"
+							sx={{
+								fontFamily: '"Newsreader", serif',
+								fontStyle: "italic",
+								px: 4,
+							}}
+						>
+							VIEW THE FULL ARCHIVE →
+						</Button>
+					</Box>
+				</Box>
 			</Container>
 
 			<Box

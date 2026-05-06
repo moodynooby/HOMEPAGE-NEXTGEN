@@ -165,6 +165,9 @@ export default function ButtonAppBar() {
 							<Button component={Link} to="/projects" color="inherit">
 								Projects
 							</Button>
+							<Button component={Link} to="/gallery" color="inherit">
+								Gallery
+							</Button>
 							<Button component={Link} to="/links" color="inherit">
 								Links
 							</Button>
@@ -238,6 +241,13 @@ export default function ButtonAppBar() {
 					onClick={() => setMenuAnchorEl(null)}
 				>
 					Projects
+				</MenuItem>
+				<MenuItem
+					component={Link}
+					to="/gallery"
+					onClick={() => setMenuAnchorEl(null)}
+				>
+					Gallery
 				</MenuItem>
 				<MenuItem
 					component={Link}

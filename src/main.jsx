@@ -22,6 +22,7 @@ const SpeedDial = lazy(() => import("@/components/Projects"));
 const ProjectDetail = lazy(() => import("@/components/ProjectDetail"));
 const LinkTree = lazy(() => import("@/components/LinkTree"));
 const WebDesignServices = lazy(() => import("@/components/WebDesignServices"));
+const Gallery = lazy(() => import("@/components/Gallery"));
 
 const AppContent = () => {
 	const { mode } = useThemeContext();
@@ -47,6 +48,7 @@ const AppContent = () => {
 							/>
 							<Route path="/links" element={<LinkTree />} />
 							<Route path="/services" element={<WebDesignServices />} />
+							<Route path="/gallery" element={<Gallery />} />
 						</Routes>
 					</Suspense>
 				</CommandPalette>
