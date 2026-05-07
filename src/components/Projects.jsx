@@ -260,7 +260,7 @@ export default function Projects({ limit, showAppBar = true }) {
 																lineHeight: 1.8,
 															}}
 														>
-															Check the README to see what this project does.
+															Click the button below to see what this project does.
 														</Typography>
 														<Link
 															sx={{
