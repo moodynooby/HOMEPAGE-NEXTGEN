@@ -91,7 +91,7 @@ export default function ProjectDetail({ limit }) {
 	if (!project) return null;
 
 	return (
-		<Box
+        <Box
 			sx={{
 				minHeight: "100vh",
 				background:
@@ -102,7 +102,7 @@ export default function ProjectDetail({ limit }) {
 				overflow: "hidden",
 			}}
 		>
-			<motion.div
+            <motion.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
@@ -267,11 +267,12 @@ export default function ProjectDetail({ limit }) {
 										),
 										p: ({ ...props }) => (
 											<Typography
-												variant="body1"
-												paragraph
-												sx={{ lineHeight: 1.8 }}
-												{...props}
-											/>
+                                                variant="body1"
+                                                sx={{
+                                                    lineHeight: 1.8,
+                                                    marginBottom: "16px"
+                                                }}
+                                                {...props} />
 										),
 										a: ({ ...props }) => (
 											<a
@@ -397,8 +398,8 @@ export default function ProjectDetail({ limit }) {
 					</Fab>
 				)}
 			</motion.div>
-		</Box>
-	);
+        </Box>
+    );
 }
 
 ProjectDetail.propTypes = {

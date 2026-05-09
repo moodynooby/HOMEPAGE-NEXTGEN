@@ -36,16 +36,12 @@ export default defineConfig({
 		sourcemap: process.env.NODE_ENV === "development",
 		minify: "lightningcss",
 		cssMinify: true,
-		chunkSizeWarningLimit: 500,
+		chunkSizeWarningLimit: 300,
 		rolldownOptions: {
 			output: {
 				manualChunks: (id) => {
 					if (id.includes("node_modules")) {
-						if (
-							id.includes("react") ||
-							id.includes("react-dom") ||
-							id.includes("react-router")
-						) {
+						if (id.includes("react") || id.includes("react-dom") || id.includes("react-router")) {
 							return "vendor-core";
 						}
 						if (id.includes("@mui") || id.includes("@emotion")) {
@@ -57,12 +53,20 @@ export default defineConfig({
 						if (id.includes("react-markdown") || id.includes("remark")) {
 							return "vendor-markdown";
 						}
+						if (id.includes("@cloudinary")) {
+							return "vendor-cloudinary";
+						}
+						if (id.includes("yet-another-react-lightbox")) {
+							return "vendor-lightbox";
+						}
+						return "vendor-other";
 					}
-				},
-			},
+				}
+			}
 		},
+		codeSplitting: true,
 	},
-	optimizeDeps: {
-		include: ["react", "react-dom", "react-router-dom"],
+		define: {
+		'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
 	},
 });

@@ -17,15 +17,16 @@
 		"@fontsource-variable/work-sans": "^5.2.8",
 		"@fontsource/newsreader": "^5.2.10",
 		"@fontsource/noto-serif": "^5.2.9",
-		"@mui/icons-material": "^7.3.10",
-		"@mui/material": "^7.3.10",
+		"@mui/icons-material": "^9.0.1",
+		"@mui/material": "^9.0.1",
+		"babel-plugin-react-compiler": "^1.0.0",
 		"kbar": "0.1.0-beta.48",
 		"motion": "^12.38.0",
 		"prop-types": "^15.8.1",
-		"react": "^19.2.5",
-		"react-dom": "^19.2.5",
+		"react": "^19.2.6",
+		"react-dom": "^19.2.6",
 		"react-markdown": "^10.1.0",
-		"react-router-dom": "^7.14.1",
+		"react-router-dom": "^7.15.0",
 		"remark-gfm": "^4.0.1",
 		"yet-another-react-lightbox": "^3.32.0"
 	},
@@ -33,7 +34,6 @@
 		"@biomejs/biome": "2.4.8",
 		"@types/react": "^19.2.14",
 		"@vitejs/plugin-react": "^6.0.1",
-		"babel-plugin-react-compiler": "19.1.0-rc.1-rc-af1b7da-20250421",
-		"vite": "^8.0.9"
+		"vite": "^8.0.11"
 	}
 }

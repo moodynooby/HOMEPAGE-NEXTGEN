@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { AdvancedImage, AdvancedVideo } from "@cloudinary/react";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
-import { format, quality } from "@cloudinary/url-gen/actions/delivery";
+import { format, quality, dpr } from "@cloudinary/url-gen/actions/delivery";
 import Lightbox from "yet-another-react-lightbox";
 import Video from "yet-another-react-lightbox/plugins/video";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
@@ -22,6 +22,17 @@ import { cld, fetchAllMediaByTag } from "@/utils/cloudinary";
 import ButtonAppBar from "@/components/Header";
 
 const MotionBox = motion.create(Box);
+
+const LazyImage = ({ children, ...props }) => (
+	<MotionBox
+		initial={{ opacity: 0 }}
+		whileInView={{ opacity: 1 }}
+		viewport={{ once: true, amount: 0.1 }}
+		{...props}
+	>
+		{children}
+	</MotionBox>
+);
 
 const SUBTLE_CONTAINER_COLORS = [
 	"rgba(253, 255, 218, 0.3)",
@@ -166,19 +177,23 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 							const _containerColor =
 								SUBTLE_CONTAINER_COLORS[index % SUBTLE_CONTAINER_COLORS.length];
 
+							const imageWidth = isLarge ? 800 : 400;
+							const imageHeight = isTall ? 800 : isLarge ? 600 : 400;
+
 							const cldMedia = cld
 								.image(item.public_id)
 								.resize(
 									fill()
-										.width(isLarge ? 800 : 400)
-										.height(isTall ? 800 : isLarge ? 600 : 400)
+										.width(imageWidth)
+										.height(imageHeight)
 										.gravity(autoGravity()),
 								)
 								.delivery(format("auto"))
-								.delivery(quality("auto"));
+								.delivery(quality("auto:good"))
+								.delivery(dpr("auto"));
 
 							return (
-								<MotionBox
+								<LazyImage
 									key={item.public_id}
 									initial={{ opacity: 0, scale: 0.95 }}
 									whileInView={{ opacity: 1, scale: 1 }}
@@ -286,7 +301,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 											/>
 										</Box>
 									)}
-								</MotionBox>
+								</LazyImage>
 							);
 						})}
 					</Box>

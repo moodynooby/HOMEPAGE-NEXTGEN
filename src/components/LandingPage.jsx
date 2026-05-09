@@ -8,9 +8,12 @@ import {
 } from "@mui/material";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
 import ButtonAppBar from "@/components/Header";
-import Gallery from "@/components/Gallery";
+import RouteLoader from "@/components/RouteLoader";
+
+const Gallery = lazy(() => import("@/components/Gallery"));
 
 export default function LandingPage() {
 	return (
@@ -83,7 +86,9 @@ export default function LandingPage() {
 					>
 						The Visual Dispatch
 					</Typography>
-					<Gallery limit={4} showAppBar={false} tag="gallery" />
+					<Suspense fallback={<RouteLoader />}>
+						<Gallery limit={4} showAppBar={false} tag="gallery" />
+					</Suspense>
 					<Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
 						<Button
 							variant="outlined"
