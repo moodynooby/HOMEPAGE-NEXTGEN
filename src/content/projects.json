@@ -1,71 +1,104 @@
 [
 	{
 		"githubName": "Todo.Txt",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Todo.Txt/a6fa22040411af2d27ea1a6a20eada5edc0bd90a/README.md",
-		"githubImg": "https://raw.githubusercontent.com/moodynooby/Todo.Txt/a6fa22040411af2d27ea1a6a20eada5edc0bd90a/public/todotxt2.svg"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Todo.Txt/main/README.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/Todo.Txt/main/public/todotxt2.svg",
+		"tagline": "A simple, plain-text todo app that stays out of your way.",
+		"category": "Web App"
 	},
 	{
 		"githubName": "Modern-TWP",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Modern-TWP/refs/heads/master/readme.md",
-		"githubImg": "https://github.com/moodynooby/Modern-TWP/blob/master/src/icons/icon-256.png?raw=true"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Modern-TWP/master/readme.md",
+		"githubImg": "https://github.com/moodynooby/Modern-TWP/blob/master/src/icons/icon-256.png?raw=true",
+		"tagline": "Quicky Translate — a fast, lightweight translation extension for Firefox.",
+		"category": "Browser Extension"
 	},
 	{
 		"githubName": "TaskTimer",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/TaskTimer/refs/heads/main/README.md",
-		"githubImg": "https://github.com/moodynooby/TaskTimer/blob/main/assets/taskTimerLogo2.png?raw=true"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/TaskTimer/main/README.md",
+		"githubImg": "https://github.com/moodynooby/TaskTimer/blob/main/assets/taskTimerLogo2.png?raw=true",
+		"tagline": "Task management with a timer, pomodoro, and a procrastination-killer suite.",
+		"category": "Web App"
 	},
 	{
 		"githubName": "modern-darkreader",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-darkreader/refs/heads/main/README.md",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-darkreader/main/README.md",
 		"githubImg": "https://github.com/moodynooby/modern-darkreader/blob/main/src/icons/dr_128.png?raw=true",
+		"tagline": "Lean Dark+ — minimalist dark mode for fast, low-distraction browsing.",
+		"category": "Browser Extension",
 		"addonId": "len-dek"
 	},
 	{
 		"githubName": "Gimme-That",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gimme-That/refs/heads/master/Readme.md",
-		"githubImg": "https://raw.githubusercontent.com/moodynooby/Gimme-That/0f6c9de0fbf95df2ffac4fba472c6edf7737630d/style/icon.svg",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gimme-That/master/Readme.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/Gimme-That/master/style/icon.svg",
+		"tagline": "The minimal, no-clutter mass downloader for your browser.",
+		"category": "Browser Extension",
 		"addonId": "gimmethat"
 	},
 	{
 		"githubName": "modern-speed-controller",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/refs/heads/firefox-port/README.md",
-		"githubImg": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/4b313b9571ac782ceee98a79c240eef88ec7c4d3/icons/icon.svg",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/firefox-port/README.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/firefox-port/icons/icon.svg",
+		"tagline": "PacePlay — speed up, slow down, and skip HTML5 audio and video.",
+		"category": "Browser Extension",
 		"addonId": "paceplay-modern-controller"
 	},
 	{
 		"githubName": "modern-volume-booster",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/refs/heads/master/README.md",
-		"githubImg": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/d51f7c02040e2dab79ab9f11dba255310a5183fd/icon.svg",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/master/README.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/master/icon.svg",
+		"tagline": "BoomRotary — per-tab volume control with boost up to 600%.",
+		"category": "Browser Extension",
 		"addonId": "modern-boomslider"
 	},
 	{
 		"githubName": "Gallery-Genie",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gallery-Genie/refs/heads/master/README.md",
-		"githubImg": "https://github.com/moodynooby/Gallery-Genie/blob/master/output_Genie.jpg?raw=true"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gallery-Genie/master/README.md",
+		"githubImg": "https://github.com/moodynooby/Gallery-Genie/blob/master/output_Genie.jpg?raw=true",
+		"tagline": "Privacy-first, AI-powered photo editing with natural-language effects.",
+		"category": "Web App"
 	},
 	{
 		"githubName": "Traffic-Congestion",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Traffic-Congestion/refs/heads/main/README.md",
-		"githubImg": "https://cdn-icons-png.flaticon.com/512/4886/4886426.png"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Traffic-Congestion/main/README.md",
+		"githubImg": "https://cdn-icons-png.flaticon.com/512/4886/4886426.png",
+		"tagline": "Real-time vehicle detection and traffic analysis powered by YOLOv8.",
+		"category": "Computer Vision"
 	},
 	{
 		"githubName": "Focus-Feeds",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/focus-feeds/refs/heads/main/README.md",
-		"githubImg": "https://github.com/moodynooby/focus-feeds/blob/main/public/icon512.png?raw=true"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/focus-feeds/main/README.md",
+		"githubImg": "https://github.com/moodynooby/focus-feeds/blob/main/public/icon512.png?raw=true",
+		"tagline": "Combine multiple RSS feeds into one minimalist reading stream.",
+		"category": "Web App"
 	},
 	{
 		"githubName": "Judgment",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Judgment/refs/heads/master/README.md",
-		"githubImg": "https://raw.githubusercontent.com/moodynooby/Judgment/refs/heads/master/gamepad-svgrepo-com.svg"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Judgment/master/README.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/Judgment/master/gamepad-svgrepo-com.svg",
+		"tagline": "The Game of Judgment — a minimalist multiplayer card game.",
+		"category": "Game"
 	},
 	{
 		"githubName": "Course-Market",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Course-Market/refs/heads/main/README.md",
-		"githubImg": "https://github.com/moodynooby/Course-Market/blob/main/public/apple-touch-icon.png?raw=true"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Course-Market/main/README.md",
+		"githubImg": "https://github.com/moodynooby/Course-Market/blob/main/public/apple-touch-icon.png?raw=true",
+		"tagline": "AuraIsHub — course scheduling and section trading, built because registration is a mess.",
+		"category": "Web App"
 	},
 	{
 		"githubName": "WEB_CONTRACTOR",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/WEB_CONTRACTOR/refs/heads/main/README.md",
-		"githubImg": "https://github.com/moodynooby/WEB_CONTRACTOR/blob/master/img.png?raw=true"
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/WEB_CONTRACTOR/master/README.md",
+		"githubImg": "https://github.com/moodynooby/WEB_CONTRACTOR/blob/master/img.png?raw=true",
+		"tagline": "An LLM-powered pipeline builder with a Streamlit dashboard and Telegram bot.",
+		"category": "AI Tool"
+	},
+	{
+		"githubName": "Club-Carnival-26",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Club-Carnival-26/master/README.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/Club-Carnival-26/master/logo.png",
+		"tagline": "AI Mitr — a fine-tuned, voice-powered AI assistant that answers questions about college documents.",
+		"category": "AI Tool"
 	}
 ]

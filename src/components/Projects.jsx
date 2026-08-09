@@ -1,11 +1,12 @@
+import { ArrowForward } from "@mui/icons-material";
 import {
 	Box,
+	Chip,
+	CircularProgress,
 	Container,
 	Typography,
 	useMediaQuery,
 	useTheme,
-	CircularProgress,
-	Link,
 } from "@mui/material";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
@@ -23,6 +24,7 @@ export default function Projects({ limit, showAppBar = true }) {
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 	const [projects, setProjects] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [activeCategory, setActiveCategory] = useState("All");
 
 	useEffect(() => {
 		async function loadProjects() {
@@ -33,6 +35,7 @@ export default function Projects({ limit, showAppBar = true }) {
 						...project,
 						year: metadata?.year || new Date().getFullYear(),
 						date: metadata?.created_at || "",
+						language: metadata?.language || "",
 					};
 				}),
 			);
@@ -61,12 +64,35 @@ export default function Projects({ limit, showAppBar = true }) {
 		);
 	}
 
-	const groupedProjects = groupProjectsByYear(projects);
+	const categoryCounts = projects.reduce((acc, project) => {
+		acc[project.category] = (acc[project.category] || 0) + 1;
+		return acc;
+	}, {});
+	const categoryOrder = [
+		"Web App",
+		"Browser Extension",
+		"Game",
+		"AI Tool",
+		"Computer Vision",
+	];
+	const categories = [
+		"All",
+		...categoryOrder.filter((category) => categoryCounts[category]),
+	];
+	const filteredProjects =
+		activeCategory === "All"
+			? projects
+			: projects.filter((project) => project.category === activeCategory);
+
+	const groupedProjects = groupProjectsByYear(filteredProjects);
 	const years = Object.keys(groupedProjects).sort((a, b) => {
 		if (a === "Unknown") return 1;
 		if (b === "Unknown") return -1;
 		return Number(b) - Number(a);
 	});
+	const entryNumbers = new Map(
+		projects.map((project, idx) => [project.githubName, idx + 1]),
+	);
 
 	return (
 		<>
@@ -90,207 +116,273 @@ export default function Projects({ limit, showAppBar = true }) {
 							sx={{
 								textAlign: "center",
 								mb: 12,
-								fontFamily: '"Newsreader", serif',
-								fontWeight: 800,
 								textTransform: "uppercase",
 								letterSpacing: "-0.02em",
 							}}
 						>
-							The Project Ledger
+							The Personal Project Ledger
 						</Typography>
 					</motion.div>
 
-					<Box sx={{ position: "relative" }}>
-						{!isMobile && (
-							<Box
-								sx={{
-									position: "absolute",
-									left: "50%",
-									top: 0,
-									bottom: 0,
-									width: "1px",
-									bgcolor: "rgba(187, 186, 172, 0.3)",
-									transform: "translateX(-50%)",
-								}}
-							/>
-						)}
+					<Box
+						sx={{
+							display: "flex",
+							flexWrap: "wrap",
+							justifyContent: "center",
+							gap: 1.5,
+							mb: 8,
+						}}
+					>
+						{categories.map((category) => {
+							const count =
+								category === "All" ? projects.length : categoryCounts[category];
+							return (
+								<Chip
+									key={category}
+									label={`${category} · ${count}`}
+									onClick={() => setActiveCategory(category)}
+									variant={activeCategory === category ? "filled" : "outlined"}
+									color="primary"
+								/>
+							);
+						})}
+					</Box>
 
-						{years.map((year) => (
-							<Box
-								key={year}
-								sx={{
-									mb: 12,
-									display: "flex",
-									flexDirection: "column",
-									alignItems: "center",
-									position: "relative",
-								}}
-							>
-								<MotionBox
-									initial={{ scale: 0.8, opacity: 0 }}
-									whileInView={{ scale: 1, opacity: 1 }}
-									viewport={{ once: true }}
+					{filteredProjects.length === 0 ? (
+						<Typography
+							variant="body1"
+							sx={{ textAlign: "center", py: 8, opacity: 0.75 }}
+						>
+							No projects in this category yet.
+						</Typography>
+					) : (
+						<Box key={activeCategory} sx={{ position: "relative" }}>
+							{!isMobile && (
+								<Box
 									sx={{
-										bgcolor: "background.default",
-										px: 4,
-										py: 1,
-										mb: 8,
-										zIndex: 2,
-										border: "1px solid",
-										borderColor: "divider",
+										position: "absolute",
+										left: "50%",
+										top: 0,
+										bottom: 0,
+										width: "1px",
+										bgcolor: "rgba(187, 186, 172, 0.3)",
+										transform: "translateX(-50%)",
+									}}
+								/>
+							)}
+
+							{years.map((year) => (
+								<Box
+									key={year}
+									sx={{
+										mb: 12,
 										display: "flex",
+										flexDirection: "column",
 										alignItems: "center",
-										justifyContent: "center",
-										width: 140,
-										height: 140,
-										borderRadius: "50%",
+										position: "relative",
 									}}
 								>
-									<Typography
-										variant="h3"
+									<MotionBox
+										initial={{ scale: 0.8, opacity: 0 }}
+										whileInView={{ scale: 1, opacity: 1 }}
+										viewport={{ once: true }}
 										sx={{
-											fontFamily: '"Newsreader", serif',
-											fontStyle: "italic",
-											color: "secondary.main",
-											fontWeight: 300,
+											bgcolor: "background.default",
+											px: 4,
+											py: 1,
+											mb: 8,
+											zIndex: 2,
+											border: "1px solid",
+											borderColor: "divider",
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+											width: 140,
+											height: 140,
+											borderRadius: "50%",
 										}}
 									>
-										{year}
-									</Typography>
-								</MotionBox>
+										<Typography
+											variant="h3"
+											sx={{
+												fontStyle: "italic",
+												color: "secondary.main",
+												fontWeight: 300,
+											}}
+										>
+											{year}
+										</Typography>
+									</MotionBox>
 
-								<Box sx={{ width: "100%" }}>
-									{groupedProjects[year].map((project, idx) => {
-										const isEven = idx % 2 === 0;
-										return (
-											<Box
+									<Box sx={{ width: "100%" }}>
+										{groupedProjects[year].map((project) => (
+											<MotionBox
 												key={project.githubName}
-												sx={{
-													display: "flex",
-													flexDirection: isMobile ? "column" : "row",
-													mb: 8,
-													width: "100%",
-												}}
+												initial={{ y: 24, opacity: 0 }}
+												whileInView={{ y: 0, opacity: 1 }}
+												viewport={{ once: true }}
+												transition={{ duration: 0.5 }}
+												sx={{ bgcolor: "background.default" }}
 											>
-												{!isMobile && isEven && <Box sx={{ flex: 1, px: 4 }} />}
-
-												<MotionBox
-													initial={{
-														x: isMobile ? 0 : isEven ? 50 : -50,
-														opacity: 0,
-													}}
-													whileInView={{ x: 0, opacity: 1 }}
-													viewport={{ once: true }}
-													transition={{ duration: 0.6, delay: 0.1 }}
+												<Box
+													component="article"
+													onClick={() =>
+														navigate(`/projects/${project.githubName}`)
+													}
 													sx={{
-														flex: 1,
-														px: { xs: 0, md: 8 },
 														display: "flex",
-														flexDirection: "column",
-														alignItems: isMobile
-															? "start"
-															: isEven
-																? "start"
-																: "end",
-														textAlign: isMobile
-															? "left"
-															: isEven
-																? "left"
-																: "right",
+														alignItems: "center",
+														gap: { xs: 2.5, md: 4 },
+														py: { xs: 2.5, md: 3.5 },
+														px: { xs: 1, md: 2 },
+														cursor: "pointer",
+														borderTop: "1px solid",
+														borderColor: "divider",
+														transition: "background-color 0.3s ease",
+														"&:hover": {
+															bgcolor: "action.hover",
+														},
+														"&:hover .ledger-arrow": {
+															transform: "translateX(4px)",
+															opacity: 1,
+														},
 													}}
 												>
-													<Box
-														component="article"
-														sx={{
-															maxWidth: 500,
-															width: "100%",
-															cursor: "pointer",
-														}}
-														onClick={() =>
-															navigate(`/projects/${project.githubName}`)
-														}
-													>
-														<Box
+													{!isMobile && (
+														<Typography
+															variant="overline"
 															sx={{
-																width: "100%",
-																aspectRatio: "4/3",
-																bgcolor: "rgba(187, 186, 172, 0.1)",
-																mb: 3,
-																position: "relative",
-																overflow: "hidden",
+																width: 64,
+																flexShrink: 0,
+																color: "text.secondary",
+																fontSize: "0.68rem",
+																letterSpacing: "0.15em",
+																lineHeight: 1,
 															}}
 														>
-															<Box
-																component="img"
-																src={project.githubImg}
-																alt={project.githubName}
-																sx={{
-																	width: "100%",
-																	height: "100%",
-																	objectFit: "contain",
-																	opacity: 0.8,
-																	filter: "grayscale(100%) contrast(120%)",
-																	transition: "all 0.6s ease-in-out",
-																	"&:hover": {
-																		opacity: 1,
-																		filter: "grayscale(0%) contrast(100%)",
-																		transform: "scale(1.02)",
-																	},
-																	p: 4,
-																}}
-															/>
-														</Box>
-														<Typography
-															variant="h4"
+															No.{" "}
+															{String(
+																entryNumbers.get(project.githubName),
+															).padStart(2, "0")}
+														</Typography>
+													)}
+
+													<Box
+														sx={{
+															width: { xs: 56, md: 88 },
+															height: { xs: 56, md: 88 },
+															flexShrink: 0,
+															bgcolor: "rgba(187, 186, 172, 0.1)",
+															border: "1px solid",
+															borderColor: "divider",
+															display: "flex",
+															alignItems: "center",
+															justifyContent: "center",
+															p: { xs: 1, md: 1.5 },
+															overflow: "hidden",
+														}}
+													>
+														<Box
+															component="img"
+															src={project.githubImg}
+															alt={project.githubName}
+															loading="lazy"
 															sx={{
-																fontFamily: '"Newsreader", serif',
-																mb: 1,
-																color: "text.primary",
+																maxWidth: "100%",
+																maxHeight: "100%",
+																objectFit: "contain",
+																opacity: 0.85,
+																filter: "grayscale(100%) contrast(115%)",
+																transition: "all 0.5s ease-in-out",
+																"&:hover": {
+																	opacity: 1,
+																	filter: "grayscale(0%) contrast(100%)",
+																},
 															}}
+														/>
+													</Box>
+
+													<Box sx={{ flex: 1, minWidth: 0 }}>
+														<Typography
+															variant="h5"
+															sx={{ mb: 0.5, color: "text.primary" }}
 														>
 															{project.githubName}
 														</Typography>
 														<Typography
 															variant="body2"
 															sx={{
-																mb: 3,
 																color: "text.primary",
-																opacity: 0.8,
-																fontFamily: '"Noto Serif", serif',
-																lineHeight: 1.8,
+																opacity: 0.75,
+																display: "-webkit-box",
+																WebkitLineClamp: 2,
+																WebkitBoxOrient: "vertical",
+																overflow: "hidden",
+																lineHeight: 1.55,
 															}}
 														>
-															Click the button below to see what this project does.
+															{project.tagline}
 														</Typography>
-														<Link
+														<Box
 															sx={{
-																fontFamily: '"Newsreader", serif',
-																fontStyle: "italic",
-																color: "secondary.main",
-																textDecoration: "none",
-																borderBottom: "1px solid",
-																borderColor: "rgba(125, 93, 83, 0.3)",
-																paddingBottom: "2px",
-																"&:hover": {
-																	borderColor: "secondary.main",
-																},
+																display: "flex",
+																alignItems: "center",
+																gap: 1.5,
+																mt: 1,
+																flexWrap: "wrap",
 															}}
 														>
-															See on GitHub
-														</Link>
+															<Typography
+																variant="overline"
+																sx={{
+																	color: "secondary.main",
+																	fontSize: "0.68rem",
+																	letterSpacing: "0.12em",
+																	lineHeight: 1,
+																}}
+															>
+																{project.category}
+															</Typography>
+															<Typography
+																variant="overline"
+																sx={{
+																	color: "text.secondary",
+																	fontSize: "0.68rem",
+																	letterSpacing: "0.12em",
+																	lineHeight: 1,
+																	opacity: 0.7,
+																}}
+															>
+																{year}
+																{project.language
+																	? ` · ${project.language}`
+																	: ""}
+															</Typography>
+														</Box>
 													</Box>
-												</MotionBox>
 
-												{!isMobile && !isEven && (
-													<Box sx={{ flex: 1, px: 4 }} />
-												)}
-											</Box>
-										);
-									})}
+													<Box
+														className="ledger-arrow"
+														sx={{
+															flexShrink: 0,
+															color: "secondary.main",
+															display: "flex",
+															alignItems: "center",
+															opacity: 0.4,
+															transition:
+																"transform 0.3s ease, opacity 0.3s ease",
+														}}
+													>
+														<ArrowForward />
+													</Box>
+												</Box>
+											</MotionBox>
+										))}
+									</Box>
 								</Box>
-							</Box>
-						))}
-					</Box>
+							))}
+						</Box>
+					)}
 				</Container>
 			</Box>
 		</>

@@ -1,73 +1,114 @@
-# Design System: The Editorial Monograph
+# Design System — "The Editorial Monograph"
 
-## 1. Overview & Creative North Star
-**Creative North Star: "The Living Archive"**
+## 1. Overview & Creative Direction
 
-This design system is not merely a "vintage theme"—it is a high-end digital broadsheet that translates the tactile authority of 1920s print journalism into a premium web experience. We reject the "template" look of modern SaaS by embracing intentional asymmetry, dense information hierarchies, and a "paper-first" philosophy. 
+**North Star: "The Living Archive."**
 
-The system moves beyond the flat screen by treating the UI as a series of physical, ink-pressed layers. We break the rigid digital grid through the use of multi-column editorial layouts, varying headline weights, and "The Masthead" header logic. Every interaction should feel like an intentional act of curation—authoritative, human, and deeply historical.
+The site is a digital broadsheet: a 1920s print-journalism aesthetic translated into a premium portfolio experience. Where modern SaaS leans on cards, shadows, and rounded corners, this system treats the interface as layers of ink-pressed paper — intentional asymmetry, dense information hierarchy, and a type-first editorial grid. The portfolio reads like a curated index of published work rather than a gallery of thumbnails.
 
-## 2. Colors
-Our palette is rooted in the chemistry of early 20th-century printing: iron-gall ink and wood-pulp parchment. 
+Every interaction should feel like an act of curation: authoritative, human, and historically grounded.
 
-### The Palette Logic
-*   **Background & Surfaces:** We use a spectrum of warm neutrals (#fdffda to #eae9d9) to simulate aging paper. Use `surface` for the primary canvas and `surface-container` tiers to create subtle, ink-wash depth.
-*   **Primary/Ink:** `primary` (#5f5e5e) and `on-surface` (#38392e) act as our "Ink Black." These are never true hex #000; they retain a slight organic softness to avoid digital eye strain.
-*   **Secondary/Sepia:** `secondary` (#7d5d53) provides the warmth of a vintage photograph or a wax seal. Use this for accents that require a human touch.
+## 2. Design Principles
 
-### The "No-Line" & "Ghost Border" Rules
-Standard 1px solid borders are strictly prohibited for sectioning content. 
-*   **Tonal Definition:** Use `surface-container-low` sections against a `surface` background to define boundaries. 
-*   **The Ghost Border:** If a boundary is required for accessibility, use the `outline-variant` token at **10% opacity**. It should feel like a faint indentation in the paper, not a digital stroke.
+1. **Type-first hierarchy** — Solve layout problems with typographic scale before reaching for boxes, fills, or borders.
+2. **Scannability** — The projects ledger is the heart of the portfolio. Content must read in a single left-to-right sweep: title → one-line description → metadata. Consistent left edges beat clever layouts.
+3. **Restraint** — No shadows, no rounded corners, no pure black, no heavy borders. Separation comes from tonal shifts and whitespace.
+4. **Craft** — Paper grain, sepia accents, and a grayscale→color reveal on hover give the archive a tactile, physical quality.
 
-### Signature Textures
-While the colors provide the base, apply a subtle noise texture (grain) to `surface` backgrounds. For primary CTAs, use a linear gradient transitioning from `primary` to `primary-dim` to simulate the slight unevenness of a heavy ink press.
+## 3. Color Tokens
 
-## 3. Typography
-Typography is the backbone of this system. It is the primary tool for conveying hierarchy, replacing the need for heavy UI containers.
+All colors are defined once in `src/theme/theme.js` and exposed as MUI palette tokens. **Use tokens in components; never hard-code hex.** Values below are the implemented tokens.
 
-*   **Display (Newsreader):** Our "Masthead" font. Use `display-lg` for high-impact editorial moments. It should feel loud yet sophisticated.
-*   **Headline (Newsreader):** Used for article titles and section headers. High-contrast serif evokes the "Golden Age" of broadsheets.
-*   **Title & Body (Noto Serif):** Our "Workhorse." This provides the legibility of a classic book. `body-lg` is your standard reading weight.
-*   **Label (Work Sans):** A subtle nod to the sans-serif typefaces used in early 20th-century classifieds and telegrams. Use this for metadata, captions, and functional UI elements to provide a modern, legible contrast to the serif-heavy layout.
+| Token | Light | Dark | Usage |
+| --- | --- | --- | --- |
+| `primary.main` | `#5f5e5e` | `#fdffda` | Ink black; primary buttons, active states |
+| `primary.dark` | `#38392e` | `#f1f3c3` | Deep ink; gradients, hover states |
+| `primary.contrastText` | `#fdffda` | `#38392e` | Text on primary surfaces |
+| `secondary.main` | `#7d5d53` | `#a6827a` | Sepia; accents, italic years, links, arrows |
+| `background.default` / `.paper` | `#fdffda` | `#282a21` | Parchment canvas / card surfaces |
+| `text.primary` | `#38392e` | `#fdffda` | Body ink |
+| `text.secondary` | `#7d5d53` | `#a6827a` | Muted meta, labels |
+| `divider` | `rgba(56,57,46,.10)` | `rgba(253,255,218,.15)` | The "ghost border" — hairline rules only |
 
-## 4. Elevation & Depth
-In a newspaper, depth is created by stacking sheets. In this system, we use **Tonal Layering** instead of shadows.
+### Rules
 
-*   **The Layering Principle:** Place a `surface-container-lowest` card on top of a `surface-container-high` section. The shift in "paper age" (brightness) creates a natural lift.
-*   **Ambient Shadows:** If an element must "float" (like a dropdown or modal), use a wide, diffused shadow (32px+ blur) at 5% opacity using the `on-surface` tint. 
-*   **Glassmorphism (The "Vellum" Effect):** For floating navigation or tooltips, use `surface` at 85% opacity with a `12px` backdrop-blur. This simulates semi-transparent vellum paper, allowing the underlying "newsprint" to bleed through.
+- **No pure black.** `#38392e` is the darkest ink — it retains an organic softness that avoids digital eye strain.
+- **The ghost border.** Sectioning uses the `divider` token (≤15% opacity), never a strong 1px stroke. A boundary should feel like a faint indentation in the paper.
+- **Tonal separation.** Use `divider` and `action.hover` (subtle background shifts) instead of borders to define surfaces.
 
-## 5. Components
+## 4. Typography
 
-### Buttons
-*   **Primary:** High-contrast `on-primary` text on `primary` background. Sharp 0px corners. No shadows.
-*   **Secondary:** `outline` frame (at 20% opacity) with `primary` text.
-*   **Tertiary:** Pure text with `label-md` styling and a 1px `primary` underline (the "Hairline Rule") that expands on hover.
+Three families, loaded via `@fontsource` in `src/main.jsx`. Typography is the primary hierarchy tool.
 
-### Cards & Lists
-*   **Forbid Divider Lines:** Separate list items using `1.75rem` (Spacing 8) of vertical white space or a subtle shift to `surface-container-lowest`.
-*   **Layout:** Use multi-column text flows within cards to mimic newspaper snippets.
+| Role | Family | Weights loaded | Usage |
+| --- | --- | --- | --- |
+| Display / headlines | Newsreader | 400, 700, 800, 400-italic | Masthead, section titles, project titles, italic year medallions |
+| Body | Noto Serif | 400, 700 | `body1`/`body2` reading text, taglines, README content |
+| Labels / meta | Work Sans Variable | variable | Buttons, `caption`, `overline` — uppercase with letter-spacing |
 
-### Input Fields
-*   **Styling:** A bottom-only "Hairline Rule" using the `outline` token. No containers. 
-*   **State:** On focus, the line transitions to `primary` and the label (using `label-sm`) shifts to a subtle `secondary` sepia.
+MUI variant map (from the theme): `h1`–`h6` use Newsreader (weights 800/700/700/600/600/600, negative letter-spacing on `h1`/`h2`); `body1`/`body2` use Noto Serif; `button`, `caption`, and `overline` use Work Sans.
 
-### The "Masthead" Component
-A mandatory top-level component. It must use `display-lg` typography, centered, with two horizontal "Hairline Rules" (`outline-variant` at 20%) above and below, containing the date and edition (metadata) in `label-sm`.
+### Usage notes
 
-### Additional Component: The "Pull Quote"
-A stylized container for emphasized content. Use `headline-sm`, italicized, with a heavy `secondary` left-border (3px) to draw the eye without cluttering the page.
+- **The masthead** uses Newsreader, centered, flanked by hairline rules above and below.
+- **Meta lines** (category, year, language) are `overline`-style Work Sans: uppercase, `0.68–0.75rem`, letter-spacing `0.12–0.15em`. This is the "classifieds" voice — the contrast to the serif headlines is what makes scanning work.
+- **No center-aligned body text.** Left-align or justify with good hyphenation.
 
-## 6. Do's and Don'ts
+## 5. Layout & Spacing
 
-### Do:
-*   **Embrace Whitespace:** Use the spacing scale (specifically `20` and `24`) to let the "ink" breathe.
-*   **Use Asymmetry:** Balance a heavy headline on the left with a lighter multi-column body block on the right.
-*   **Type-First Hierarchy:** Always try to solve a layout problem with typography scale before adding a box or a background color.
+- **Spacing scale:** MUI's 8px base (`theme.spacing(n)`). The ledger uses `mb: 12` (96px) between year groups, `py: 3.5` (28px) within rows, `gap: 4` (32px) between row elements.
+- **Embrace whitespace** at the `20`–`24` spacing levels to let the ink breathe.
+- **Asymmetry is allowed — misalignment is not.** Editorial offsets and centered medallions create character; every list row keeps one consistent left edge for scanning.
 
-### Don't:
-*   **No Rounded Corners:** `0px` is the absolute rule. Rounded corners break the "cut paper" aesthetic.
-*   **No Heavy Shadows:** Shadows are a modern digital crutch. Use color shifts instead.
-*   **No Pure Black:** Avoid `#000000`. Use the `on-surface` (#38392e) to keep the "organic ink" feel.
-*   **No Center-Alignment for Body Text:** Always left-align or justify (with high-quality hyphenation) to maintain the editorial grid.
+### The Project Ledger (signature component)
+
+- Full-width rows on desktop, grouped under circular **year medallions** (italic Newsreader year, hairline ring) on a central timeline rule.
+- Each row: entry number (`No. 01`) → square thumbnail (grayscale, colorizes on hover) → Newsreader title → two-line tagline (clamped) → `overline` meta (`CATEGORY · YEAR · LANGUAGE`).
+- Rows are separated by ghost hairlines; hover lifts the row with a subtle `action.hover` background and slides the arrow.
+- On mobile: the timeline and entry numbers disappear, thumbnails shrink, rows stack.
+
+## 6. Elevation & Texture
+
+- **No shadows.** Depth comes from tonal layering (see §3) and, where an element must float, a wide diffused shadow at low opacity is the *only* exception.
+- **Paper grain:** a `noise.webp` texture is blended (`soft-light`) onto the body background.
+- **Vellum effect:** floating surfaces (the app bar) use `background` at ~85% opacity with `backdrop-filter: blur(12px)` so underlying newsprint bleeds through.
+- **Grayscale→color reveal:** project thumbnails render `grayscale(100%) contrast(115%)` and restore full color on hover — a quiet "catalog → artifact" transition.
+
+## 7. Components
+
+| Component | Rules |
+| --- | --- |
+| **Buttons** | Primary: ink gradient (`primary.main → primary.dark`), sharp corners, no shadow. Secondary: `outline` frame at 20% opacity. Tertiary: text with a hairline underline that expands on hover. |
+| **Cards & lists** | No divider lines between items — separate with whitespace or the ghost border. The ledger row (see §5) is the canonical list item. |
+| **Inputs** | Bottom-only hairline rule; on focus the line shifts to `primary` and the label to sepia. |
+| **Chips** | Work Sans, uppercase, letter-spacing `0.1em`, square corners. |
+| **Links** | Inherit text color, hairline underline offset 4px; underline darkens on hover. |
+
+## 8. Content Guidelines (Portfolio)
+
+The design only shines if the content is curated. Follow the content model in [AGENTS.md](./AGENTS.md):
+
+- **Taglines** are the most-scanned text on the page — one plain-language sentence about *what the project is*, ≤ ~110 chars, no markdown, no "click here."
+- **Categories** are a closed set: `Web App`, `Browser Extension`, `Game`, `AI Tool`, `Computer Vision`.
+- **Thumbnails** should be square logos/icons that read at 88px on a light plate.
+- **Asset URLs** (READMEs, thumbnails) track each repo's **default branch**, so the site always shows the latest content. Update `githubImg`/`githubContentPath` if a file is ever moved or renamed.
+
+## 9. Accessibility & Performance
+
+- Ink-on-parchment contrast meets WCAG AA in both themes; hover is always an *enhancement*, never the only signal (rows remain clickable and visually distinct).
+- All images carry `alt` text; thumbnails are `loading="lazy"`.
+- Typography is fontsource-subsetted; the build splits vendor chunks and lazy-loads routes.
+- Preserve existing motion patterns (`motion` + `whileInView`) — animations are entrance-only and subtle; don't add continuous or looping motion.
+
+## 10. Do's and Don'ts
+
+**Do:**
+- Solve layout with type scale first; use whitespace (`20`–`24`) generously.
+- Keep list content left-aligned and consistent for fast scanning.
+- Use palette tokens and the ghost-border `divider` everywhere.
+
+**Don't:**
+- Rounded corners (`0px` is absolute — it preserves the cut-paper aesthetic).
+- Heavy shadows, pure black (`#000000`), or center-aligned body text.
+- Strong 1px borders for sectioning — use tonal shifts or the 10–15% ghost border.
+- Add container chrome around content the type hierarchy can carry alone.

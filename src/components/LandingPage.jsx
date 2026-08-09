@@ -61,6 +61,7 @@ export default function LandingPage() {
 									color="primary"
 									href="https://flowcv.com/resume/woofkdsq4sse"
 									target="_blank"
+									rel="noopener noreferrer"
 								>
 									VIEW RESUME
 								</Button>
@@ -73,7 +74,7 @@ export default function LandingPage() {
 					sx={{ my: 10, borderColor: "text.primary", borderWidth: "2px" }}
 				/>
 
-				<Box sx={{ mt: 16 }}>
+				{/* <Box sx={{ mt: 16 }}>
 					<Typography
 						variant="h3"
 						sx={{
@@ -87,7 +88,7 @@ export default function LandingPage() {
 						The Visual Dispatch
 					</Typography>
 					<Suspense fallback={<RouteLoader />}>
-						<Gallery limit={4} showAppBar={false} tag="gallery" />
+						<Gallery limit={4} showAppBar={false} />
 					</Suspense>
 					<Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
 						<Button
@@ -104,7 +105,7 @@ export default function LandingPage() {
 							VIEW THE FULL ARCHIVE →
 						</Button>
 					</Box>
-				</Box>
+				</Box> */}
 			</Container>
 
 			<Box

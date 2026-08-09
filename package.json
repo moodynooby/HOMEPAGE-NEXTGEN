@@ -14,26 +14,26 @@
 		"@cloudinary/url-gen": "^1.22.0",
 		"@emotion/react": "^11.14.0",
 		"@emotion/styled": "^11.14.1",
-		"@fontsource-variable/work-sans": "^5.2.8",
-		"@fontsource/newsreader": "^5.2.10",
-		"@fontsource/noto-serif": "^5.2.9",
-		"@mui/icons-material": "^9.0.1",
-		"@mui/material": "^9.0.1",
+		"@fontsource-variable/work-sans": "^5.3.0",
+		"@fontsource/newsreader": "^5.3.0",
+		"@fontsource/noto-serif": "^5.3.0",
+		"@mui/icons-material": "^9.3.1",
+		"@mui/material": "^9.3.1",
 		"babel-plugin-react-compiler": "^1.0.0",
 		"kbar": "0.1.0-beta.48",
-		"motion": "^12.38.0",
+		"motion": "^12.43.0",
 		"prop-types": "^15.8.1",
-		"react": "^19.2.6",
-		"react-dom": "^19.2.6",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8",
 		"react-markdown": "^10.1.0",
-		"react-router-dom": "^7.15.0",
+		"react-router-dom": "^7.18.2",
 		"remark-gfm": "^4.0.1",
-		"yet-another-react-lightbox": "^3.32.0"
+		"yet-another-react-lightbox": "^3.32.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.8",
-		"@types/react": "^19.2.14",
-		"@vitejs/plugin-react": "^6.0.1",
-		"vite": "^8.0.11"
+		"@types/react": "^19.2.18",
+		"@vitejs/plugin-react": "^6.0.5",
+		"vite": "^8.2.1"
 	}
 }

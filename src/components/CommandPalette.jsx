@@ -56,14 +56,6 @@ export default function CommandPalette({ children }) {
 			icon: <Person />,
 		},
 		{
-			id: "services",
-			name: "Web Design Services",
-			shortcut: ["s"],
-			keywords: "services-hire",
-			perform: () => navigate("/services"),
-			icon: <Settings />,
-		},
-		{
 			id: "gallery",
 			name: "Media Gallery",
 			shortcut: ["g"],
@@ -100,7 +92,8 @@ export default function CommandPalette({ children }) {
 			name: "GitHub Profile",
 			shortcut: ["g"],
 			keywords: "external-github",
-			perform: () => window.open("https://github.com/moodynooby", "_blank"),
+			perform: () =>
+				window.open("https://github.com/moodynooby", "_blank", "noopener"),
 			icon: <GitHub />,
 		},
 		{
@@ -112,6 +105,7 @@ export default function CommandPalette({ children }) {
 				window.open(
 					"https://www.linkedin.com/in/manas-doshi-644751363",
 					"_blank",
+					"noopener",
 				),
 			icon: <LinkedIn />,
 		},
@@ -124,6 +118,7 @@ export default function CommandPalette({ children }) {
 				window.open(
 					"https://addons.mozilla.org/en-US/firefox/user/17859963/",
 					"_blank",
+					"noopener",
 				),
 			icon: <Language />,
 		},
