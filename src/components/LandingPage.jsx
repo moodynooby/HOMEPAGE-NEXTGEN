@@ -13,6 +13,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
 import RouteLoader from "@/components/RouteLoader";
+import SocialProofTicker from "@/components/SocialProofTicker";
 import { fetchUserStats } from "@/utils/githubUtils";
 
 const Gallery = lazy(() => import("@/components/Gallery"));
@@ -34,6 +35,7 @@ export default function LandingPage() {
 	return (
 		<Box sx={{ minHeight: "100vh", pb: 8 }}>
 			<ButtonAppBar />
+			<SocialProofTicker />
 
 			<Container maxWidth="lg" sx={{ mt: 6 }}>
 				<Grid container spacing={4} alignItems="center">
