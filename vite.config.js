@@ -41,27 +41,28 @@ export default defineConfig({
 			output: {
 				manualChunks: (id) => {
 					if (id.includes("node_modules")) {
-						if (
-							id.includes("react") ||
-							id.includes("react-dom") ||
-							id.includes("react-router")
-						) {
-							return "vendor-core";
-						}
 						if (id.includes("@mui") || id.includes("@emotion")) {
 							return "vendor-mui";
-						}
-						if (id.includes("motion")) {
-							return "vendor-motion";
-						}
-						if (id.includes("react-markdown") || id.includes("remark")) {
-							return "vendor-markdown";
 						}
 						if (id.includes("@cloudinary")) {
 							return "vendor-cloudinary";
 						}
 						if (id.includes("yet-another-react-lightbox")) {
 							return "vendor-lightbox";
+						}
+						if (id.includes("react-markdown") || id.includes("remark")) {
+							return "vendor-markdown";
+						}
+						if (id.includes("motion")) {
+							return "vendor-motion";
+						}
+						if (
+							id.includes("/react/") ||
+							id.includes("/react-dom/") ||
+							id.includes("/react-router") ||
+							id.includes("/scheduler/")
+						) {
+							return "vendor-core";
 						}
 						return "vendor-other";
 					}

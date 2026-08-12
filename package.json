@@ -6,8 +6,13 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
-		"lint": "biome lint --write . && biome format --write .",
-		"preview": "vite preview"
+		"lint": "biome check --write .",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"preview": "vite preview",
+		"setup:hooks": "lefthook install"
 	},
 	"dependencies": {
 		"@cloudinary/react": "^1.14.4",
@@ -32,8 +37,15 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.8",
+		"@testing-library/jest-dom": "^7.0.1",
+		"@testing-library/react": "^16.3.2",
 		"@types/react": "^19.2.18",
+		"@types/react-dom": "^19.2.4",
 		"@vitejs/plugin-react": "^6.0.5",
-		"vite": "^8.2.1"
+		"happy-dom": "^20.11.2",
+		"lefthook": "^2.1.10",
+		"typescript": "^7.0.2",
+		"vite": "^8.2.1",
+		"vitest": "^4.1.10"
 	}
 }

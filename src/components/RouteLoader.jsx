@@ -1,13 +1,18 @@
-import { Box, CircularProgress } from "@mui/material";
-import { motion } from "motion/react";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import { motion, useReducedMotion } from "motion/react";
 
 export default function RouteLoader() {
+	const shouldReduceMotion = useReducedMotion();
+
 	return (
 		<Box
 			component={motion.div}
-			initial={{ opacity: 0 }}
+			initial={shouldReduceMotion ? false : { opacity: 0 }}
 			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
+			exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+			role="status"
+			aria-live="polite"
+			aria-label="Loading page"
 			sx={{
 				display: "flex",
 				flexDirection: "column",
@@ -15,39 +20,50 @@ export default function RouteLoader() {
 				alignItems: "center",
 				minHeight: "100vh",
 				bgcolor: "background.default",
-				gap: 3,
+				gap: 2,
 			}}
 		>
 			<CircularProgress
-				size={60}
+				size={52}
 				thickness={3}
+				aria-label="Loading"
 				sx={{
 					color: "secondary.main",
-					"@keyframes pulse": {
-						"0%": {
-							boxShadow: "0 0 0 0 rgba(125, 93, 83, 0.4)",
-						},
-						"70%": {
-							boxShadow: "0 0 0 20px rgba(125, 93, 83, 0)",
-						},
-						"100%": {
-							boxShadow: "0 0 0 0 rgba(125, 93, 83, 0)",
-						},
-					},
-					animation: "pulse 2s infinite",
+					...(shouldReduceMotion
+						? {}
+						: {
+								"@keyframes pulse": {
+									"0%": {
+										boxShadow: "0 0 0 0 rgba(125, 93, 83, 0.4)",
+									},
+									"70%": {
+										boxShadow: "0 0 0 20px rgba(125, 93, 83, 0)",
+									},
+									"100%": {
+										boxShadow: "0 0 0 0 rgba(125, 93, 83, 0)",
+									},
+								},
+								animation: "pulse 2s infinite",
+							}),
 				}}
 			/>
-			<Box
-				component={motion.div}
-				initial={{ width: 0 }}
-				animate={{ width: "200px" }}
-				transition={{ duration: 1.5, repeat: Infinity }}
-				sx={{
-					height: "2px",
-					bgcolor: "secondary.main",
-					opacity: 0.5,
-				}}
-			/>
+			<Typography variant="body2" color="text.secondary">
+				Loading page…
+			</Typography>
+			{!shouldReduceMotion && (
+				<Box
+					component={motion.div}
+					initial={{ width: 0 }}
+					animate={{ width: "200px" }}
+					transition={{ duration: 1.5, repeat: Infinity }}
+					aria-hidden="true"
+					sx={{
+						height: "2px",
+						bgcolor: "secondary.main",
+						opacity: 0.5,
+					}}
+				/>
+			)}
 		</Box>
 	);
 }

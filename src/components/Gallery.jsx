@@ -1,25 +1,25 @@
+import { AdvancedImage, AdvancedVideo } from "@cloudinary/react";
+import { dpr, format, quality } from "@cloudinary/url-gen/actions/delivery";
+import { fill } from "@cloudinary/url-gen/actions/resize";
+import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import {
 	Box,
+	CircularProgress,
 	Container,
 	Typography,
 	useMediaQuery,
 	useTheme,
-	CircularProgress,
 } from "@mui/material";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { AdvancedImage, AdvancedVideo } from "@cloudinary/react";
-import { fill } from "@cloudinary/url-gen/actions/resize";
-import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
-import { format, quality, dpr } from "@cloudinary/url-gen/actions/delivery";
 import Lightbox from "yet-another-react-lightbox";
-import Video from "yet-another-react-lightbox/plugins/video";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import Video from "yet-another-react-lightbox/plugins/video";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
-import { cld, fetchAllMediaByTag } from "@/utils/cloudinary";
 import ButtonAppBar from "@/components/Header";
+import { cld, fetchAllMediaByTag } from "@/utils/cloudinary";
 
 const MotionBox = motion.create(Box);
 

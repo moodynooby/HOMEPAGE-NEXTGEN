@@ -1,27 +1,27 @@
 import {
-	KBarProvider,
-	KBarPortal,
-	KBarPositioner,
-	KBarAnimator,
-	KBarSearch,
-	KBarResults,
-	useMatches,
-} from "kbar";
-import { useNavigate } from "react-router-dom";
-import { useTheme, Box, Typography } from "@mui/material";
-import PropTypes from "prop-types";
-import {
-	Home,
 	AccountTree,
-	Person,
-	Settings,
 	Brightness4,
 	Brightness7,
 	BrightnessAuto,
 	GitHub,
-	LinkedIn,
+	Home,
 	Language,
+	LinkedIn,
+	Person,
+	Settings,
 } from "@mui/icons-material";
+import { Box, Typography, useTheme } from "@mui/material";
+import {
+	KBarAnimator,
+	KBarPortal,
+	KBarPositioner,
+	KBarProvider,
+	KBarResults,
+	KBarSearch,
+	useMatches,
+} from "kbar";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 import { useThemeContext } from "@/contexts/ThemeContext";
 

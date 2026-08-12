@@ -48,6 +48,8 @@ function SocialLinksComponent() {
 						key={social.alt}
 						href={social.link}
 						target="_blank"
+						rel="noopener noreferrer"
+						aria-label={`Open ${social.alt} in a new tab`}
 						size="small"
 						sx={{
 							color: "primary.main",
@@ -179,14 +181,26 @@ export default function ButtonAppBar() {
 						<IconButton
 							onClick={(e) => setMenuAnchorEl(e.currentTarget)}
 							color="inherit"
+							aria-label="Open navigation menu"
+							aria-controls={
+								menuAnchorEl ? "mobile-navigation-menu" : undefined
+							}
+							aria-haspopup="menu"
 						>
 							<MenuIcon />
 						</IconButton>
 					)}
 
-					<IconButton onClick={query.toggle} size="small" color="inherit">
+					<IconButton
+						onClick={query.toggle}
+						color="inherit"
+						aria-label="Open command palette"
+						sx={{ minWidth: 48, minHeight: 48, borderRadius: 1, gap: 0.5 }}
+					>
 						<SearchIcon fontSize="small" />
-						Search
+						<Typography component="span" variant="body2">
+							Search
+						</Typography>
 					</IconButton>
 
 					<Box sx={{ flexGrow: isMobile ? 1 : 0 }} />
@@ -198,10 +212,10 @@ export default function ButtonAppBar() {
 						size="small"
 						variant="contained"
 					>
-						<ToggleButton value="light">
+						<ToggleButton value="light" aria-label="Use light theme">
 							<LightModeIcon sx={{ fontSize: 16 }} />
 						</ToggleButton>
-						<ToggleButton value="dark">
+						<ToggleButton value="dark" aria-label="Use dark theme">
 							<DarkModeIcon sx={{ fontSize: 16 }} />
 						</ToggleButton>
 					</ToggleButtonGroup>
@@ -218,6 +232,7 @@ export default function ButtonAppBar() {
 			</AppBar>
 
 			<Menu
+				id="mobile-navigation-menu"
 				anchorEl={menuAnchorEl}
 				open={Boolean(menuAnchorEl)}
 				onClose={() => setMenuAnchorEl(null)}

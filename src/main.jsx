@@ -1,7 +1,7 @@
-import { StrictMode, lazy, Suspense } from "react";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider, CssBaseline } from "@mui/material";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import "@fontsource/newsreader/400.css";
 import "@fontsource/newsreader/700.css";
@@ -12,11 +12,12 @@ import "@fontsource/noto-serif/700.css";
 import "@fontsource-variable/work-sans";
 
 import "./index.css";
-import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
-import { getTheme } from "@/theme/theme";
 import CommandPalette from "@/components/CommandPalette";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import LandingPage from "@/components/LandingPage";
 import RouteLoader from "@/components/RouteLoader";
+import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
+import { getTheme } from "@/theme/theme";
 
 const SpeedDial = lazy(() => import("@/components/Projects"));
 const ProjectDetail = lazy(() => import("@/components/ProjectDetail"));
@@ -37,18 +38,20 @@ const AppContent = () => {
 			<CssBaseline />
 			<BrowserRouter>
 				<CommandPalette>
-					<Suspense fallback={<RouteLoader />}>
-						<Routes>
-							<Route path="/" element={<LandingPage />} />
-							<Route path="/projects" element={<SpeedDial />} />
-							<Route
-								path="/projects/:projectName"
-								element={<ProjectDetail />}
-							/>
-							<Route path="/links" element={<LinkTree />} />
-							<Route path="/gallery" element={<Gallery />} />
-						</Routes>
-					</Suspense>
+					<ErrorBoundary>
+						<Suspense fallback={<RouteLoader />}>
+							<Routes>
+								<Route path="/" element={<LandingPage />} />
+								<Route path="/projects" element={<SpeedDial />} />
+								<Route
+									path="/projects/:projectName"
+									element={<ProjectDetail />}
+								/>
+								<Route path="/links" element={<LinkTree />} />
+								<Route path="/gallery" element={<Gallery />} />
+							</Routes>
+						</Suspense>
+					</ErrorBoundary>
 				</CommandPalette>
 			</BrowserRouter>
 		</ThemeProvider>

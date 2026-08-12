@@ -1,15 +1,17 @@
-import { ArrowForward, Star, Download, Visibility } from "@mui/icons-material";
+import { ArrowForward, Star, Download, Visibility, PushPin, Schedule } from "@mui/icons-material";
 import {
+	Alert,
 	Box,
 	Chip,
-	CircularProgress,
 	Container,
+	Skeleton,
 	Typography,
 	useMediaQuery,
 	useTheme,
 	Tooltip,
+	alpha,
 } from "@mui/material";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,13 +27,18 @@ export default function Projects({ limit, showAppBar = true }) {
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 	const [projects, setProjects] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [loadError, setLoadError] = useState("");
 	const [activeCategory, setActiveCategory] = useState("All");
+	const shouldReduceMotion = useReducedMotion();
 
 	useEffect(() => {
+		let isMounted = true;
+
 		async function loadProjects() {
-			const projectsWithMetadata = await Promise.all(
-				projectsData.map(async (project) => {
-					const metadata = await fetchRepoMetadata(project.githubName);
+			try {
+				const projectsWithMetadata = await Promise.all(
+					projectsData.map(async (project) => {
+						const metadata = await fetchRepoMetadata(project.githubName);
 						return {
 							...project,
 							year: metadata?.year || new Date().getFullYear(),
@@ -40,29 +47,72 @@ export default function Projects({ limit, showAppBar = true }) {
 							stars: metadata?.stars || 0,
 							forks: metadata?.forks || 0,
 						};
-				}),
-			);
-			const sortedProjects = projectsWithMetadata.sort(
-				(a, b) => new Date(b.date) - new Date(a.date),
-			);
+					}),
+				);
+				const sortedProjects = projectsWithMetadata.sort(
+					(a, b) => new Date(b.date) - new Date(a.date),
+				);
 
-			setProjects(limit ? sortedProjects.slice(0, limit) : sortedProjects);
-			setLoading(false);
+				if (isMounted) {
+					setProjects(limit ? sortedProjects.slice(0, limit) : sortedProjects);
+					setLoadError("");
+				}
+			} catch (error) {
+				console.error("Unable to load projects", error);
+				if (isMounted) {
+					setLoadError("Projects could not be loaded. Please try again.");
+				}
+			} finally {
+				if (isMounted) setLoading(false);
+			}
 		}
+
 		loadProjects();
+		return () => {
+			isMounted = false;
+		};
 	}, [limit]);
 
 	if (loading) {
 		return (
 			<Box
-				sx={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					minHeight: "60vh",
-				}}
+				sx={{ minHeight: "60vh", py: 8 }}
+				role="status"
+				aria-label="Loading projects"
 			>
-				<CircularProgress color="primary" />
+				<Skeleton
+					variant="text"
+					width="55%"
+					height={72}
+					sx={{ mx: "auto", mb: 6 }}
+				/>
+				{[1, 2, 3].map((item) => (
+					<Box
+						key={item}
+						sx={{
+							display: "flex",
+							gap: 2,
+							py: 3,
+							borderTop: "1px solid",
+							borderColor: "divider",
+						}}
+					>
+						<Skeleton variant="rectangular" width={88} height={88} />
+						<Box sx={{ flex: 1 }}>
+							<Skeleton variant="text" width="35%" />
+							<Skeleton variant="text" width="80%" />
+							<Skeleton variant="text" width="25%" />
+						</Box>
+					</Box>
+				))}
+			</Box>
+		);
+	}
+
+	if (loadError) {
+		return (
+			<Box sx={{ minHeight: "60vh", py: 8 }}>
+				<Alert severity="error">{loadError}</Alert>
 			</Box>
 		);
 	}
@@ -110,9 +160,11 @@ export default function Projects({ limit, showAppBar = true }) {
 			>
 				<Container maxWidth="lg">
 					<motion.div
-						initial={{ opacity: 0, y: 20 }}
+						initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8 }}
+						transition={
+							shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }
+						}
 					>
 						<Typography
 							variant="h2"
@@ -186,8 +238,12 @@ export default function Projects({ limit, showAppBar = true }) {
 									}}
 								>
 									<MotionBox
-										initial={{ scale: 0.8, opacity: 0 }}
-										whileInView={{ scale: 1, opacity: 1 }}
+										initial={
+											shouldReduceMotion ? false : { scale: 0.8, opacity: 0 }
+										}
+										whileInView={
+											shouldReduceMotion ? undefined : { scale: 1, opacity: 1 }
+										}
 										viewport={{ once: true }}
 										sx={{
 											bgcolor: "background.default",
@@ -221,17 +277,34 @@ export default function Projects({ limit, showAppBar = true }) {
 										{groupedProjects[year].map((project) => (
 											<MotionBox
 												key={project.githubName}
-												initial={{ y: 24, opacity: 0 }}
-												whileInView={{ y: 0, opacity: 1 }}
+												initial={
+													shouldReduceMotion ? false : { y: 24, opacity: 0 }
+												}
+												whileInView={
+													shouldReduceMotion ? undefined : { y: 0, opacity: 1 }
+												}
 												viewport={{ once: true }}
-												transition={{ duration: 0.5 }}
+												transition={
+													shouldReduceMotion
+														? { duration: 0 }
+														: { duration: 0.5 }
+												}
 												sx={{ bgcolor: "background.default" }}
 											>
 												<Box
 													component="article"
+													role="link"
+													tabIndex={0}
+													aria-label={`Open project ${project.githubName}`}
 													onClick={() =>
 														navigate(`/projects/${project.githubName}`)
 													}
+													onKeyDown={(event) => {
+														if (event.key === "Enter" || event.key === " ") {
+															event.preventDefault();
+															navigate(`/projects/${project.githubName}`);
+														}
+													}}
 													sx={{
 														display: "flex",
 														alignItems: "center",
@@ -326,62 +399,62 @@ export default function Projects({ limit, showAppBar = true }) {
 														>
 															{project.tagline}
 														</Typography>
-															<Box
+														<Box
+															sx={{
+																display: "flex",
+																alignItems: "center",
+																gap: 1.5,
+																mt: 1,
+																flexWrap: "wrap",
+															}}
+														>
+															<Typography
+																variant="overline"
 																sx={{
-																	display: "flex",
-																	alignItems: "center",
-																	gap: 1.5,
-																	mt: 1,
-																	flexWrap: "wrap",
+																	color: "secondary.main",
+																	fontSize: "0.68rem",
+																	letterSpacing: "0.12em",
+																	lineHeight: 1,
 																}}
 															>
-																<Typography
-																	variant="overline"
-																	sx={{
-																		color: "secondary.main",
-																		fontSize: "0.68rem",
-																		letterSpacing: "0.12em",
-																		lineHeight: 1,
-																	}}
-																>
-																	{project.category}
-																</Typography>
-																<Typography
-																	variant="overline"
-																	sx={{
-																		color: "text.secondary",
-																		fontSize: "0.68rem",
-																		letterSpacing: "0.12em",
-																		lineHeight: 1,
-																		opacity: 0.7,
-																	}}
-																>
-																	{year}
-																	{project.language
-																		? ` · ${project.language}`
-																		: ""}
-																</Typography>
-																
-																{/* GitHub Stats */}
-																{project.stars > 0 && (
-																	<Box sx={{ display: "flex", alignItems: "center", gap: 0.5, opacity: 0.8 }}>
-																		<Star sx={{ fontSize: "0.75rem", color: "secondary.main" }} />
-																		<Typography variant="overline" sx={{ fontSize: "0.68rem", lineHeight: 1 }}>
-																			{project.stars}
-																		</Typography>
-																	</Box>
-																)}
+																{project.category}
+															</Typography>
+															<Typography
+																variant="overline"
+																sx={{
+																	color: "text.secondary",
+																	fontSize: "0.68rem",
+																	letterSpacing: "0.12em",
+																	lineHeight: 1,
+																	opacity: 0.7,
+																}}
+															>
+																{year}
+																{project.language
+																	? ` · ${project.language}`
+																	: ""}
+															</Typography>
+															
+															{/* GitHub Stats */}
+															{project.stars > 0 && (
+																<Box sx={{ display: "flex", alignItems: "center", gap: 0.5, opacity: 0.8 }}>
+																	<Star sx={{ fontSize: "0.75rem", color: "secondary.main" }} />
+																	<Typography variant="overline" sx={{ fontSize: "0.68rem", lineHeight: 1 }}>
+																		{project.stars}
+																	</Typography>
+																</Box>
+															)}
 
-																{/* Mozilla Add-on Badge Integration */}
-																{project.addonId && (
-																	<Box 
-																		component="img" 
-																		src={`https://img.shields.io/amo/users/${project.addonId}?style=flat-square&color=${theme.palette.secondary.main.replace('#', '')}&label=USERS&labelColor=${theme.palette.primary.main.replace('#', '')}`}
-																		alt="Mozilla Users"
-																		sx={{ height: 16, opacity: 0.9 }}
-																	/>
-																)}
-															</Box>
+															{/* Mozilla Add-on Badge Integration */}
+															{project.addonId && (
+																<Box 
+																	component="img" 
+																	src={`https://img.shields.io/amo/users/${project.addonId}?style=flat-square&color=${theme.palette.secondary.main.replace('#', '')}&label=USERS&labelColor=${theme.palette.primary.main.replace('#', '')}`}
+																	alt="Mozilla Users"
+																	sx={{ height: 16, opacity: 0.9 }}
+																/>
+															)}
+														</Box>
 													</Box>
 
 													<Box

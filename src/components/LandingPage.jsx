@@ -8,7 +8,7 @@ import {
 	Grid,
 	Typography,
 } from "@mui/material";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
@@ -19,6 +19,7 @@ const Gallery = lazy(() => import("@/components/Gallery"));
 
 export default function LandingPage() {
 	const [githubStats, setGithubStats] = useState(null);
+	const shouldReduceMotion = useReducedMotion();
 
 	useEffect(() => {
 		let mounted = true;
@@ -38,12 +39,15 @@ export default function LandingPage() {
 				<Grid container spacing={4} alignItems="center">
 					<Grid size={{ xs: 12, md: 10, mdOffset: 1 }}>
 						<motion.div
-							initial={{ opacity: 0, y: 30 }}
+							initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8 }}
+							transition={
+								shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }
+							}
 						>
 							<Typography
 								variant="h2"
+								component="h1"
 								sx={{
 									fontSize: { xs: "2.5rem", md: "4rem" },
 									lineHeight: 1.1,
@@ -67,6 +71,7 @@ export default function LandingPage() {
 									color="primary"
 									component={Link}
 									to="/projects"
+									aria-label="View Manas Doshi's projects"
 								>
 									VIEW PROJECTS
 								</Button>
@@ -76,6 +81,7 @@ export default function LandingPage() {
 									href="https://flowcv.com/resume/woofkdsq4sse"
 									target="_blank"
 									rel="noopener noreferrer"
+									aria-label="Open Manas Doshi's resume in a new tab"
 								>
 									VIEW RESUME
 								</Button>
@@ -167,45 +173,15 @@ export default function LandingPage() {
 				<Divider
 					sx={{ my: 10, borderColor: "text.primary", borderWidth: "2px" }}
 				/>
-
-				{/* <Box sx={{ mt: 16 }}>
-					<Typography
-						variant="h3"
-						sx={{
-							fontFamily: '"Newsreader", serif',
-							fontWeight: 800,
-							textAlign: "center",
-							mb: 6,
-							textTransform: "uppercase",
-						}}
-					>
-						The Visual Dispatch
-					</Typography>
-					<Suspense fallback={<RouteLoader />}>
-						<Gallery limit={4} showAppBar={false} />
-					</Suspense>
-					<Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-						<Button
-							variant="outlined"
-							color="primary"
-							component={Link}
-							to="/gallery"
-							sx={{
-								fontFamily: '"Newsreader", serif',
-								fontStyle: "italic",
-								px: 4,
-							}}
-						>
-							VIEW THE FULL ARCHIVE →
-						</Button>
-					</Box>
-				</Box> */}
 			</Container>
 
 			<Box
+				component="footer"
 				sx={{
-					borderTop: "1px solid black",
+					borderTop: "1px solid",
+					borderColor: "divider",
 					py: 6,
+					px: 2,
 					textAlign: "center",
 					mt: 10,
 				}}
