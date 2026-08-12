@@ -1,21 +1,35 @@
+import { Code, GitHub, People, Star } from "@mui/icons-material";
 import {
 	Box,
 	Button,
+	Chip,
 	Container,
 	Divider,
 	Grid,
 	Typography,
 } from "@mui/material";
 import { motion } from "motion/react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { lazy, Suspense } from "react";
-
 import ButtonAppBar from "@/components/Header";
 import RouteLoader from "@/components/RouteLoader";
+import { fetchUserStats } from "@/utils/githubUtils";
 
 const Gallery = lazy(() => import("@/components/Gallery"));
 
 export default function LandingPage() {
+	const [githubStats, setGithubStats] = useState(null);
+
+	useEffect(() => {
+		let mounted = true;
+		fetchUserStats("moodynooby").then((stats) => {
+			if (mounted) setGithubStats(stats);
+		});
+		return () => {
+			mounted = false;
+		};
+	}, []);
+
 	return (
 		<Box sx={{ minHeight: "100vh", pb: 8 }}>
 			<ButtonAppBar />
@@ -47,52 +61,105 @@ export default function LandingPage() {
 								hardware-software integration, and occasionally break things
 								trying to learn.
 							</Typography>
-								<Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 6 }}>
-									<Button
-										variant="contained"
-										color="primary"
-										component={Link}
-										to="/projects"
-									>
-										VIEW PROJECTS
-									</Button>
-									<Button
-										variant="outlined"
-										color="primary"
-										href="https://flowcv.com/resume/woofkdsq4sse"
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										VIEW RESUME
-									</Button>
-								</Box>
+							<Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 6 }}>
+								<Button
+									variant="contained"
+									color="primary"
+									component={Link}
+									to="/projects"
+								>
+									VIEW PROJECTS
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									href="https://flowcv.com/resume/woofkdsq4sse"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									VIEW RESUME
+								</Button>
+							</Box>
 
-								{/* Automated GitHub Stats Card - Low Upkeep, High Impact */}
-								<Box sx={{ mt: 4, opacity: 0.9 }}>
+							{/* Native GitHub stats: fetched from GitHub's API and cached locally for 24 hours. */}
+							{githubStats && (
+								<Box
+									sx={{
+										mt: 4,
+										p: { xs: 2, sm: 3 },
+										border: "1px solid",
+										borderColor: "divider",
+										borderRadius: 2,
+										backgroundColor: "background.paper",
+										maxWidth: 680,
+									}}
+								>
 									<Box
-										component="img"
-										src="https://github-readme-stats.vercel.app/api?username=moodynooby&show_icons=true&theme=transparent&title_color=38392e&text_color=7d5d53&icon_color=7d5d53&border_color=38392e&hide_border=true&bg_color=00000000"
-										alt="GitHub Stats"
 										sx={{
-											maxWidth: "100%",
-											height: "auto",
-											display: { xs: "none", sm: "block" },
-											filter: "contrast(1.1)",
+											display: "flex",
+											alignItems: "center",
+											gap: 1,
+											mb: 2,
 										}}
-									/>
-									<Box
-										component="img"
-										src="https://github-readme-stats.vercel.app/api/top-langs/?username=moodynooby&layout=compact&theme=transparent&title_color=38392e&text_color=7d5d53&border_color=38392e&hide_border=true&bg_color=00000000"
-										alt="Top Languages"
-										sx={{
-											mt: 2,
-											maxWidth: "100%",
-											height: "auto",
-											display: { xs: "none", sm: "block" },
-											filter: "contrast(1.1)",
-										}}
-									/>
+									>
+										<GitHub fontSize="small" />
+										<Typography variant="overline" sx={{ fontWeight: 800 }}>
+											GitHub / MOOD YNOOBY
+										</Typography>
+									</Box>
+									<Grid container spacing={1.5}>
+										{[
+											{
+												label: "Repositories",
+												value: githubStats.publicRepos,
+												icon: <Code fontSize="small" />,
+											},
+											{
+												label: "Stars earned",
+												value: githubStats.totalStars,
+												icon: <Star fontSize="small" />,
+											},
+											{
+												label: "Followers",
+												value: githubStats.followers,
+												icon: <People fontSize="small" />,
+											},
+										].map((stat) => (
+											<Grid key={stat.label} size={{ xs: 4 }}>
+												<Box
+													sx={{
+														display: "flex",
+														alignItems: "center",
+														gap: 0.75,
+													}}
+												>
+													{stat.icon}
+													<Typography variant="h6" sx={{ fontWeight: 800 }}>
+														{stat.value}
+													</Typography>
+												</Box>
+												<Typography variant="caption" color="text.secondary">
+													{stat.label}
+												</Typography>
+											</Grid>
+										))}
+									</Grid>
+									{githubStats.languages.length > 0 && (
+										<Box
+											sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 2 }}
+										>
+											{githubStats.languages.map((language) => (
+												<Chip
+													key={language.name}
+													label={`${language.name} · ${language.count}`}
+													size="small"
+													variant="outlined"
+												/>
+											))}
+										</Box>
+									)}
 								</Box>
+							)}
 						</motion.div>
 					</Grid>
 				</Grid>

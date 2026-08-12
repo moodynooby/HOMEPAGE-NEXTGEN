@@ -90,6 +90,76 @@ export async function fetchRepoMetadata(repoName) {
  * @param {Array} projects - List of project objects with year property.
  * @returns {Object} - Projects grouped by year in descending order.
  */
+/**
+ * Fetches profile and repository statistics directly from GitHub.
+ * The result is cached for 24 hours so the homepage stays lightweight and low-upkeep.
+ *
+ * @param {string} username - GitHub username.
+ * @returns {Promise<{followers: number, following: number, publicRepos: number, totalStars: number, languages: Array<{name: string, count: number}>} | null>}
+ */
+export async function fetchUserStats(username) {
+	const cacheKey = `github_user_stats_v1_${username}`;
+	const cacheTimeKey = `github_user_stats_time_v1_${username}`;
+	const CACHE_DURATION = 24 * 60 * 60 * 1000;
+
+	try {
+		const cachedData = localStorage.getItem(cacheKey);
+		const cachedTime = localStorage.getItem(cacheTimeKey);
+		if (
+			cachedData &&
+			cachedTime &&
+			Date.now() - Number(cachedTime) < CACHE_DURATION
+		) {
+			return JSON.parse(cachedData);
+		}
+
+		const [profileResponse, reposResponse] = await Promise.all([
+			fetch(`https://api.github.com/users/${encodeURIComponent(username)}`),
+			fetch(
+				`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&type=owner`,
+			),
+		]);
+
+		if (!profileResponse.ok || !reposResponse.ok) {
+			throw new Error("GitHub profile request failed");
+		}
+
+		const profile = await profileResponse.json();
+		const repositories = await reposResponse.json();
+		const languageCounts = repositories.reduce((counts, repo) => {
+			if (repo.language)
+				counts[repo.language] = (counts[repo.language] || 0) + 1;
+			return counts;
+		}, {});
+
+		const stats = {
+			followers: profile.followers || 0,
+			following: profile.following || 0,
+			publicRepos: profile.public_repos || 0,
+			totalStars: repositories.reduce(
+				(total, repo) => total + (repo.stargazers_count || 0),
+				0,
+			),
+			languages: Object.entries(languageCounts)
+				.sort(([, a], [, b]) => b - a)
+				.slice(0, 5)
+				.map(([name, count]) => ({ name, count })),
+		};
+
+		localStorage.setItem(cacheKey, JSON.stringify(stats));
+		localStorage.setItem(cacheTimeKey, Date.now().toString());
+		return stats;
+	} catch (error) {
+		const cachedData = localStorage.getItem(cacheKey);
+		if (cachedData) return JSON.parse(cachedData);
+		console.warn(
+			`Failed to fetch GitHub user stats for ${username}:`,
+			error.message,
+		);
+		return null;
+	}
+}
+
 export function groupProjectsByYear(projects) {
 	const grouped = projects.reduce((acc, project) => {
 		const year = project.year || "Unknown";
