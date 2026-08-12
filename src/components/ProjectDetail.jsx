@@ -1,6 +1,15 @@
-import { ArrowBack, ArrowForward, Close, GitHub, Star, AccountTree, Download } from "@mui/icons-material";
+import {
+	AccountTree,
+	ArrowBack,
+	ArrowForward,
+	Close,
+	Download,
+	GitHub,
+	Star,
+} from "@mui/icons-material";
 import {
 	Box,
+	Chip,
 	Container,
 	Fab,
 	IconButton,
@@ -9,7 +18,6 @@ import {
 	Typography,
 	useMediaQuery,
 	useTheme,
-	Chip,
 } from "@mui/material";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
@@ -36,6 +44,7 @@ export default function ProjectDetail({ limit }) {
 	const [markdown, setMarkdown] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [repoStats, setRepoStats] = useState(null);
+	const [addonStats, setAddonStats] = useState(null);
 
 	useEffect(() => {
 		if (!project) {
@@ -55,17 +64,17 @@ export default function ProjectDetail({ limit }) {
 		const cachedContent = localStorage.getItem(cacheKey);
 		const cachedTime = localStorage.getItem(cacheTimeKey);
 
-		if (cachedContent && cachedTime) {
-			const age = Date.now() - parseInt(cachedTime, 10);
-			if (age < CACHE_DURATION) {
-				setMarkdown(cachedContent);
-				setLoading(false);
-				return;
-			}
-		}
-
-		setLoading(true);
 		const { signal } = abortControllerRef.current;
+		const hasFreshCache =
+			cachedContent &&
+			cachedTime &&
+			Date.now() - parseInt(cachedTime, 10) < CACHE_DURATION;
+
+		if (hasFreshCache) {
+			setMarkdown(cachedContent);
+			setLoading(false);
+		} else {
+			setLoading(true);
 			fetch(project.githubContentPath, { signal })
 				.then((res) => res.text())
 				.then((content) => {
@@ -82,15 +91,23 @@ export default function ProjectDetail({ limit }) {
 						setLoading(false);
 					}
 				});
+		}
 
-			// Fetch Repo Stats for Detail View
-			import("@/utils/githubUtils")
-				.then(({ fetchRepoMetadata }) => {
-					fetchRepoMetadata(project.githubName).then((stats) => {
-						if (!signal.aborted) setRepoStats(stats);
-					});
-				})
-				.catch((err) => console.error("Failed to load repo metadata:", err));
+		// Fetch GitHub and Mozilla Add-ons stats for the detail view.
+		import("@/utils/githubUtils")
+			.then(({ fetchAddonMetadata, fetchRepoMetadata }) =>
+				Promise.all([
+					fetchRepoMetadata(project.githubName),
+					project.addonId ? fetchAddonMetadata(project.addonId) : null,
+				]),
+			)
+			.then(([stats, addonStatsResult]) => {
+				if (!signal.aborted) {
+					setRepoStats(stats);
+					setAddonStats(addonStatsResult);
+				}
+			})
+			.catch((err) => console.error("Failed to load project metadata:", err));
 
 		return () => {
 			if (abortControllerRef.current) {
@@ -184,62 +201,111 @@ export default function ProjectDetail({ limit }) {
 								>
 									{project.githubName}
 								</Typography>
-									<Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
-										<IconButton
+								<Box
+									sx={{
+										display: "flex",
+										alignItems: "center",
+										gap: 2,
+										flexWrap: "wrap",
+										justifyContent: isMobile ? "center" : "flex-start",
+									}}
+								>
+									<IconButton
+										component="a"
+										href={`https://github.com/moodynooby/${project.githubName}`}
+										target="_blank"
+										rel="noopener noreferrer"
+										sx={{
+											color: "white",
+											bgcolor: "rgba(255, 255, 255, 0.15)",
+											backdropFilter: "blur(10px)",
+											"&:hover": {
+												bgcolor: "rgba(255, 255, 255, 0.25)",
+												transform: "scale(1.05)",
+											},
+											transition:
+												"transform 0.2s ease, background-color 0.2s ease",
+										}}
+									>
+										<GitHub />
+									</IconButton>
+
+									{repoStats && (
+										<Box sx={{ display: "flex", gap: 1 }}>
+											<Chip
+												icon={
+													<Star
+														sx={{
+															fontSize: "1rem !important",
+															color: "inherit !important",
+														}}
+													/>
+												}
+												label={repoStats.stars}
+												size="small"
+												sx={{
+													bgcolor: "rgba(255,255,255,0.1)",
+													color: "white",
+													backdropFilter: "blur(10px)",
+												}}
+											/>
+											<Chip
+												icon={
+													<AccountTree
+														sx={{
+															fontSize: "1rem !important",
+															color: "inherit !important",
+														}}
+													/>
+												}
+												label={repoStats.forks}
+												size="small"
+												sx={{
+													bgcolor: "rgba(255,255,255,0.1)",
+													color: "white",
+													backdropFilter: "blur(10px)",
+												}}
+											/>
+										</Box>
+									)}
+
+									{project.addonId && (
+										<Box
 											component="a"
-											href={`https://github.com/moodynooby/${project.githubName}`}
+											href={`https://addons.mozilla.org/en-US/firefox/addon/${project.addonId}/`}
 											target="_blank"
 											rel="noopener noreferrer"
 											sx={{
-												color: "white",
-												bgcolor: "rgba(255, 255, 255, 0.15)",
-												backdropFilter: "blur(10px)",
-												"&:hover": {
-													bgcolor: "rgba(255, 255, 255, 0.25)",
-													transform: "scale(1.05)",
-												},
-												transition:
-													"transform 0.2s ease, background-color 0.2s ease",
+												display: "flex",
+												alignItems: "center",
+												gap: 1,
+												flexWrap: "wrap",
 											}}
 										>
-											<GitHub />
-										</IconButton>
-
-										{repoStats && (
-											<Box sx={{ display: "flex", gap: 1 }}>
-												<Chip 
-													icon={<Star sx={{ fontSize: "1rem !important", color: "inherit !important" }} />}
-													label={repoStats.stars}
+											<Chip
+												label={`${addonStats?.averageDailyUsers?.toLocaleString() || "—"} users`}
+												size="small"
+												sx={{
+													bgcolor: "rgba(255,255,255,0.15)",
+													color: "white",
+													backdropFilter: "blur(10px)",
+												}}
+											/>
+											{addonStats && (
+												<Chip
+													label={`${addonStats.weeklyDownloads.toLocaleString()} weekly downloads`}
 													size="small"
-													sx={{ bgcolor: "rgba(255,255,255,0.1)", color: "white", backdropFilter: "blur(10px)" }}
+													sx={{
+														bgcolor: "rgba(255,255,255,0.15)",
+														color: "white",
+														backdropFilter: "blur(10px)",
+													}}
 												/>
-												<Chip 
-													icon={<AccountTree sx={{ fontSize: "1rem !important", color: "inherit !important" }} />}
-													label={repoStats.forks}
-													size="small"
-													sx={{ bgcolor: "rgba(255,255,255,0.1)", color: "white", backdropFilter: "blur(10px)" }}
-												/>
-											</Box>
-										)}
-
-										{project.addonId && (
-											<Box 
-												component="a"
-												href={`https://addons.mozilla.org/en-US/firefox/addon/${project.addonId}/`}
-												target="_blank"
-												rel="noopener noreferrer"
-												sx={{ display: "flex", alignItems: "center" }}
-											>
-												<Box 
-													component="img" 
-													src={`https://img.shields.io/amo/users/${project.addonId}?style=for-the-badge&color=fdffda&labelColor=38392e`}
-													alt="Mozilla Users"
-													sx={{ height: 28, borderRadius: 1 }}
-												/>
-											</Box>
-										)}
-									</Box>
+											)}
+										</Box>
+									)}
 								</Box>
+							</Box>
 						</Box>
 					</motion.div>
 
@@ -390,47 +456,71 @@ export default function ProjectDetail({ limit }) {
 									}}
 								>
 									{markdown}
-									</ReactMarkdown>
-								)}
+								</ReactMarkdown>
+							)}
 
-								{project.chromeStatsId && !loading && (
-									<Box sx={{ mt: 6, pt: 4, borderTop: `1px solid ${theme.palette.divider}` }}>
-										<Typography variant="h5" sx={{ fontWeight: 600, mb: 3, display: "flex", alignItems: "center", gap: 1.5 }}>
-											<Download /> Usage Trends
-										</Typography>
-										<Box
-											sx={{
+							{project.chromeStatsId && !loading && (
+								<Box
+									sx={{
+										mt: 6,
+										pt: 4,
+										borderTop: `1px solid ${theme.palette.divider}`,
+									}}
+								>
+									<Typography
+										variant="h5"
+										sx={{
+											fontWeight: 600,
+											mb: 3,
+											display: "flex",
+											alignItems: "center",
+											gap: 1.5,
+										}}
+									>
+										<Download /> Usage Trends
+									</Typography>
+									<Box
+										sx={{
+											width: "100%",
+											borderRadius: "12px",
+											overflow: "hidden",
+											boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+											bgcolor:
+												theme.palette.mode === "dark" ? "#1a1a1a" : "#fff",
+											position: "relative",
+											pb: "100%", // Aspect ratio 1:1 for the trends widget
+											height: 0,
+										}}
+									>
+										<iframe
+											src={`https://chrome-stats.com/embed/${project.chromeStatsId}/trends?theme=${theme.palette.mode}`}
+											title={`${project.githubName} Usage Trends`}
+											style={{
+												position: "absolute",
+												top: 0,
+												left: 0,
 												width: "100%",
-												borderRadius: "12px",
-												overflow: "hidden",
-												boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-												bgcolor: theme.palette.mode === "dark" ? "#1a1a1a" : "#fff",
-												position: "relative",
-												pb: "100%", // Aspect ratio 1:1 for the trends widget
-												height: 0,
+												height: "100%",
+												border: "none",
 											}}
-										>
-											<iframe
-												src={`https://chrome-stats.com/embed/${project.chromeStatsId}/trends?theme=${theme.palette.mode}`}
-												title={`${project.githubName} Usage Trends`}
-												style={{
-													position: "absolute",
-													top: 0,
-													left: 0,
-													width: "100%",
-													height: "100%",
-													border: "none",
-												}}
-											/>
-										</Box>
-										<Typography variant="caption" sx={{ mt: 2, display: "block", textAlign: "center", color: theme.palette.text.secondary }}>
-											Live usage and rating data provided by Chrome-Stats.
-										</Typography>
+										/>
 									</Box>
-								)}
-							</Paper>
-						</motion.div>
-					</Container>
+									<Typography
+										variant="caption"
+										sx={{
+											mt: 2,
+											display: "block",
+											textAlign: "center",
+											color: theme.palette.text.secondary,
+										}}
+									>
+										Live usage and rating data provided by Chrome-Stats.
+									</Typography>
+								</Box>
+							)}
+						</Paper>
+					</motion.div>
+				</Container>
 
 				{currentIndex > 0 && (
 					<Fab

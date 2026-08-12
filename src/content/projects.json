@@ -6,15 +6,15 @@
 		"tagline": "A simple, plain-text todo app that stays out of your way.",
 		"category": "Web App"
 	},
-		{
-			"githubName": "Modern-TWP",
-			"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Modern-TWP/master/readme.md",
-			"githubImg": "https://github.com/moodynooby/Modern-TWP/blob/master/src/icons/icon-256.png?raw=true",
-			"tagline": "Quicky Translate — a fast, lightweight translation extension for Firefox.",
-			"category": "Browser Extension",
-			"addonId": "modern-translate-web-pages",
-			"chromeStatsId": "modern-translate-web-pages"
-		},
+	{
+		"githubName": "Modern-TWP",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Modern-TWP/master/readme.md",
+		"githubImg": "https://github.com/moodynooby/Modern-TWP/blob/master/src/icons/icon-256.png?raw=true",
+		"tagline": "Quicky Translate — a fast, lightweight translation extension for Firefox.",
+		"category": "Browser Extension",
+		"addonId": "modern-translate-web-pages",
+		"chromeStatsId": "modern-translate-web-pages"
+	},
 	{
 		"githubName": "TaskTimer",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/TaskTimer/main/README.md",
@@ -27,37 +27,37 @@
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-darkreader/main/README.md",
 		"githubImg": "https://github.com/moodynooby/modern-darkreader/blob/main/src/icons/dr_128.png?raw=true",
 		"tagline": "Lean Dark+ — minimalist dark mode for fast, low-distraction browsing.",
-			"category": "Browser Extension",
-			"addonId": "len-dek",
-			"chromeStatsId": "len-dek"
-		},
+		"category": "Browser Extension",
+		"addonId": "len-dek",
+		"chromeStatsId": "len-dek"
+	},
 	{
 		"githubName": "Gimme-That",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gimme-That/master/Readme.md",
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/Gimme-That/master/style/icon.svg",
 		"tagline": "The minimal, no-clutter mass downloader for your browser.",
-			"category": "Browser Extension",
-			"addonId": "gimmethat",
-			"chromeStatsId": "gimmethat"
-		},
+		"category": "Browser Extension",
+		"addonId": "gimmethat",
+		"chromeStatsId": "gimmethat"
+	},
 	{
 		"githubName": "modern-speed-controller",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/firefox-port/README.md",
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/firefox-port/icons/icon.svg",
 		"tagline": "PacePlay — speed up, slow down, and skip HTML5 audio and video.",
-			"category": "Browser Extension",
-			"addonId": "paceplay-modern-controller",
-			"chromeStatsId": "paceplay-modern-controller"
-		},
+		"category": "Browser Extension",
+		"addonId": "paceplay-modern-controller",
+		"chromeStatsId": "paceplay-modern-controller"
+	},
 	{
 		"githubName": "modern-volume-booster",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/master/README.md",
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/master/icon.svg",
 		"tagline": "BoomRotary — per-tab volume control with boost up to 600%.",
-			"category": "Browser Extension",
-			"addonId": "modern-boomslider",
-			"chromeStatsId": "modern-boomslider"
-		},
+		"category": "Browser Extension",
+		"addonId": "modern-boomslider",
+		"chromeStatsId": "modern-boomslider"
+	},
 	{
 		"githubName": "Gallery-Genie",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gallery-Genie/master/README.md",
@@ -99,6 +99,24 @@
 		"githubImg": "https://github.com/moodynooby/WEB_CONTRACTOR/blob/master/img.png?raw=true",
 		"tagline": "An LLM-powered pipeline builder with a Streamlit dashboard and Telegram bot.",
 		"category": "AI Tool"
+	},
+	{
+		"githubName": "whatsapp-web-incognito",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/whatsapp-web-incognito/master/README.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/whatsapp-web-incognito/master/images/icon_128_reshaped.png",
+		"tagline": "WhatsApp Incognito — browse WhatsApp Web without read receipts or presence updates.",
+		"category": "Browser Extension",
+		"addonId": "whatsapp-incognito",
+		"chromeStatsId": "whatsapp-incognito"
+	},
+	{
+		"githubName": "nanobrowser-firefox",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/nanobrowser-firefox/master/README.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/nanobrowser-firefox/master/chrome-extension/public/icon-128.png",
+		"tagline": "NanoBrowser — an open-source AI web agent for extracting data and automating browser tasks.",
+		"category": "AI Tool",
+		"addonId": "nanobrowser-ai-web-agent",
+		"chromeStatsId": "nanobrowser-ai-web-agent"
 	},
 	{
 		"githubName": "Club-Carnival-26",

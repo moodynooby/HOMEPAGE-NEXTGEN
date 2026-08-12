@@ -160,6 +160,59 @@ export async function fetchUserStats(username) {
 	}
 }
 
+/**
+ * Fetches public Mozilla Add-ons metadata and caches it for 24 hours.
+ * This avoids third-party image badges while keeping extension metrics current.
+ *
+ * @param {string} addonId - Mozilla Add-ons slug.
+ * @returns {Promise<{averageDailyUsers: number, weeklyDownloads: number, rating: number, ratingCount: number, version: string, lastUpdated: string} | null>}
+ */
+export async function fetchAddonMetadata(addonId) {
+	const cacheKey = `amo_meta_v1_${addonId}`;
+	const cacheTimeKey = `amo_meta_time_v1_${addonId}`;
+	const CACHE_DURATION = 24 * 60 * 60 * 1000;
+
+	try {
+		const cachedData = localStorage.getItem(cacheKey);
+		const cachedTime = localStorage.getItem(cacheTimeKey);
+		if (
+			cachedData &&
+			cachedTime &&
+			Date.now() - Number(cachedTime) < CACHE_DURATION
+		) {
+			return JSON.parse(cachedData);
+		}
+
+		const response = await fetch(
+			`https://addons.mozilla.org/api/v5/addons/addon/${encodeURIComponent(addonId)}/`,
+		);
+		if (!response.ok)
+			throw new Error(`Mozilla Add-ons API error: ${response.status}`);
+
+		const data = await response.json();
+		const metadata = {
+			averageDailyUsers: data.average_daily_users || 0,
+			weeklyDownloads: data.weekly_downloads || 0,
+			rating: data.ratings?.average || 0,
+			ratingCount: data.ratings?.count || 0,
+			version: data.current_version?.version || "",
+			lastUpdated: data.last_updated || "",
+		};
+
+		localStorage.setItem(cacheKey, JSON.stringify(metadata));
+		localStorage.setItem(cacheTimeKey, Date.now().toString());
+		return metadata;
+	} catch (error) {
+		const cachedData = localStorage.getItem(cacheKey);
+		if (cachedData) return JSON.parse(cachedData);
+		console.warn(
+			`Failed to fetch Mozilla Add-ons metadata for ${addonId}:`,
+			error.message,
+		);
+		return null;
+	}
+}
+
 export function groupProjectsByYear(projects) {
 	const grouped = projects.reduce((acc, project) => {
 		const year = project.year || "Unknown";

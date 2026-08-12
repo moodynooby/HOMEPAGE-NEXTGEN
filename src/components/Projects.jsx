@@ -1,15 +1,22 @@
-import { ArrowForward, Star, Download, Visibility, PushPin, Schedule } from "@mui/icons-material";
+import {
+	ArrowForward,
+	Download,
+	PushPin,
+	Schedule,
+	Star,
+	Visibility,
+} from "@mui/icons-material";
 import {
 	Alert,
+	alpha,
 	Box,
 	Chip,
 	Container,
 	Skeleton,
+	Tooltip,
 	Typography,
 	useMediaQuery,
 	useTheme,
-	Tooltip,
-	alpha,
 } from "@mui/material";
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
@@ -17,7 +24,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
 import projectsData from "@/content/projects.json";
-import { fetchRepoMetadata, groupProjectsByYear } from "@/utils/githubUtils";
+import {
+	fetchAddonMetadata,
+	fetchRepoMetadata,
+	groupProjectsByYear,
+} from "@/utils/githubUtils";
 
 const MotionBox = motion.create(Box);
 
@@ -38,7 +49,10 @@ export default function Projects({ limit, showAppBar = true }) {
 			try {
 				const projectsWithMetadata = await Promise.all(
 					projectsData.map(async (project) => {
-						const metadata = await fetchRepoMetadata(project.githubName);
+						const [metadata, addonMetadata] = await Promise.all([
+							fetchRepoMetadata(project.githubName),
+							project.addonId ? fetchAddonMetadata(project.addonId) : null,
+						]);
 						return {
 							...project,
 							year: metadata?.year || new Date().getFullYear(),
@@ -46,6 +60,7 @@ export default function Projects({ limit, showAppBar = true }) {
 							language: metadata?.language || "",
 							stars: metadata?.stars || 0,
 							forks: metadata?.forks || 0,
+							addonMetadata,
 						};
 					}),
 				);
@@ -136,6 +151,14 @@ export default function Projects({ limit, showAppBar = true }) {
 		activeCategory === "All"
 			? projects
 			: projects.filter((project) => project.category === activeCategory);
+	const totalStars = projects.reduce(
+		(total, project) => total + project.stars,
+		0,
+	);
+	const totalAddonUsers = projects.reduce(
+		(total, project) => total + (project.addonMetadata?.averageDailyUsers || 0),
+		0,
+	);
 
 	const groupedProjects = groupProjectsByYear(filteredProjects);
 	const years = Object.keys(groupedProjects).sort((a, b) => {
@@ -170,12 +193,20 @@ export default function Projects({ limit, showAppBar = true }) {
 							variant="h2"
 							sx={{
 								textAlign: "center",
-								mb: 12,
+								mb: 3,
 								textTransform: "uppercase",
 								letterSpacing: "-0.02em",
 							}}
 						>
 							The Personal Project Ledger
+						</Typography>
+						<Typography
+							variant="body2"
+							color="text.secondary"
+							sx={{ textAlign: "center", mb: 10 }}
+						>
+							{projects.length} projects · {totalStars} GitHub stars ·{" "}
+							{totalAddonUsers.toLocaleString()} active Firefox users
 						</Typography>
 					</motion.div>
 
@@ -434,25 +465,67 @@ export default function Projects({ limit, showAppBar = true }) {
 																	? ` · ${project.language}`
 																	: ""}
 															</Typography>
-															
+
 															{/* GitHub Stats */}
 															{project.stars > 0 && (
-																<Box sx={{ display: "flex", alignItems: "center", gap: 0.5, opacity: 0.8 }}>
-																	<Star sx={{ fontSize: "0.75rem", color: "secondary.main" }} />
-																	<Typography variant="overline" sx={{ fontSize: "0.68rem", lineHeight: 1 }}>
+																<Box
+																	sx={{
+																		display: "flex",
+																		alignItems: "center",
+																		gap: 0.5,
+																		opacity: 0.8,
+																	}}
+																>
+																	<Star
+																		sx={{
+																			fontSize: "0.75rem",
+																			color: "secondary.main",
+																		}}
+																	/>
+																	<Typography
+																		variant="overline"
+																		sx={{ fontSize: "0.68rem", lineHeight: 1 }}
+																	>
 																		{project.stars}
 																	</Typography>
 																</Box>
 															)}
 
-															{/* Mozilla Add-on Badge Integration */}
-															{project.addonId && (
-																<Box 
-																	component="img" 
-																	src={`https://img.shields.io/amo/users/${project.addonId}?style=flat-square&color=${theme.palette.secondary.main.replace('#', '')}&label=USERS&labelColor=${theme.palette.primary.main.replace('#', '')}`}
-																	alt="Mozilla Users"
-																	sx={{ height: 16, opacity: 0.9 }}
-																/>
+															{/* Native Mozilla Add-ons metrics */}
+															{project.addonMetadata && (
+																<Box
+																	sx={{
+																		display: "flex",
+																		alignItems: "center",
+																		gap: 0.75,
+																		flexWrap: "wrap",
+																	}}
+																>
+																	<Download
+																		sx={{
+																			fontSize: "0.8rem",
+																			color: "secondary.main",
+																		}}
+																	/>
+																	<Typography
+																		variant="overline"
+																		sx={{ fontSize: "0.68rem", lineHeight: 1 }}
+																	>
+																		{project.addonMetadata.averageDailyUsers.toLocaleString()}{" "}
+																		users
+																	</Typography>
+																	<Typography
+																		variant="overline"
+																		sx={{
+																			fontSize: "0.68rem",
+																			lineHeight: 1,
+																			opacity: 0.7,
+																		}}
+																	>
+																		{project.addonMetadata.weeklyDownloads.toLocaleString()}{" "}
+																		weekly downloads
+																	</Typography>
+																</Box>
 															)}
 														</Box>
 													</Box>
