@@ -6,13 +6,15 @@
 		"tagline": "A simple, plain-text todo app that stays out of your way.",
 		"category": "Web App"
 	},
-	{
-		"githubName": "Modern-TWP",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Modern-TWP/master/readme.md",
-		"githubImg": "https://github.com/moodynooby/Modern-TWP/blob/master/src/icons/icon-256.png?raw=true",
-		"tagline": "Quicky Translate — a fast, lightweight translation extension for Firefox.",
-		"category": "Browser Extension"
-	},
+		{
+			"githubName": "Modern-TWP",
+			"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Modern-TWP/master/readme.md",
+			"githubImg": "https://github.com/moodynooby/Modern-TWP/blob/master/src/icons/icon-256.png?raw=true",
+			"tagline": "Quicky Translate — a fast, lightweight translation extension for Firefox.",
+			"category": "Browser Extension",
+			"addonId": "modern-translate-web-pages",
+			"chromeStatsId": "modern-translate-web-pages"
+		},
 	{
 		"githubName": "TaskTimer",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/TaskTimer/main/README.md",
@@ -25,33 +27,37 @@
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-darkreader/main/README.md",
 		"githubImg": "https://github.com/moodynooby/modern-darkreader/blob/main/src/icons/dr_128.png?raw=true",
 		"tagline": "Lean Dark+ — minimalist dark mode for fast, low-distraction browsing.",
-		"category": "Browser Extension",
-		"addonId": "len-dek"
-	},
+			"category": "Browser Extension",
+			"addonId": "len-dek",
+			"chromeStatsId": "len-dek"
+		},
 	{
 		"githubName": "Gimme-That",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gimme-That/master/Readme.md",
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/Gimme-That/master/style/icon.svg",
 		"tagline": "The minimal, no-clutter mass downloader for your browser.",
-		"category": "Browser Extension",
-		"addonId": "gimmethat"
-	},
+			"category": "Browser Extension",
+			"addonId": "gimmethat",
+			"chromeStatsId": "gimmethat"
+		},
 	{
 		"githubName": "modern-speed-controller",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/firefox-port/README.md",
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/modern-speed-controller/firefox-port/icons/icon.svg",
 		"tagline": "PacePlay — speed up, slow down, and skip HTML5 audio and video.",
-		"category": "Browser Extension",
-		"addonId": "paceplay-modern-controller"
-	},
+			"category": "Browser Extension",
+			"addonId": "paceplay-modern-controller",
+			"chromeStatsId": "paceplay-modern-controller"
+		},
 	{
 		"githubName": "modern-volume-booster",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/master/README.md",
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/modern-volume-booster/master/icon.svg",
 		"tagline": "BoomRotary — per-tab volume control with boost up to 600%.",
-		"category": "Browser Extension",
-		"addonId": "modern-boomslider"
-	},
+			"category": "Browser Extension",
+			"addonId": "modern-boomslider",
+			"chromeStatsId": "modern-boomslider"
+		},
 	{
 		"githubName": "Gallery-Genie",
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Gallery-Genie/master/README.md",

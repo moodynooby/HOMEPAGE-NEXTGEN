@@ -47,25 +47,52 @@ export default function LandingPage() {
 								hardware-software integration, and occasionally break things
 								trying to learn.
 							</Typography>
-							<Box sx={{ display: "flex", gap: 2 }}>
-								<Button
-									variant="contained"
-									color="primary"
-									component={Link}
-									to="/projects"
-								>
-									VIEW PROJECTS
-								</Button>
-								<Button
-									variant="outlined"
-									color="primary"
-									href="https://flowcv.com/resume/woofkdsq4sse"
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									VIEW RESUME
-								</Button>
-							</Box>
+								<Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 6 }}>
+									<Button
+										variant="contained"
+										color="primary"
+										component={Link}
+										to="/projects"
+									>
+										VIEW PROJECTS
+									</Button>
+									<Button
+										variant="outlined"
+										color="primary"
+										href="https://flowcv.com/resume/woofkdsq4sse"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										VIEW RESUME
+									</Button>
+								</Box>
+
+								{/* Automated GitHub Stats Card - Low Upkeep, High Impact */}
+								<Box sx={{ mt: 4, opacity: 0.9 }}>
+									<Box
+										component="img"
+										src="https://github-readme-stats.vercel.app/api?username=moodynooby&show_icons=true&theme=transparent&title_color=38392e&text_color=7d5d53&icon_color=7d5d53&border_color=38392e&hide_border=true&bg_color=00000000"
+										alt="GitHub Stats"
+										sx={{
+											maxWidth: "100%",
+											height: "auto",
+											display: { xs: "none", sm: "block" },
+											filter: "contrast(1.1)",
+										}}
+									/>
+									<Box
+										component="img"
+										src="https://github-readme-stats.vercel.app/api/top-langs/?username=moodynooby&layout=compact&theme=transparent&title_color=38392e&text_color=7d5d53&border_color=38392e&hide_border=true&bg_color=00000000"
+										alt="Top Languages"
+										sx={{
+											mt: 2,
+											maxWidth: "100%",
+											height: "auto",
+											display: { xs: "none", sm: "block" },
+											filter: "contrast(1.1)",
+										}}
+									/>
+								</Box>
 						</motion.div>
 					</Grid>
 				</Grid>

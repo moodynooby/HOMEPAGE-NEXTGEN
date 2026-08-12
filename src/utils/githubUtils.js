@@ -3,11 +3,11 @@
  * Caches results in localStorage for 7 days to avoid rate limits.
  *
  * @param {string} repoName - The name of the repository (moodynooby/{repoName}).
- * @returns {Promise<{created_at: string, pushed_at: string, year: number, language: string} | null>}
+ * @returns {Promise<{created_at: string, pushed_at: string, year: number, language: string, stars: number, forks: number, watchers: number} | null>}
  */
 export async function fetchRepoMetadata(repoName) {
-	const cacheKey = `github_meta_v2_${repoName}`;
-	const cacheTimeKey = `github_meta_time_v2_${repoName}`;
+	const cacheKey = `github_meta_v3_${repoName}`;
+	const cacheTimeKey = `github_meta_time_v3_${repoName}`;
 	const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 	try {
@@ -38,6 +38,9 @@ export async function fetchRepoMetadata(repoName) {
 					pushed_at: null,
 					year: new Date().getFullYear(),
 					language: null,
+					stars: 0,
+					forks: 0,
+					watchers: 0,
 				};
 			}
 			throw new Error(`GitHub API error: ${response.statusText}`);
@@ -49,6 +52,9 @@ export async function fetchRepoMetadata(repoName) {
 			pushed_at: data.pushed_at,
 			year: new Date(data.created_at).getFullYear(),
 			language: data.language,
+			stars: data.stargazers_count || 0,
+			forks: data.forks_count || 0,
+			watchers: data.watchers_count || 0,
 		};
 
 		localStorage.setItem(cacheKey, JSON.stringify(metadata));
@@ -71,6 +77,9 @@ export async function fetchRepoMetadata(repoName) {
 			pushed_at: null,
 			year: new Date().getFullYear(),
 			language: null,
+			stars: 0,
+			forks: 0,
+			watchers: 0,
 		};
 	}
 }

@@ -1,4 +1,4 @@
-import { ArrowForward } from "@mui/icons-material";
+import { ArrowForward, Star, Download, Visibility } from "@mui/icons-material";
 import {
 	Box,
 	Chip,
@@ -7,6 +7,7 @@ import {
 	Typography,
 	useMediaQuery,
 	useTheme,
+	Tooltip,
 } from "@mui/material";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
@@ -31,12 +32,14 @@ export default function Projects({ limit, showAppBar = true }) {
 			const projectsWithMetadata = await Promise.all(
 				projectsData.map(async (project) => {
 					const metadata = await fetchRepoMetadata(project.githubName);
-					return {
-						...project,
-						year: metadata?.year || new Date().getFullYear(),
-						date: metadata?.created_at || "",
-						language: metadata?.language || "",
-					};
+						return {
+							...project,
+							year: metadata?.year || new Date().getFullYear(),
+							date: metadata?.created_at || "",
+							language: metadata?.language || "",
+							stars: metadata?.stars || 0,
+							forks: metadata?.forks || 0,
+						};
 				}),
 			);
 			const sortedProjects = projectsWithMetadata.sort(
@@ -323,42 +326,62 @@ export default function Projects({ limit, showAppBar = true }) {
 														>
 															{project.tagline}
 														</Typography>
-														<Box
-															sx={{
-																display: "flex",
-																alignItems: "center",
-																gap: 1.5,
-																mt: 1,
-																flexWrap: "wrap",
-															}}
-														>
-															<Typography
-																variant="overline"
+															<Box
 																sx={{
-																	color: "secondary.main",
-																	fontSize: "0.68rem",
-																	letterSpacing: "0.12em",
-																	lineHeight: 1,
+																	display: "flex",
+																	alignItems: "center",
+																	gap: 1.5,
+																	mt: 1,
+																	flexWrap: "wrap",
 																}}
 															>
-																{project.category}
-															</Typography>
-															<Typography
-																variant="overline"
-																sx={{
-																	color: "text.secondary",
-																	fontSize: "0.68rem",
-																	letterSpacing: "0.12em",
-																	lineHeight: 1,
-																	opacity: 0.7,
-																}}
-															>
-																{year}
-																{project.language
-																	? ` · ${project.language}`
-																	: ""}
-															</Typography>
-														</Box>
+																<Typography
+																	variant="overline"
+																	sx={{
+																		color: "secondary.main",
+																		fontSize: "0.68rem",
+																		letterSpacing: "0.12em",
+																		lineHeight: 1,
+																	}}
+																>
+																	{project.category}
+																</Typography>
+																<Typography
+																	variant="overline"
+																	sx={{
+																		color: "text.secondary",
+																		fontSize: "0.68rem",
+																		letterSpacing: "0.12em",
+																		lineHeight: 1,
+																		opacity: 0.7,
+																	}}
+																>
+																	{year}
+																	{project.language
+																		? ` · ${project.language}`
+																		: ""}
+																</Typography>
+																
+																{/* GitHub Stats */}
+																{project.stars > 0 && (
+																	<Box sx={{ display: "flex", alignItems: "center", gap: 0.5, opacity: 0.8 }}>
+																		<Star sx={{ fontSize: "0.75rem", color: "secondary.main" }} />
+																		<Typography variant="overline" sx={{ fontSize: "0.68rem", lineHeight: 1 }}>
+																			{project.stars}
+																		</Typography>
+																	</Box>
+																)}
+
+																{/* Mozilla Add-on Badge Integration */}
+																{project.addonId && (
+																	<Box 
+																		component="img" 
+																		src={`https://img.shields.io/amo/users/${project.addonId}?style=flat-square&color=${theme.palette.secondary.main.replace('#', '')}&label=USERS&labelColor=${theme.palette.primary.main.replace('#', '')}`}
+																		alt="Mozilla Users"
+																		sx={{ height: 16, opacity: 0.9 }}
+																	/>
+																)}
+															</Box>
 													</Box>
 
 													<Box
