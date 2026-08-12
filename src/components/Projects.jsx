@@ -1,8 +1,11 @@
 import {
 	ArrowForward,
 	Download,
+	GitHub,
+	OpenInNew,
 	PushPin,
 	Schedule,
+	Search,
 	Star,
 	Visibility,
 } from "@mui/icons-material";
@@ -10,9 +13,12 @@ import {
 	Alert,
 	alpha,
 	Box,
+	Button,
 	Chip,
 	Container,
+	InputAdornment,
 	Skeleton,
+	TextField,
 	Tooltip,
 	Typography,
 	useMediaQuery,
@@ -40,6 +46,7 @@ export default function Projects({ limit, showAppBar = true }) {
 	const [loading, setLoading] = useState(true);
 	const [loadError, setLoadError] = useState("");
 	const [activeCategory, setActiveCategory] = useState("All");
+	const [searchQuery, setSearchQuery] = useState("");
 	const shouldReduceMotion = useReducedMotion();
 
 	useEffect(() => {
@@ -69,7 +76,11 @@ export default function Projects({ limit, showAppBar = true }) {
 				);
 
 				if (isMounted) {
-					setProjects(limit ? sortedProjects.slice(0, limit) : sortedProjects);
+					const featuredFirst = [
+						...sortedProjects.filter((project) => project.featured),
+						...sortedProjects.filter((project) => !project.featured),
+					];
+					setProjects(limit ? featuredFirst.slice(0, limit) : featuredFirst);
 					setLoadError("");
 				}
 			} catch (error) {
@@ -147,10 +158,20 @@ export default function Projects({ limit, showAppBar = true }) {
 		"All",
 		...categoryOrder.filter((category) => categoryCounts[category]),
 	];
-	const filteredProjects =
-		activeCategory === "All"
-			? projects
-			: projects.filter((project) => project.category === activeCategory);
+	const normalizedQuery = searchQuery.trim().toLowerCase();
+	const matchesQuery = (project) =>
+		!normalizedQuery ||
+		[project.githubName, project.tagline, project.category, project.language]
+			.filter(Boolean)
+			.some((value) => value.toLowerCase().includes(normalizedQuery));
+	const featuredProjects = projects
+		.filter((project) => project.featured)
+		.slice(0, 3);
+	const filteredProjects = projects.filter(
+		(project) =>
+			(activeCategory === "All" || project.category === activeCategory) &&
+			matchesQuery(project),
+	);
 	const totalStars = projects.reduce(
 		(total, project) => total + project.stars,
 		0,
@@ -159,6 +180,13 @@ export default function Projects({ limit, showAppBar = true }) {
 		(total, project) => total + (project.addonMetadata?.averageDailyUsers || 0),
 		0,
 	);
+	const technologyMix = Object.entries(
+		projects.reduce((counts, project) => {
+			const technology = project.language || project.category;
+			counts[technology] = (counts[technology] || 0) + 1;
+			return counts;
+		}, {}),
+	).sort(([, countA], [, countB]) => countB - countA);
 
 	const groupedProjects = groupProjectsByYear(filteredProjects);
 	const years = Object.keys(groupedProjects).sort((a, b) => {
@@ -209,6 +237,146 @@ export default function Projects({ limit, showAppBar = true }) {
 							{totalAddonUsers.toLocaleString()} active Firefox users
 						</Typography>
 					</motion.div>
+
+					{technologyMix.length > 0 && (
+						<Box
+							sx={{
+								display: "flex",
+								justifyContent: "center",
+								gap: 1,
+								flexWrap: "wrap",
+								mb: 5,
+							}}
+						>
+							{technologyMix.slice(0, 6).map(([technology, count]) => (
+								<Chip
+									key={technology}
+									label={`${technology} · ${count}`}
+									size="small"
+									variant="outlined"
+								/>
+							))}
+						</Box>
+					)}
+
+					<TextField
+						fullWidth
+						value={searchQuery}
+						onChange={(event) => setSearchQuery(event.target.value)}
+						placeholder="Search projects, categories, or technologies"
+						aria-label="Search projects"
+						sx={{ maxWidth: 680, display: "block", mx: "auto", mb: 5 }}
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<Search fontSize="small" />
+								</InputAdornment>
+							),
+						}}
+					/>
+
+					{!normalizedQuery && featuredProjects.length > 0 && (
+						<Box sx={{ mb: 8 }}>
+							<Typography
+								variant="h4"
+								sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+							>
+								<PushPin color="secondary" /> Featured Projects
+							</Typography>
+							<Box
+								sx={{
+									display: "grid",
+									gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+									gap: 2,
+								}}
+							>
+								{featuredProjects.map((project) => (
+									<Box
+										key={project.githubName}
+										component="article"
+										onClick={() => navigate(`/projects/${project.githubName}`)}
+										onKeyDown={(event) => {
+											if (event.key === "Enter" || event.key === " ") {
+												navigate(`/projects/${project.githubName}`);
+											}
+										}}
+										tabIndex={0}
+										role="button"
+										sx={{
+											p: 2.5,
+											border: "1px solid",
+											borderColor: "divider",
+											cursor: "pointer",
+											transition:
+												"transform 0.2s ease, background-color 0.2s ease",
+											"&:hover": {
+												transform: "translateY(-4px)",
+												bgcolor: "action.hover",
+											},
+										}}
+									>
+										<Box
+											sx={{
+												display: "flex",
+												alignItems: "center",
+												gap: 1.5,
+												mb: 1.5,
+											}}
+										>
+											<Box
+												component="img"
+												src={project.githubImg}
+												alt=""
+												sx={{ width: 44, height: 44, objectFit: "contain" }}
+											/>
+											<Typography variant="h6">{project.githubName}</Typography>
+										</Box>
+										<Typography
+											variant="body2"
+											color="text.secondary"
+											sx={{ lineHeight: 1.6 }}
+										>
+											{project.tagline}
+										</Typography>
+										<Typography
+											variant="overline"
+											color="secondary.main"
+											sx={{ display: "block", mt: 2 }}
+										>
+											{project.category}
+										</Typography>
+										<Box
+											sx={{ display: "flex", gap: 1, mt: 2, flexWrap: "wrap" }}
+											onClick={(event) => event.stopPropagation()}
+										>
+											<Button
+												component="a"
+												href={`https://github.com/moodynooby/${project.githubName}`}
+												target="_blank"
+												rel="noopener noreferrer"
+												size="small"
+												startIcon={<GitHub fontSize="small" />}
+											>
+												Code
+											</Button>
+											{project.addonId && (
+												<Button
+													component="a"
+													href={`https://addons.mozilla.org/en-US/firefox/addon/${project.addonId}/`}
+													target="_blank"
+													rel="noopener noreferrer"
+													size="small"
+													startIcon={<OpenInNew fontSize="small" />}
+												>
+													Firefox Add-on
+												</Button>
+											)}
+										</Box>
+									</Box>
+								))}
+							</Box>
+						</Box>
+					)}
 
 					<Box
 						sx={{

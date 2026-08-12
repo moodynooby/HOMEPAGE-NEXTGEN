@@ -88,6 +88,7 @@
 	},
 	{
 		"githubName": "Course-Market",
+		"featured": true,
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Course-Market/main/README.md",
 		"githubImg": "https://github.com/moodynooby/Course-Market/blob/main/public/apple-touch-icon.png?raw=true",
 		"tagline": "AuraIsHub — course scheduling and section trading, built because registration is a mess.",
@@ -106,6 +107,7 @@
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/whatsapp-web-incognito/master/images/icon_128_reshaped.png",
 		"tagline": "WhatsApp Incognito — browse WhatsApp Web without read receipts or presence updates.",
 		"category": "Browser Extension",
+		"featured": true,
 		"addonId": "whatsapp-incognito",
 		"chromeStatsId": "whatsapp-incognito"
 	},
@@ -115,6 +117,7 @@
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/nanobrowser-firefox/master/chrome-extension/public/icon-128.png",
 		"tagline": "NanoBrowser — an open-source AI web agent for extracting data and automating browser tasks.",
 		"category": "AI Tool",
+		"featured": true,
 		"addonId": "nanobrowser-ai-web-agent",
 		"chromeStatsId": "nanobrowser-ai-web-agent"
 	},
