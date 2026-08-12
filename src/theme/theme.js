@@ -7,22 +7,24 @@ const getDesignTokens = (mode) => {
 		palette: {
 			mode,
 			primary: {
-				main: isLight ? "#5f5e5e" : "#fdffda",
-				dark: isLight ? "#38392e" : "#f1f3c3",
-				contrastText: isLight ? "#fdffda" : "#38392e",
+				main: isLight ? "#1f2933" : "#f4efe4",
+				dark: isLight ? "#101820" : "#fffaf0",
+				contrastText: isLight ? "#fffaf0" : "#1f2933",
 			},
 			secondary: {
-				main: isLight ? "#7d5d53" : "#a6827a",
+				main: isLight ? "#c06c4f" : "#e0a083",
+				light: isLight ? "#e7a98d" : "#f0bba5",
+				dark: isLight ? "#934c37" : "#b86e55",
 			},
 			background: {
-				default: isLight ? "#fdffda" : "#282a21",
-				paper: isLight ? "#fdffda" : "#282a21",
+				default: isLight ? "#f7f4ed" : "#111820",
+				paper: isLight ? "#fffdf8" : "#19232d",
 			},
 			text: {
-				primary: isLight ? "#38392e" : "#fdffda",
-				secondary: isLight ? "#7d5d53" : "#a6827a",
+				primary: isLight ? "#1f2933" : "#f7f4ed",
+				secondary: isLight ? "#66717d" : "#b8c1c9",
 			},
-			divider: isLight ? "rgba(56, 57, 46, 0.1)" : "rgba(253, 255, 218, 0.15)",
+			divider: isLight ? "rgba(31, 41, 51, 0.14)" : "rgba(247, 244, 237, 0.16)",
 		},
 		typography: {
 			fontFamily: '"Noto Serif", serif',
@@ -75,7 +77,7 @@ const getDesignTokens = (mode) => {
 			},
 		},
 		shape: {
-			borderRadius: 0,
+			borderRadius: 12,
 		},
 		components: {
 			MuiCssBaseline: {
@@ -94,9 +96,9 @@ const getDesignTokens = (mode) => {
 						WebkitFontSmoothing: "antialiased",
 						MozOsxFontSmoothing: "grayscale",
 						transition: "background-color 0.4s ease, color 0.4s ease",
-						backgroundImage: 'url("/noise.webp")',
-						backgroundBlendMode: "soft-light",
-						backgroundSize: "150px 150px",
+						backgroundImage: `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.025)}, transparent 360px), url("/noise.webp")`,
+						backgroundBlendMode: "normal, soft-light",
+						backgroundSize: "100% 100%, 150px 150px",
 					},
 					"::-webkit-scrollbar": {
 						width: "8px",
@@ -119,13 +121,14 @@ const getDesignTokens = (mode) => {
 			},
 			MuiButton: {
 				styleOverrides: {
-					root: () => ({
-						borderRadius: 0,
-						padding: "8px 20px",
-						boxShadow: "none",
+					root: ({ theme }) => ({
+						borderRadius: 8,
+						padding: "10px 18px",
+						boxShadow: `0 6px 18px ${alpha(theme.palette.primary.main, 0.08)}`,
+						transition: "transform 0.2s ease, box-shadow 0.2s ease",
 						"&:hover": {
-							boxShadow: "none",
-							transform: "translateY(-1px)",
+							boxShadow: `0 10px 24px ${alpha(theme.palette.primary.main, 0.14)}`,
+							transform: "translateY(-2px)",
 						},
 					}),
 					containedPrimary: ({ theme }) => ({
@@ -156,7 +159,7 @@ const getDesignTokens = (mode) => {
 					root: ({ theme }) => ({
 						backgroundImage: "none",
 						backgroundColor: theme.palette.background.paper,
-						boxShadow: "none",
+						boxShadow: `0 10px 30px ${alpha(theme.palette.text.primary, 0.06)}`,
 						border: `1px solid ${theme.palette.divider}`,
 					}),
 					elevation1: {
@@ -168,7 +171,7 @@ const getDesignTokens = (mode) => {
 				styleOverrides: {
 					root: ({ theme }) => ({
 						backgroundColor: alpha(theme.palette.background.default, 0.85),
-						backdropFilter: "blur(12px)",
+						backdropFilter: "blur(16px) saturate(140%)",
 						backgroundImage: "none",
 						color: theme.palette.text.primary,
 						borderBottom: `1px solid ${theme.palette.divider}`,
@@ -179,14 +182,16 @@ const getDesignTokens = (mode) => {
 			MuiCard: {
 				styleOverrides: {
 					root: ({ theme: _theme }) => ({
-						borderRadius: 0,
+						borderRadius: 16,
 						border: `1px solid ${_theme.palette.divider}`,
 						backgroundColor: _theme.palette.background.paper,
+						boxShadow: `0 12px 40px ${alpha(_theme.palette.text.primary, 0.05)}`,
 						transition:
 							"border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease",
 						"&:hover": {
-							borderColor: alpha(_theme.palette.primary.main, 0.3),
-							backgroundColor: alpha(_theme.palette.divider, 0.05),
+							borderColor: alpha(_theme.palette.secondary.main, 0.55),
+							backgroundColor: alpha(_theme.palette.secondary.main, 0.04),
+							boxShadow: `0 18px 48px ${alpha(_theme.palette.text.primary, 0.1)}`,
 						},
 					}),
 				},
@@ -194,7 +199,7 @@ const getDesignTokens = (mode) => {
 			MuiChip: {
 				styleOverrides: {
 					root: ({ theme: _theme }) => ({
-						borderRadius: 0,
+						borderRadius: 999,
 						fontFamily: '"Work Sans Variable", sans-serif',
 						fontSize: "0.75rem",
 						fontWeight: 700,
@@ -209,6 +214,21 @@ const getDesignTokens = (mode) => {
 						fontFamily: '"Noto Serif", serif',
 						"&:after": {
 							borderBottomColor: _theme.palette.primary.main,
+						},
+					}),
+				},
+			},
+			MuiOutlinedInput: {
+				styleOverrides: {
+					root: ({ theme }) => ({
+						borderRadius: 10,
+						backgroundColor: alpha(theme.palette.background.paper, 0.65),
+						"&:hover .MuiOutlinedInput-notchedOutline": {
+							borderColor: alpha(theme.palette.secondary.main, 0.7),
+						},
+						"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+							borderWidth: 2,
+							borderColor: theme.palette.secondary.main,
 						},
 					}),
 				},
