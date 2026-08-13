@@ -173,7 +173,11 @@ export default function LandingPage() {
 				</Grid>
 
 				<Divider
-					sx={{ my: 10, borderColor: "text.primary", borderWidth: "2px" }}
+					sx={{
+						my: { xs: 5, md: 10 },
+						borderColor: "text.primary",
+						borderWidth: "2px",
+					}}
 				/>
 			</Container>
 

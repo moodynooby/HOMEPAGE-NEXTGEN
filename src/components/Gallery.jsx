@@ -130,11 +130,13 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 								variant="h2"
 								sx={{
 									textAlign: "center",
-									mb: 8,
+									mb: { xs: 3, md: 8 },
 									fontFamily: '"Newsreader", serif',
 									fontWeight: 800,
 									textTransform: "uppercase",
 									letterSpacing: "-0.02em",
+									fontSize: { xs: "1.9rem", sm: "2.5rem", md: "3.25rem" },
+									lineHeight: 1.15,
 								}}
 							>
 								The Visual Archive
@@ -143,7 +145,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 								variant="body1"
 								sx={{
 									textAlign: "center",
-									mb: 12,
+									mb: { xs: 6, md: 12 },
 									fontFamily: '"Noto Serif", serif',
 									fontStyle: "italic",
 									opacity: 0.7,

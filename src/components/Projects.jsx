@@ -224,6 +224,8 @@ export default function Projects({ limit, showAppBar = true }) {
 								mb: 3,
 								textTransform: "uppercase",
 								letterSpacing: "-0.02em",
+								fontSize: { xs: "1.9rem", sm: "2.5rem", md: "3.25rem" },
+								lineHeight: 1.15,
 							}}
 						>
 							The Personal Project Ledger
@@ -231,7 +233,7 @@ export default function Projects({ limit, showAppBar = true }) {
 						<Typography
 							variant="body2"
 							color="text.secondary"
-							sx={{ textAlign: "center", mb: 10 }}
+							sx={{ textAlign: "center", mb: { xs: 5, md: 10 } }}
 						>
 							{projects.length} projects · {totalStars} GitHub stars ·{" "}
 							{totalAddonUsers.toLocaleString()} active Firefox users
@@ -276,10 +278,16 @@ export default function Projects({ limit, showAppBar = true }) {
 					/>
 
 					{!normalizedQuery && featuredProjects.length > 0 && (
-						<Box sx={{ mb: 8 }}>
+						<Box sx={{ mb: { xs: 5, md: 8 } }}>
 							<Typography
 								variant="h4"
-								sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+								sx={{
+									display: "flex",
+									alignItems: "center",
+									gap: 1,
+									mb: 3,
+									fontSize: { xs: "1.35rem", md: "2rem" },
+								}}
 							>
 								<PushPin color="secondary" /> Featured Projects
 							</Typography>
@@ -429,7 +437,7 @@ export default function Projects({ limit, showAppBar = true }) {
 								<Box
 									key={year}
 									sx={{
-										mb: 12,
+										mb: { xs: 6, md: 12 },
 										display: "flex",
 										flexDirection: "column",
 										alignItems: "center",
@@ -509,7 +517,7 @@ export default function Projects({ limit, showAppBar = true }) {
 														alignItems: "center",
 														gap: { xs: 2.5, md: 4 },
 														py: { xs: 2.5, md: 3.5 },
-														px: { xs: 1, md: 2 },
+														px: { xs: 1.5, md: 2 },
 														cursor: "pointer",
 														borderTop: "1px solid",
 														borderColor: "divider",
