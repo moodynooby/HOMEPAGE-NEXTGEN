@@ -4,7 +4,8 @@
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Todo.Txt/main/README.md",
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/Todo.Txt/main/public/todotxt2.svg",
 		"tagline": "A simple, plain-text todo app that stays out of your way.",
-		"category": "Web App"
+		"category": "Web App",
+		"featured": true
 	},
 	{
 		"githubName": "Modern-TWP",
@@ -56,7 +57,8 @@
 		"tagline": "BoomRotary — per-tab volume control with boost up to 600%.",
 		"category": "Browser Extension",
 		"addonId": "modern-boomslider",
-		"chromeStatsId": "modern-boomslider"
+		"chromeStatsId": "modern-boomslider",
+		"featured": true
 	},
 	{
 		"githubName": "Gallery-Genie",
@@ -107,7 +109,6 @@
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/whatsapp-web-incognito/master/images/icon_128_reshaped.png",
 		"tagline": "WhatsApp Incognito — browse WhatsApp Web without read receipts or presence updates.",
 		"category": "Browser Extension",
-		"featured": true,
 		"addonId": "whatsapp-incognito",
 		"chromeStatsId": "whatsapp-incognito"
 	},
@@ -117,7 +118,6 @@
 		"githubImg": "https://raw.githubusercontent.com/moodynooby/nanobrowser-firefox/master/chrome-extension/public/icon-128.png",
 		"tagline": "NanoBrowser — an open-source AI web agent for extracting data and automating browser tasks.",
 		"category": "AI Tool",
-		"featured": true,
 		"addonId": "nanobrowser-ai-web-agent",
 		"chromeStatsId": "nanobrowser-ai-web-agent"
 	},
