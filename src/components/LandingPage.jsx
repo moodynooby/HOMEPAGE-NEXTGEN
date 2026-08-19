@@ -14,7 +14,6 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
 import SocialProofTicker from "@/components/SocialProofTicker";
-import linkedinPosts from "@/content/linkedinPosts.json";
 import projectsData from "@/content/projects.json";
 import {
 	fetchAddonMetadata,
@@ -487,111 +486,6 @@ export default function LandingPage() {
 				>
 					<Gallery limit={4} showAppBar={false} />
 				</Suspense>
-			</Container>
-
-			<Container maxWidth="lg">
-				<Box
-					sx={{
-						mt: 10,
-						p: { xs: 2, sm: 4 },
-						border: "1px solid",
-						borderColor: "divider",
-						borderRadius: 2,
-						backgroundColor: "background.paper",
-					}}
-				>
-					<Box
-						sx={{
-							display: "flex",
-							flexWrap: "wrap",
-							alignItems: "center",
-							justifyContent: "space-between",
-							gap: 2,
-							mb: 3,
-						}}
-					>
-						<Typography
-							variant="h4"
-							sx={{
-								fontWeight: 800,
-								textTransform: "uppercase",
-								letterSpacing: "-0.02em",
-							}}
-						>
-							LinkedIn Posts
-						</Typography>
-						<Button
-							variant="outlined"
-							color="primary"
-							component="a"
-							href="https://www.linkedin.com/in/manas-doshi-644751363/"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Open Manas Doshi's LinkedIn profile in a new tab"
-						>
-							FOLLOW ME
-						</Button>
-					</Box>
-					<Box
-						sx={{
-							display: "grid",
-							gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-							gap: { xs: 2, md: 3 },
-						}}
-					>
-						{linkedinPosts.map((post) => (
-							<Box
-								key={post.id}
-								component="a"
-								href={post.url}
-								target="_blank"
-								rel="noopener noreferrer"
-								sx={{
-									display: "flex",
-									flexDirection: "column",
-									gap: 1.5,
-									p: 2.5,
-									border: "1px solid",
-									borderColor: "divider",
-									borderRadius: 0,
-									textDecoration: "none",
-									color: "text.primary",
-									transition: "background-color 0.3s ease",
-									"&:hover": { bgcolor: "action.hover" },
-								}}
-							>
-								<Typography variant="body2" sx={{ lineHeight: 1.6 }}>
-									{post.text}
-								</Typography>
-								<Box sx={{ mt: "auto" }}>
-									<Box
-										sx={{
-											display: "flex",
-											flexWrap: "wrap",
-											gap: 1.5,
-											alignItems: "center",
-										}}
-									>
-										<Typography
-											variant="overline"
-											color="text.secondary"
-											sx={{ fontSize: "0.7rem" }}
-										>
-											{formatNumber(post.likes)} likes
-										</Typography>
-										<Typography
-											variant="overline"
-											color="text.secondary"
-											sx={{ fontSize: "0.7rem" }}
-										>
-											{formatNumber(post.comments)} comments
-										</Typography>
-									</Box>
-								</Box>
-							</Box>
-						))}
-					</Box>
-				</Box>
 			</Container>
 
 			<Container maxWidth="lg">
