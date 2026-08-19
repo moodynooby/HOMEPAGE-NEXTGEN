@@ -1,4 +1,6 @@
+import isPropValid from "@emotion/is-prop-valid";
 import { CssBaseline, ThemeProvider } from "@mui/material";
+import { MotionConfig } from "motion/react";
 import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -36,24 +38,26 @@ const AppContent = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<BrowserRouter>
-				<CommandPalette>
-					<ErrorBoundary>
-						<Suspense fallback={<RouteLoader />}>
-							<Routes>
-								<Route path="/" element={<LandingPage />} />
-								<Route path="/projects" element={<SpeedDial />} />
-								<Route
-									path="/projects/:projectName"
-									element={<ProjectDetail />}
-								/>
-								<Route path="/links" element={<LinkTree />} />
-								<Route path="/gallery" element={<Gallery />} />
-							</Routes>
-						</Suspense>
-					</ErrorBoundary>
-				</CommandPalette>
-			</BrowserRouter>
+			<MotionConfig isValidProp={isPropValid}>
+				<BrowserRouter>
+					<CommandPalette>
+						<ErrorBoundary>
+							<Suspense fallback={<RouteLoader />}>
+								<Routes>
+									<Route path="/" element={<LandingPage />} />
+									<Route path="/projects" element={<SpeedDial />} />
+									<Route
+										path="/projects/:projectName"
+										element={<ProjectDetail />}
+									/>
+									<Route path="/links" element={<LinkTree />} />
+									<Route path="/gallery" element={<Gallery />} />
+								</Routes>
+							</Suspense>
+						</ErrorBoundary>
+					</CommandPalette>
+				</BrowserRouter>
+			</MotionConfig>
 		</ThemeProvider>
 	);
 };

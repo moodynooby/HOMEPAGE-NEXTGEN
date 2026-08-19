@@ -8,7 +8,6 @@ import {
 	Language,
 	LinkedIn,
 	Person,
-	Settings,
 } from "@mui/icons-material";
 import { Box, Typography, useTheme } from "@mui/material";
 import {

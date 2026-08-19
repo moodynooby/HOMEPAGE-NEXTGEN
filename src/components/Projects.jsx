@@ -4,14 +4,11 @@ import {
 	GitHub,
 	OpenInNew,
 	PushPin,
-	Schedule,
 	Search,
 	Star,
-	Visibility,
 } from "@mui/icons-material";
 import {
 	Alert,
-	alpha,
 	Box,
 	Button,
 	Chip,
@@ -19,7 +16,6 @@ import {
 	InputAdornment,
 	Skeleton,
 	TextField,
-	Tooltip,
 	Typography,
 	useMediaQuery,
 	useTheme,

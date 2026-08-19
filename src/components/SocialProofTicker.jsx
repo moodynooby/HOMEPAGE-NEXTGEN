@@ -67,6 +67,13 @@ export default function SocialProofTicker() {
 		},
 	];
 
+	const renderItems = shouldReduceMotion
+		? proofItems.map((item) => ({ ...item, id: item.label, hidden: false }))
+		: proofItems.flatMap((item) => [
+				{ ...item, id: `${item.label}-0`, hidden: false },
+				{ ...item, id: `${item.label}-1`, hidden: true },
+			]);
+
 	return (
 		<Box
 			component="section"
@@ -95,13 +102,10 @@ export default function SocialProofTicker() {
 						},
 					}}
 				>
-					{(shouldReduceMotion
-						? proofItems
-						: [...proofItems, ...proofItems]
-						).map((item, index) => (
-							<Box
-								key={`${item.label}-${index}`}
-								aria-hidden={index >= proofItems.length}
+					{renderItems.map((item) => (
+						<Box
+							key={item.id}
+							aria-hidden={item.hidden}
 							sx={{
 								display: "flex",
 								alignItems: "center",
