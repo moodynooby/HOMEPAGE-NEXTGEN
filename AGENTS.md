@@ -8,6 +8,8 @@ The site is **content-driven**: all portfolio data (projects, gallery, social li
 
 The visual language is documented in [DESIGN.md](./DESIGN.md) — read it before making any UI change. Its rules are non-negotiable: **0px corner radius, no pure black (`#38392e` is the ink), serif display type (Newsreader), and Work Sans for labels/meta.**
 
+To keep the site from reading as AI-generated, every UI change must pass the [DESIGN.md §10 "Never" ban list](./DESIGN.md) before finishing — no scrolling metric tickers, glassmorphism on gradients, floating action buttons, full-screen gradient backgrounds, icons standing in for headings, filler metadata, or hard-coded hex outside `theme.js`/`index.css`.
+
 ## Commands
 
 | Command | Purpose |

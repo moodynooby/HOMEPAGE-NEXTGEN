@@ -36,10 +36,16 @@ const iconMap = {
 	"Addons Profile": WebIcon,
 };
 
-function SocialLinksComponent() {
-	const theme = useTheme();
+const NAV_ITEMS = [
+	{ label: "Home", to: "/" },
+	{ label: "Projects", to: "/projects" },
+	{ label: "Gallery", to: "/gallery" },
+	{ label: "Directory", to: "/links" },
+];
+
+function SocialLinks() {
 	return (
-		<Box sx={{ display: "flex", gap: 1 }}>
+		<Box sx={{ display: "flex", gap: 0.75 }}>
 			{socialLinks.map((social) => {
 				const IconComponent = iconMap[social.alt];
 				if (!IconComponent) return null;
@@ -52,12 +58,15 @@ function SocialLinksComponent() {
 						aria-label={`Open ${social.alt} in a new tab`}
 						size="small"
 						sx={{
-							color: "primary.main",
-							border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+							color: "text.secondary",
+							border: "1px solid",
+							borderColor: "divider",
 							borderRadius: 0,
+							transition: "color 0.25s ease, border-color 0.25s ease",
 							"&:hover": {
-								bgcolor: alpha(theme.palette.primary.main, 0.05),
-								borderColor: theme.palette.primary.main,
+								color: "secondary.main",
+								borderColor: "secondary.main",
+								bgcolor: "transparent",
 							},
 						}}
 					>
@@ -76,24 +85,23 @@ export default function ButtonAppBar() {
 	const { mode, setThemeMode } = useThemeContext();
 	const { query } = useKBar();
 
-	const currentDate = new Date().toLocaleDateString("en-US", {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
+	const currentDate = new Date()
+		.toLocaleDateString("en-US", {
+			weekday: "long",
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		})
+		.toUpperCase();
 
 	return (
-		<Box sx={{ flexGrow: 1 }}>
+		<Box component="header">
 			<Box
 				sx={{
-					pt: 4,
-					pb: 2,
+					pt: { xs: 5, md: 7 },
+					pb: 2.5,
 					px: 2,
 					textAlign: "center",
-					bgcolor: "background.default",
-					position: "relative",
-					zIndex: 1,
 				}}
 			>
 				<Typography
@@ -102,11 +110,14 @@ export default function ButtonAppBar() {
 					to="/"
 					sx={{
 						display: "block",
-						fontSize: { xs: "3rem", md: "5rem" },
+						fontSize: { xs: "2.6rem", md: "4.25rem" },
 						color: "text.primary",
 						textDecoration: "none",
-						mb: 1,
-						"&:hover": { opacity: 0.9 },
+						mb: 2,
+						fontWeight: 800,
+						lineHeight: 1,
+						transition: "opacity 0.3s ease",
+						"&:hover": { opacity: 0.85 },
 					}}
 				>
 					MANAS DOSHI TIMES
@@ -115,9 +126,8 @@ export default function ButtonAppBar() {
 				<Box
 					sx={{
 						borderTop: `2px solid ${theme.palette.text.primary}`,
-						borderBottom: `1px solid ${alpha(theme.palette.text.primary, 0.2)}`,
-						py: 0.5,
-						my: 1,
+						borderBottom: `1px solid ${alpha(theme.palette.text.primary, 0.35)}`,
+						py: 0.75,
 						display: "flex",
 						justifyContent: "space-between",
 						alignItems: "center",
@@ -125,107 +135,104 @@ export default function ButtonAppBar() {
 						mx: "auto",
 					}}
 				>
-					<Typography variant="overline" sx={{ fontWeight: 800 }}>
-						MANAS DOSHI
+					<Typography variant="overline">Manas Doshi</Typography>
+					<Typography
+						variant="overline"
+						sx={{ display: { xs: "none", sm: "block" } }}
+					>
+						{currentDate}
 					</Typography>
 					<Typography
 						variant="overline"
-						sx={{ display: { xs: "none", md: "block" }, fontWeight: 800 }}
+						sx={{ display: { sm: "none" }, letterSpacing: "0.08em" }}
 					>
-						{currentDate.toUpperCase()}
+						Personal Archive
 					</Typography>
-					<Typography variant="overline" sx={{ fontWeight: 800 }}>
-						DEV
-					</Typography>
+					<Typography variant="overline">Est. MMXXIV</Typography>
 				</Box>
 			</Box>
 
-			<AppBar
-				position="sticky"
-				elevation={0}
-				sx={{
-					top: 0,
-					zIndex: 10,
-					bgcolor: alpha(theme.palette.background.default, 0.85),
-					backdropFilter: "blur(12px)",
-					borderBottom: `1px solid ${alpha(theme.palette.text.primary, 0.1)}`,
-				}}
-			>
+			<AppBar position="sticky" elevation={0}>
 				<Toolbar
 					variant="dense"
 					sx={{
 						justifyContent: "center",
-						gap: { xs: 1, md: 4 },
-						minHeight: "48px !important",
+						gap: { xs: 1, md: 2 },
+						minHeight: "52px !important",
 					}}
 				>
-					{!isMobile ? (
-						<>
-							<Button component={Link} to="/" color="inherit">
-								Home
+					{!isMobile &&
+						NAV_ITEMS.map((item) => (
+							<Button
+								key={item.to}
+								component={Link}
+								to={item.to}
+								color="inherit"
+								sx={{ px: 1.5 }}
+							>
+								{item.label}
 							</Button>
-							<Button component={Link} to="/projects" color="inherit">
-								Projects
-							</Button>
-							<Button component={Link} to="/gallery" color="inherit">
-								Gallery
-							</Button>
-							<Button component={Link} to="/links" color="inherit">
-								Links
-							</Button>
-							<Box
-								sx={{ width: "1px", height: "24px", bgcolor: "divider", mx: 2 }}
-							/>
-						</>
-					) : (
+						))}
+					{isMobile && (
 						<IconButton
-							onClick={(e) => setMenuAnchorEl(e.currentTarget)}
+							onClick={(event) => setMenuAnchorEl(event.currentTarget)}
 							color="inherit"
 							aria-label="Open navigation menu"
 							aria-controls={
 								menuAnchorEl ? "mobile-navigation-menu" : undefined
 							}
 							aria-haspopup="menu"
+							size="small"
+							sx={{ borderRadius: 0 }}
 						>
 							<MenuIcon />
 						</IconButton>
 					)}
 
-					<IconButton
+					<Box sx={{ width: "1px", height: "20px", bgcolor: "divider" }} />
+
+					<Button
 						onClick={query.toggle}
 						color="inherit"
+						startIcon={<SearchIcon fontSize="small" />}
+						sx={{ px: 1.5 }}
 						aria-label="Open command palette"
-						sx={{ minWidth: 48, minHeight: 48, borderRadius: 1, gap: 0.5 }}
 					>
-						<SearchIcon fontSize="small" />
-						<Typography component="span" variant="body2">
-							Search
-						</Typography>
-					</IconButton>
+						Search
+					</Button>
 
-					<Box sx={{ flexGrow: isMobile ? 1 : 0 }} />
+					<Box sx={{ width: "1px", height: "20px", bgcolor: "divider" }} />
 
 					<ToggleButtonGroup
-						value={mode}
+						value={mode === "system" ? null : mode}
 						exclusive
 						onChange={(_, newMode) => newMode && setThemeMode(newMode)}
 						size="small"
-						variant="contained"
+						sx={{
+							"& .MuiToggleButton-root": {
+								borderRadius: 0,
+								padding: "4px 8px",
+								borderColor: "divider",
+								color: "text.secondary",
+								"&.Mui-selected": {
+									backgroundColor: "action.selected",
+									color: "text.primary",
+								},
+							},
+						}}
 					>
 						<ToggleButton value="light" aria-label="Use light theme">
-							<LightModeIcon sx={{ fontSize: 16 }} />
+							<LightModeIcon sx={{ fontSize: 15 }} />
 						</ToggleButton>
 						<ToggleButton value="dark" aria-label="Use dark theme">
-							<DarkModeIcon sx={{ fontSize: 16 }} />
+							<DarkModeIcon sx={{ fontSize: 15 }} />
 						</ToggleButton>
 					</ToggleButtonGroup>
 
 					{!isMobile && (
 						<>
-							<Box
-								sx={{ width: "1px", height: "24px", bgcolor: "divider", mx: 2 }}
-							/>
-							<SocialLinksComponent />
+							<Box sx={{ width: "1px", height: "20px", bgcolor: "divider" }} />
+							<SocialLinks />
 						</>
 					)}
 				</Toolbar>
@@ -239,38 +246,22 @@ export default function ButtonAppBar() {
 				slotProps={{
 					paper: {
 						sx: {
-							borderRadius: 0,
 							minWidth: 200,
-							bgcolor: "background.default",
-							border: `1px solid ${theme.palette.text.primary}`,
+							mt: 1,
 						},
 					},
 				}}
 			>
-				<MenuItem component={Link} to="/" onClick={() => setMenuAnchorEl(null)}>
-					Home
-				</MenuItem>
-				<MenuItem
-					component={Link}
-					to="/projects"
-					onClick={() => setMenuAnchorEl(null)}
-				>
-					Projects
-				</MenuItem>
-				<MenuItem
-					component={Link}
-					to="/gallery"
-					onClick={() => setMenuAnchorEl(null)}
-				>
-					Gallery
-				</MenuItem>
-				<MenuItem
-					component={Link}
-					to="/links"
-					onClick={() => setMenuAnchorEl(null)}
-				>
-					Links
-				</MenuItem>
+				{NAV_ITEMS.map((item) => (
+					<MenuItem
+						key={item.to}
+						component={Link}
+						to={item.to}
+						onClick={() => setMenuAnchorEl(null)}
+					>
+						{item.label}
+					</MenuItem>
+				))}
 			</Menu>
 		</Box>
 	);

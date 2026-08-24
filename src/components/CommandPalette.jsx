@@ -3,6 +3,7 @@ import {
 	Brightness4,
 	Brightness7,
 	BrightnessAuto,
+	Collections,
 	GitHub,
 	Home,
 	Language,
@@ -60,7 +61,7 @@ export default function CommandPalette({ children }) {
 			shortcut: ["g"],
 			keywords: "go-gallery-photos-videos",
 			perform: () => navigate("/gallery"),
-			icon: <AccountTree />,
+			icon: <Collections />,
 		},
 		{
 			id: "theme-light",
@@ -130,18 +131,19 @@ export default function CommandPalette({ children }) {
 					style={{
 						zIndex: 9999,
 						backdropFilter: "blur(4px)",
-						background: "rgba(0,0,0,0.5)",
+						background: "rgba(0, 0, 0, 0.4)",
 					}}
 				>
 					<KBarAnimator
 						style={{
-							maxWidth: "600px",
+							maxWidth: "560px",
 							width: "100%",
 							background: theme.palette.background.paper,
 							color: theme.palette.text.primary,
-							borderRadius: "16px",
+							borderRadius: "0px",
+							border: `1px solid ${theme.palette.text.primary}`,
 							overflow: "hidden",
-							boxShadow: theme.shadows[24],
+							boxShadow: "none",
 						}}
 					>
 						<Box
@@ -149,15 +151,18 @@ export default function CommandPalette({ children }) {
 						>
 							<KBarSearch
 								style={{
-									padding: "12px 16px",
-									fontSize: "16px",
+									padding: "10px 12px",
+									fontSize: "15px",
 									width: "100%",
 									boxSizing: "border-box",
 									outline: "none",
 									border: "none",
 									background: "transparent",
 									color: theme.palette.text.primary,
+									fontFamily: '"Work Sans Variable", "Work Sans", sans-serif',
+									letterSpacing: "0.02em",
 								}}
+								placeholder="Type a command…"
 							/>
 						</Box>
 						<RenderResults />
@@ -178,11 +183,8 @@ function RenderResults() {
 			items={results}
 			onRender={({ item, active }) =>
 				typeof item === "string" ? (
-					<Box sx={{ p: 2 }}>
-						<Typography
-							variant="caption"
-							sx={{ textTransform: "uppercase", opacity: 0.5, fontWeight: 700 }}
-						>
+					<Box sx={{ px: 3, pt: 2, pb: 1 }}>
+						<Typography variant="overline" color="text.secondary">
 							{item}
 						</Typography>
 					</Box>
@@ -190,26 +192,21 @@ function RenderResults() {
 					<Box
 						sx={{
 							px: 3,
-							py: 2,
+							py: 1.75,
 							background: active ? theme.palette.action.hover : "transparent",
-							borderLeft: `4px solid ${active ? theme.palette.primary.main : "transparent"}`,
+							borderLeft: `2px solid ${active ? theme.palette.secondary.main : "transparent"}`,
 							display: "flex",
 							alignItems: "center",
 							justifyContent: "space-between",
 							cursor: "pointer",
-							transition: "all 0.2s ease",
+							transition: "background 0.15s ease, border-color 0.15s ease",
 						}}
 					>
 						<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 							{item.icon && (
 								<Box sx={{ display: "flex", opacity: 0.7 }}>{item.icon}</Box>
 							)}
-							<Typography
-								variant="body1"
-								sx={{ fontWeight: active ? 600 : 400 }}
-							>
-								{item.name}
-							</Typography>
+							<Typography variant="body2">{item.name}</Typography>
 						</Box>
 						{item.shortcut?.length > 0 && (
 							<Box sx={{ display: "flex", gap: 0.5 }}>
@@ -217,13 +214,15 @@ function RenderResults() {
 									<Box
 										key={sc}
 										sx={{
-											px: 1,
-											py: 0.5,
-											borderRadius: 1,
+											px: 0.75,
+											py: 0.25,
 											bgcolor: theme.palette.action.selected,
-											fontSize: "10px",
-											fontWeight: 700,
+											fontSize: "0.65rem",
+											fontWeight: 600,
+											fontFamily:
+												'"Work Sans Variable", "Work Sans", sans-serif',
 											textTransform: "uppercase",
+											letterSpacing: "0.08em",
 										}}
 									>
 										{sc}

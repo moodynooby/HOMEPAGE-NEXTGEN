@@ -21,7 +21,7 @@ import RouteLoader from "@/components/RouteLoader";
 import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
 import { getTheme } from "@/theme/theme";
 
-const SpeedDial = lazy(() => import("@/components/Projects"));
+const Projects = lazy(() => import("@/components/Projects"));
 const ProjectDetail = lazy(() => import("@/components/ProjectDetail"));
 const LinkTree = lazy(() => import("@/components/LinkTree"));
 const Gallery = lazy(() => import("@/components/Gallery"));
@@ -45,7 +45,7 @@ const AppContent = () => {
 							<Suspense fallback={<RouteLoader />}>
 								<Routes>
 									<Route path="/" element={<LandingPage />} />
-									<Route path="/projects" element={<SpeedDial />} />
+									<Route path="/projects" element={<Projects />} />
 									<Route
 										path="/projects/:projectName"
 										element={<ProjectDetail />}

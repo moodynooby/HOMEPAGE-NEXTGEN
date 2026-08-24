@@ -1,16 +1,7 @@
-import {
-	ArrowForward,
-	Download,
-	GitHub,
-	OpenInNew,
-	PushPin,
-	Search,
-	Star,
-} from "@mui/icons-material";
+import { ArrowForward, Download, Search, Star } from "@mui/icons-material";
 import {
 	Alert,
 	Box,
-	Button,
 	Chip,
 	Container,
 	InputAdornment,
@@ -23,7 +14,7 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
 import projectsData from "@/content/projects.json";
 import {
@@ -35,7 +26,6 @@ import {
 const MotionBox = motion.create(Box);
 
 export default function Projects({ limit, showAppBar = true }) {
-	const navigate = useNavigate();
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 	const [projects, setProjects] = useState([]);
@@ -72,11 +62,7 @@ export default function Projects({ limit, showAppBar = true }) {
 				);
 
 				if (isMounted) {
-					const featuredFirst = [
-						...sortedProjects.filter((project) => project.featured),
-						...sortedProjects.filter((project) => !project.featured),
-					];
-					setProjects(limit ? featuredFirst.slice(0, limit) : featuredFirst);
+					setProjects(limit ? sortedProjects.slice(0, limit) : sortedProjects);
 					setLoadError("");
 				}
 			} catch (error) {
@@ -102,31 +88,33 @@ export default function Projects({ limit, showAppBar = true }) {
 				role="status"
 				aria-label="Loading projects"
 			>
-				<Skeleton
-					variant="text"
-					width="55%"
-					height={72}
-					sx={{ mx: "auto", mb: 6 }}
-				/>
-				{[1, 2, 3].map((item) => (
-					<Box
-						key={item}
-						sx={{
-							display: "flex",
-							gap: 2,
-							py: 3,
-							borderTop: "1px solid",
-							borderColor: "divider",
-						}}
-					>
-						<Skeleton variant="rectangular" width={88} height={88} />
-						<Box sx={{ flex: 1 }}>
-							<Skeleton variant="text" width="35%" />
-							<Skeleton variant="text" width="80%" />
-							<Skeleton variant="text" width="25%" />
+				<Container maxWidth="lg">
+					<Skeleton variant="text" width="40%" height={64} sx={{ mb: 8 }} />
+					{[1, 2, 3].map((item) => (
+						<Box
+							key={item}
+							sx={{
+								display: "flex",
+								gap: 3,
+								py: 3,
+								borderTop: "1px solid",
+								borderColor: "divider",
+							}}
+						>
+							<Skeleton
+								variant="rectangular"
+								width={88}
+								height={88}
+								sx={{ flexShrink: 0 }}
+							/>
+							<Box sx={{ flex: 1 }}>
+								<Skeleton variant="text" width="30%" />
+								<Skeleton variant="text" width="70%" />
+								<Skeleton variant="text" width="22%" />
+							</Box>
 						</Box>
-					</Box>
-				))}
+					))}
+				</Container>
 			</Box>
 		);
 	}
@@ -160,29 +148,11 @@ export default function Projects({ limit, showAppBar = true }) {
 		[project.githubName, project.tagline, project.category, project.language]
 			.filter(Boolean)
 			.some((value) => value.toLowerCase().includes(normalizedQuery));
-	const featuredProjects = projects
-		.filter((project) => project.featured)
-		.slice(0, 3);
 	const filteredProjects = projects.filter(
 		(project) =>
 			(activeCategory === "All" || project.category === activeCategory) &&
 			matchesQuery(project),
 	);
-	const totalStars = projects.reduce(
-		(total, project) => total + project.stars,
-		0,
-	);
-	const totalAddonUsers = projects.reduce(
-		(total, project) => total + (project.addonMetadata?.averageDailyUsers || 0),
-		0,
-	);
-	const technologyMix = Object.entries(
-		projects.reduce((counts, project) => {
-			const technology = project.language || project.category;
-			counts[technology] = (counts[technology] || 0) + 1;
-			return counts;
-		}, {}),
-	).sort(([, countA], [, countB]) => countB - countA);
 
 	const groupedProjects = groupProjectsByYear(filteredProjects);
 	const years = Object.keys(groupedProjects).sort((a, b) => {
@@ -199,8 +169,8 @@ export default function Projects({ limit, showAppBar = true }) {
 			{showAppBar && <ButtonAppBar />}
 			<Box
 				sx={{
-					pt: showAppBar ? { xs: 10, md: 14 } : 0,
-					pb: 8,
+					pt: showAppBar ? { xs: 7, md: 10 } : 0,
+					pb: 10,
 					position: "relative",
 					minHeight: "100vh",
 				}}
@@ -210,208 +180,84 @@ export default function Projects({ limit, showAppBar = true }) {
 						initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={
-							shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }
+							shouldReduceMotion ? { duration: 0 } : { duration: 0.7 }
 						}
 					>
-						<Typography
-							variant="h2"
-							sx={{
-								textAlign: "center",
-								mb: 3,
-								textTransform: "uppercase",
-								letterSpacing: "-0.02em",
-								fontSize: { xs: "1.9rem", sm: "2.5rem", md: "3.25rem" },
-								lineHeight: 1.15,
-							}}
-						>
-							The Personal Project Ledger
-						</Typography>
-						<Typography
-							variant="body2"
-							color="text.secondary"
-							sx={{ textAlign: "center", mb: { xs: 5, md: 10 } }}
-						>
-							{projects.length} projects · {totalStars} GitHub stars ·{" "}
-							{totalAddonUsers.toLocaleString()} active Firefox users
-						</Typography>
-					</motion.div>
-
-					{technologyMix.length > 0 && (
 						<Box
 							sx={{
 								display: "flex",
-								justifyContent: "center",
-								gap: 1,
+								alignItems: "baseline",
+								justifyContent: "space-between",
 								flexWrap: "wrap",
+								gap: 1,
+								borderBottom: "1px solid",
+								borderColor: "divider",
+								pb: 3,
 								mb: 5,
 							}}
 						>
-							{technologyMix.slice(0, 6).map(([technology, count]) => (
-								<Chip
-									key={technology}
-									label={`${technology} · ${count}`}
-									size="small"
-									variant="outlined"
-								/>
-							))}
-						</Box>
-					)}
-
-					<TextField
-						fullWidth
-						value={searchQuery}
-						onChange={(event) => setSearchQuery(event.target.value)}
-						placeholder="Search projects, categories, or technologies"
-						aria-label="Search projects"
-						sx={{ maxWidth: 680, display: "block", mx: "auto", mb: 5 }}
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<Search fontSize="small" />
-								</InputAdornment>
-							),
-						}}
-					/>
-
-					{!normalizedQuery && featuredProjects.length > 0 && (
-						<Box sx={{ mb: { xs: 5, md: 8 } }}>
-							<Typography
-								variant="h4"
-								sx={{
-									display: "flex",
-									alignItems: "center",
-									gap: 1,
-									mb: 3,
-									fontSize: { xs: "1.35rem", md: "2rem" },
-								}}
-							>
-								<PushPin color="secondary" /> Featured Projects
+							<Typography variant="h2" component="h1">
+								The Project Ledger
 							</Typography>
-							<Box
-								sx={{
-									display: "grid",
-									gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-									gap: 2,
-								}}
-							>
-								{featuredProjects.map((project) => (
-									<Box
-										key={project.githubName}
-										component="article"
-										onClick={() => navigate(`/projects/${project.githubName}`)}
-										onKeyDown={(event) => {
-											if (event.key === "Enter" || event.key === " ") {
-												navigate(`/projects/${project.githubName}`);
-											}
-										}}
-										tabIndex={0}
-										role="button"
-										sx={{
-											p: 2.5,
-											border: "1px solid",
-											borderColor: "divider",
-											cursor: "pointer",
-											transition:
-												"transform 0.2s ease, background-color 0.2s ease",
-											"&:hover": {
-												transform: "translateY(-4px)",
-												bgcolor: "action.hover",
-											},
-										}}
-									>
-										<Box
-											sx={{
-												display: "flex",
-												alignItems: "center",
-												gap: 1.5,
-												mb: 1.5,
-											}}
-										>
-											<Box
-												component="img"
-												src={project.githubImg}
-												alt=""
-												sx={{ width: 44, height: 44, objectFit: "contain" }}
-											/>
-											<Typography variant="h6">{project.githubName}</Typography>
-										</Box>
-										<Typography
-											variant="body2"
-											color="text.secondary"
-											sx={{ lineHeight: 1.6 }}
-										>
-											{project.tagline}
-										</Typography>
-										<Typography
-											variant="overline"
-											color="secondary.main"
-											sx={{ display: "block", mt: 2 }}
-										>
-											{project.category}
-										</Typography>
-										<Box
-											sx={{ display: "flex", gap: 1, mt: 2, flexWrap: "wrap" }}
-											onClick={(event) => event.stopPropagation()}
-										>
-											<Button
-												component="a"
-												href={`https://github.com/moodynooby/${project.githubName}`}
-												target="_blank"
-												rel="noopener noreferrer"
-												size="small"
-												startIcon={<GitHub fontSize="small" />}
-											>
-												Code
-											</Button>
-											{project.addonId && (
-												<Button
-													component="a"
-													href={`https://addons.mozilla.org/en-US/firefox/addon/${project.addonId}/`}
-													target="_blank"
-													rel="noopener noreferrer"
-													size="small"
-													startIcon={<OpenInNew fontSize="small" />}
-												>
-													Firefox Add-on
-												</Button>
-											)}
-										</Box>
-									</Box>
-								))}
-							</Box>
+							<Typography variant="overline" color="text.secondary">
+								A running index of shipped work
+							</Typography>
 						</Box>
-					)}
 
-					<Box
-						sx={{
-							display: "flex",
-							flexWrap: "wrap",
-							justifyContent: "center",
-							gap: 1.5,
-							mb: 8,
-						}}
-					>
-						{categories.map((category) => {
-							const count =
-								category === "All" ? projects.length : categoryCounts[category];
-							return (
-								<Chip
-									key={category}
-									label={`${category} · ${count}`}
-									onClick={() => setActiveCategory(category)}
-									variant={activeCategory === category ? "filled" : "outlined"}
-									color="primary"
-								/>
-							);
-						})}
-					</Box>
+						<TextField
+							fullWidth
+							variant="standard"
+							value={searchQuery}
+							onChange={(event) => setSearchQuery(event.target.value)}
+							placeholder="Filter by name, tagline, or technology"
+							aria-label="Search projects"
+							sx={{ maxWidth: 560, mb: 4 }}
+							slotProps={{
+								input: {
+									startAdornment: (
+										<InputAdornment position="start">
+											<Search fontSize="small" />
+										</InputAdornment>
+									),
+									sx: { fontFamily: '"Work Sans Variable", sans-serif' },
+								},
+							}}
+						/>
+
+						<Box
+							sx={{
+								display: "flex",
+								flexWrap: "wrap",
+								gap: 1,
+								mb: 7,
+							}}
+						>
+							{categories.map((category) => {
+								const count =
+									category === "All"
+										? projects.length
+										: categoryCounts[category];
+								return (
+									<Chip
+										key={category}
+										label={`${category} · ${count}`}
+										onClick={() => setActiveCategory(category)}
+										variant={
+											activeCategory === category ? "filled" : "outlined"
+										}
+										color={activeCategory === category ? "primary" : "default"}
+									/>
+								);
+							})}
+						</Box>
+					</motion.div>
 
 					{filteredProjects.length === 0 ? (
 						<Typography
 							variant="body1"
-							sx={{ textAlign: "center", py: 8, opacity: 0.75 }}
+							sx={{ textAlign: "center", py: 10, color: "text.secondary" }}
 						>
-							No projects in this category yet.
+							Nothing filed under this heading yet.
 						</Typography>
 					) : (
 						<Box key={activeCategory} sx={{ position: "relative" }}>
@@ -423,7 +269,7 @@ export default function Projects({ limit, showAppBar = true }) {
 										top: 0,
 										bottom: 0,
 										width: "1px",
-										bgcolor: "rgba(187, 186, 172, 0.3)",
+										bgcolor: "divider",
 										transform: "translateX(-50%)",
 									}}
 								/>
@@ -433,7 +279,7 @@ export default function Projects({ limit, showAppBar = true }) {
 								<Box
 									key={year}
 									sx={{
-										mb: { xs: 6, md: 12 },
+										mb: { xs: 7, md: 12 },
 										display: "flex",
 										flexDirection: "column",
 										alignItems: "center",
@@ -442,7 +288,7 @@ export default function Projects({ limit, showAppBar = true }) {
 								>
 									<MotionBox
 										initial={
-											shouldReduceMotion ? false : { scale: 0.8, opacity: 0 }
+											shouldReduceMotion ? false : { scale: 0.9, opacity: 0 }
 										}
 										whileInView={
 											shouldReduceMotion ? undefined : { scale: 1, opacity: 1 }
@@ -450,27 +296,22 @@ export default function Projects({ limit, showAppBar = true }) {
 										viewport={{ once: true }}
 										sx={{
 											bgcolor: "background.default",
-											px: 4,
-											py: 1,
-											mb: 8,
-											zIndex: 2,
 											border: "1px solid",
 											borderColor: "divider",
 											display: "flex",
 											alignItems: "center",
 											justifyContent: "center",
-											width: 140,
-											height: 140,
+											width: 128,
+											height: 128,
 											borderRadius: "50%",
+											mb: 7,
+											zIndex: 2,
 										}}
 									>
 										<Typography
 											variant="h3"
-											sx={{
-												fontStyle: "italic",
-												color: "secondary.main",
-												fontWeight: 300,
-											}}
+											component="p"
+											sx={{ fontStyle: "italic", fontWeight: 400 }}
 										>
 											{year}
 										</Typography>
@@ -481,7 +322,7 @@ export default function Projects({ limit, showAppBar = true }) {
 											<MotionBox
 												key={project.githubName}
 												initial={
-													shouldReduceMotion ? false : { y: 24, opacity: 0 }
+													shouldReduceMotion ? false : { y: 16, opacity: 0 }
 												}
 												whileInView={
 													shouldReduceMotion ? undefined : { y: 0, opacity: 1 }
@@ -490,24 +331,14 @@ export default function Projects({ limit, showAppBar = true }) {
 												transition={
 													shouldReduceMotion
 														? { duration: 0 }
-														: { duration: 0.5 }
+														: { duration: 0.45 }
 												}
 												sx={{ bgcolor: "background.default" }}
 											>
 												<Box
-													component="article"
-													role="link"
-													tabIndex={0}
+													component={RouterLink}
+													to={`/projects/${project.githubName}`}
 													aria-label={`Open project ${project.githubName}`}
-													onClick={() =>
-														navigate(`/projects/${project.githubName}`)
-													}
-													onKeyDown={(event) => {
-														if (event.key === "Enter" || event.key === " ") {
-															event.preventDefault();
-															navigate(`/projects/${project.githubName}`);
-														}
-													}}
 													sx={{
 														display: "flex",
 														alignItems: "center",
@@ -515,6 +346,8 @@ export default function Projects({ limit, showAppBar = true }) {
 														py: { xs: 2.5, md: 3.5 },
 														px: { xs: 1.5, md: 2 },
 														cursor: "pointer",
+														textDecoration: "none",
+														color: "text.primary",
 														borderTop: "1px solid",
 														borderColor: "divider",
 														transition: "background-color 0.3s ease",
@@ -525,17 +358,18 @@ export default function Projects({ limit, showAppBar = true }) {
 															transform: "translateX(4px)",
 															opacity: 1,
 														},
+														"&:hover .ledger-thumb img": {
+															filter: "grayscale(0%) contrast(100%)",
+														},
 													}}
 												>
 													{!isMobile && (
 														<Typography
 															variant="overline"
 															sx={{
-																width: 64,
+																width: 56,
 																flexShrink: 0,
 																color: "text.secondary",
-																fontSize: "0.68rem",
-																letterSpacing: "0.15em",
 																lineHeight: 1,
 															}}
 														>
@@ -547,11 +381,12 @@ export default function Projects({ limit, showAppBar = true }) {
 													)}
 
 													<Box
+														className="ledger-thumb"
 														sx={{
 															width: { xs: 56, md: 88 },
 															height: { xs: 56, md: 88 },
 															flexShrink: 0,
-															bgcolor: "rgba(187, 186, 172, 0.1)",
+															bgcolor: "background.paper",
 															border: "1px solid",
 															borderColor: "divider",
 															display: "flex",
@@ -564,40 +399,30 @@ export default function Projects({ limit, showAppBar = true }) {
 														<Box
 															component="img"
 															src={project.githubImg}
-															alt={project.githubName}
+															alt=""
 															loading="lazy"
 															sx={{
 																maxWidth: "100%",
 																maxHeight: "100%",
 																objectFit: "contain",
-																opacity: 0.85,
 																filter: "grayscale(100%) contrast(115%)",
-																transition: "all 0.5s ease-in-out",
-																"&:hover": {
-																	opacity: 1,
-																	filter: "grayscale(0%) contrast(100%)",
-																},
+																transition: "filter 0.5s ease-in-out",
 															}}
 														/>
 													</Box>
 
 													<Box sx={{ flex: 1, minWidth: 0 }}>
-														<Typography
-															variant="h5"
-															sx={{ mb: 0.5, color: "text.primary" }}
-														>
+														<Typography variant="h5" sx={{ mb: 0.5 }}>
 															{project.githubName}
 														</Typography>
 														<Typography
 															variant="body2"
+															color="text.secondary"
 															sx={{
-																color: "text.primary",
-																opacity: 0.75,
 																display: "-webkit-box",
 																WebkitLineClamp: 2,
 																WebkitBoxOrient: "vertical",
 																overflow: "hidden",
-																lineHeight: 1.55,
 															}}
 														>
 															{project.tagline}
@@ -606,71 +431,59 @@ export default function Projects({ limit, showAppBar = true }) {
 															sx={{
 																display: "flex",
 																alignItems: "center",
-																gap: 1.5,
+																columnGap: 1.5,
+																rowGap: 0.5,
 																mt: 1,
 																flexWrap: "wrap",
 															}}
 														>
 															<Typography
 																variant="overline"
-																sx={{
-																	color: "secondary.main",
-																	fontSize: "0.68rem",
-																	letterSpacing: "0.12em",
-																	lineHeight: 1,
-																}}
+																color="secondary.main"
+																lineHeight={1}
 															>
 																{project.category}
 															</Typography>
 															<Typography
 																variant="overline"
-																sx={{
-																	color: "text.secondary",
-																	fontSize: "0.68rem",
-																	letterSpacing: "0.12em",
-																	lineHeight: 1,
-																	opacity: 0.7,
-																}}
+																color="text.secondary"
+																lineHeight={1}
+																sx={{ opacity: 0.85 }}
 															>
 																{year}
 																{project.language
 																	? ` · ${project.language}`
 																	: ""}
 															</Typography>
-
-															{/* GitHub Stats */}
 															{project.stars > 0 && (
 																<Box
 																	sx={{
 																		display: "flex",
 																		alignItems: "center",
 																		gap: 0.5,
-																		opacity: 0.8,
 																	}}
 																>
 																	<Star
 																		sx={{
-																			fontSize: "0.75rem",
+																			fontSize: "0.8rem",
 																			color: "secondary.main",
 																		}}
 																	/>
 																	<Typography
 																		variant="overline"
-																		sx={{ fontSize: "0.68rem", lineHeight: 1 }}
+																		color="text.secondary"
+																		lineHeight={1}
 																	>
 																		{project.stars}
 																	</Typography>
 																</Box>
 															)}
-
-															{/* Native Mozilla Add-ons metrics */}
 															{project.addonMetadata && (
 																<Box
 																	sx={{
 																		display: "flex",
 																		alignItems: "center",
-																		gap: 0.75,
-																		flexWrap: "wrap",
+																		gap: 0.5,
 																	}}
 																>
 																	<Download
@@ -681,21 +494,11 @@ export default function Projects({ limit, showAppBar = true }) {
 																	/>
 																	<Typography
 																		variant="overline"
-																		sx={{ fontSize: "0.68rem", lineHeight: 1 }}
+																		color="text.secondary"
+																		lineHeight={1}
 																	>
 																		{project.addonMetadata.averageDailyUsers.toLocaleString()}{" "}
 																		users
-																	</Typography>
-																	<Typography
-																		variant="overline"
-																		sx={{
-																			fontSize: "0.68rem",
-																			lineHeight: 1,
-																			opacity: 0.7,
-																		}}
-																	>
-																		{project.addonMetadata.weeklyDownloads.toLocaleString()}{" "}
-																		weekly downloads
 																	</Typography>
 																</Box>
 															)}
@@ -709,7 +512,7 @@ export default function Projects({ limit, showAppBar = true }) {
 															color: "secondary.main",
 															display: "flex",
 															alignItems: "center",
-															opacity: 0.4,
+															opacity: 0.35,
 															transition:
 																"transform 0.3s ease, opacity 0.3s ease",
 														}}

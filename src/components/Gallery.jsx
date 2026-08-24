@@ -10,6 +10,7 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -33,14 +34,6 @@ const LazyImage = ({ children, ...props }) => (
 		{children}
 	</MotionBox>
 );
-
-const SUBTLE_CONTAINER_COLORS = [
-	"rgba(253, 255, 218, 0.3)",
-	"rgba(187, 186, 172, 0.2)",
-	"rgba(200, 220, 240, 0.3)",
-	"rgba(220, 200, 240, 0.3)",
-	"rgba(200, 240, 200, 0.3)",
-];
 
 export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 	const theme = useTheme();
@@ -124,37 +117,30 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8 }}
+							transition={{ duration: 0.7 }}
 						>
 							<Typography
 								variant="h2"
+								component="h1"
 								sx={{
 									textAlign: "center",
-									mb: { xs: 3, md: 8 },
-									fontFamily: '"Newsreader", serif',
-									fontWeight: 800,
-									textTransform: "uppercase",
-									letterSpacing: "-0.02em",
-									fontSize: { xs: "1.9rem", sm: "2.5rem", md: "3.25rem" },
-									lineHeight: 1.15,
+									mb: 1,
+									fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
 								}}
 							>
 								The Visual Archive
 							</Typography>
 							<Typography
-								variant="body1"
+								variant="body2"
+								component="p"
 								sx={{
 									textAlign: "center",
-									mb: { xs: 6, md: 12 },
-									fontFamily: '"Noto Serif", serif',
 									fontStyle: "italic",
-									opacity: 0.7,
-									maxWidth: 600,
-									mx: "auto",
+									color: "text.secondary",
+									mb: { xs: 6, md: 10 },
 								}}
 							>
-								A curated collection of captured moments and kinetic studies,
-								preserved for the record.
+								Captured moments and kinetic studies, preserved for the record.
 							</Typography>
 						</motion.div>
 					)}
@@ -176,8 +162,6 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 							const isLarge =
 								!isMobile && (index % 7 === 0 || index % 11 === 0);
 							const isTall = !isMobile && index % 5 === 0;
-							const _containerColor =
-								SUBTLE_CONTAINER_COLORS[index % SUBTLE_CONTAINER_COLORS.length];
 
 							const imageWidth = isLarge ? 800 : 400;
 							const imageHeight = isTall ? 800 : isLarge ? 600 : 400;
@@ -197,25 +181,29 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 							return (
 								<LazyImage
 									key={item.public_id}
-									initial={{ opacity: 0, scale: 0.95 }}
+									initial={{ opacity: 0, scale: 0.97 }}
 									whileInView={{ opacity: 1, scale: 1 }}
 									viewport={{ once: true }}
-									transition={{ duration: 0.6, delay: index * 0.05 }}
+									transition={{
+										duration: 0.5,
+										delay: Math.min(index, 8) * 0.04,
+									}}
 									onClick={() => handleMediaClick(index)}
 									sx={{
 										gridColumn: isLarge ? "span 2" : "span 1",
 										gridRow: isTall ? "span 2" : "span 1",
 										position: "relative",
 										overflow: "hidden",
-										bgcolor: "surface.container",
+										bgcolor: "background.paper",
 										border: "1px solid",
-										borderColor: "rgba(187, 186, 172, 0.15)",
+										borderColor: "divider",
 										aspectRatio: isLarge ? "16/9" : isTall ? "3/4" : "1/1",
 										cursor: "pointer",
 										"&:hover img, &:hover video": {
 											filter: "grayscale(0%) contrast(100%)",
-											transform: "scale(1.03)",
+											transform: "scale(1.02)",
 										},
+										"&:hover .gallery-caption": { opacity: 1 },
 									}}
 								>
 									{item.resource_type === "image" ? (
@@ -224,9 +212,9 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 											style={{
 												width: "100%",
 												height: "100%",
-												objectFit: "contain",
+												objectFit: "cover",
 												filter: "grayscale(100%) contrast(110%)",
-												transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+												transition: "filter 0.6s ease, transform 0.6s ease",
 											}}
 										/>
 									) : (
@@ -239,37 +227,34 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 											style={{
 												width: "100%",
 												height: "100%",
-												objectFit: "contain",
+												objectFit: "cover",
 												filter: "grayscale(100%) contrast(110%)",
-												transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+												transition: "filter 0.6s ease, transform 0.6s ease",
 											}}
 										/>
 									)}
 
 									<Box
+										className="gallery-caption"
 										sx={{
 											position: "absolute",
 											bottom: 0,
 											left: 0,
 											right: 0,
-											p: 2,
-											background:
-												"linear-gradient(transparent, rgba(56, 57, 46, 0.6))",
+											py: 1,
+											px: 2,
+											bgcolor: (th) =>
+												alpha(th.palette.background.default, 0.82),
+											borderTop: "1px solid",
+											borderColor: "divider",
+											backdropFilter: "blur(6px)",
 											opacity: 0,
 											transition: "opacity 0.4s ease",
-											".motion-box:hover &": { opacity: 1 },
 										}}
 									>
-										<Typography
-											variant="label-sm"
-											sx={{
-												color: "#fdffda",
-												fontFamily: '"Work Sans", sans-serif',
-												textTransform: "uppercase",
-												letterSpacing: "0.1em",
-											}}
-										>
-											{item.resource_type === "video" ? "Kinetic" : "Static"} —{" "}
+										<Typography variant="overline" color="text.primary">
+											{item.resource_type === "video" ? "Kinetic" : "Static"}
+											{" · "}
 											{new Date(item.created_at).getFullYear()}
 										</Typography>
 									</Box>
@@ -278,26 +263,27 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 										<Box
 											sx={{
 												position: "absolute",
-												top: 16,
-												right: 16,
-												width: 32,
-												height: 32,
-												borderRadius: "50%",
-												bgcolor: "rgba(56, 57, 46, 0.4)",
+												top: 12,
+												right: 12,
+												width: 28,
+												height: 28,
+												bgcolor: (th) =>
+													alpha(th.palette.background.default, 0.7),
 												display: "flex",
 												alignItems: "center",
 												justifyContent: "center",
 												backdropFilter: "blur(4px)",
-												border: "1px solid rgba(253, 255, 218, 0.2)",
+												border: "1px solid",
+												borderColor: "divider",
 											}}
 										>
 											<Box
 												sx={{
 													width: 0,
 													height: 0,
-													borderTop: "6px solid transparent",
-													borderBottom: "6px solid transparent",
-													borderLeft: "10px solid #fdffda",
+													borderTop: "5px solid transparent",
+													borderBottom: "5px solid transparent",
+													borderLeft: `8px solid ${theme.palette.text.primary}`,
 													ml: "2px",
 												}}
 											/>

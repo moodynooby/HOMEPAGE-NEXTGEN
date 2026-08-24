@@ -1,19 +1,15 @@
-import { Code, Download, GitHub, People, Star } from "@mui/icons-material";
 import {
 	Box,
 	Button,
-	Chip,
 	CircularProgress,
 	Container,
 	Divider,
-	Grid,
 	Typography,
 } from "@mui/material";
 import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
-import SocialProofTicker from "@/components/SocialProofTicker";
 import projectsData from "@/content/projects.json";
 import {
 	fetchAddonMetadata,
@@ -100,39 +96,67 @@ export default function LandingPage() {
 	const formatNumber = (value) =>
 		new Intl.NumberFormat("en").format(value || 0);
 
+	const ledgerEntries = [
+		githubStats && {
+			label: "Repositories",
+			value: formatNumber(githubStats.publicRepos),
+		},
+		githubStats &&
+			githubStats.totalStars > 0 && {
+				label: "Stars earned",
+				value: formatNumber(githubStats.totalStars),
+			},
+		addonStats.totalUsers > 0 && {
+			label: "Firefox users",
+			value: formatCompact(addonStats.totalUsers),
+		},
+		addonStats.totalDownloads > 0 && {
+			label: "Weekly downloads",
+			value: formatCompact(addonStats.totalDownloads),
+		},
+	].filter(Boolean);
+
 	return (
 		<Box sx={{ minHeight: "100vh", pb: 8 }}>
 			<ButtonAppBar />
-			<SocialProofTicker />
 
-			<Container maxWidth="lg" sx={{ mt: 6 }}>
+			<Container maxWidth="lg" sx={{ mt: { xs: 7, md: 10 } }}>
 				<motion.div
-					initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+					initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }}
+					transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7 }}
 				>
+					<Typography variant="overline" color="text.secondary">
+						Manas Doshi · Student · Engineer
+					</Typography>
 					<Typography
 						variant="h2"
 						component="h1"
 						sx={{
-							fontSize: { xs: "2.5rem", md: "4rem" },
-							lineHeight: 1.1,
-							mb: 4,
-							fontWeight: 800,
+							fontSize: { xs: "2.6rem", md: "4rem" },
+							lineHeight: 1.08,
+							mt: 1.5,
+							mb: 3.5,
+							maxWidth: "17ch",
 						}}
 					>
-						STUDENT. ENGINEER.
+						I see something I like — then build{" "}
+						<Box component="em" sx={{ fontStyle: "italic", fontWeight: 400 }}>
+							my own version.
+						</Box>
 					</Typography>
-					<Typography
-						variant="body1"
-						sx={{ mb: 4, maxWidth: "600px", fontSize: "1.25rem" }}
+					<Typography variant="body1" sx={{ mb: 4, maxWidth: "58ch" }}>
+						Browser extensions, hardware-software experiments, and the
+						occasional breakage it takes to learn something properly.
+					</Typography>
+					<Box
+						sx={{
+							display: "flex",
+							flexWrap: "wrap",
+							gap: 2,
+							mb: { xs: 6, md: 9 },
+						}}
 					>
-						Hi, I'm Manas. I build browser extensions, tinker with
-						hardware-software integration, and occasionally break things trying
-						to learn. If I see something I like, I try to learn how it works —
-						then build my own version.
-					</Typography>
-					<Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 6 }}>
 						<Button
 							variant="contained"
 							color="primary"
@@ -140,7 +164,7 @@ export default function LandingPage() {
 							to="/projects"
 							aria-label="View Manas Doshi's projects"
 						>
-							VIEW PROJECTS
+							View Projects
 						</Button>
 						<Button
 							variant="outlined"
@@ -150,326 +174,213 @@ export default function LandingPage() {
 							rel="noopener noreferrer"
 							aria-label="Open Manas Doshi's resume in a new tab"
 						>
-							VIEW RESUME
+							View Résumé
 						</Button>
 					</Box>
 
-					{(githubStats || addonStats.addonCount > 0) && (
+					{ledgerEntries.length > 0 && (
 						<Box
 							sx={{
-								mt: 4,
-								p: { xs: 2, sm: 3 },
-								border: "1px solid",
+								borderTop: "1px solid",
+								borderBottom: "1px solid",
 								borderColor: "divider",
-								borderRadius: 2,
-								backgroundColor: "background.paper",
-								maxWidth: 680,
+								py: 2.5,
+								display: "flex",
+								flexWrap: "wrap",
 							}}
 						>
-							{githubStats && (
-								<>
-									<Box
-										sx={{
-											display: "flex",
-											alignItems: "center",
-											gap: 1,
-											mb: 2,
-										}}
-									>
-										<GitHub fontSize="small" />
-										<Typography variant="overline" sx={{ fontWeight: 800 }}>
-											GitHub / MOOD YNOOBY
-										</Typography>
-									</Box>
-									<Grid container spacing={1.5}>
-										{[
-											{
-												label: "Repositories",
-												value: githubStats.publicRepos,
-												icon: <Code fontSize="small" />,
-											},
-											{
-												label: "Stars earned",
-												value: githubStats.totalStars,
-												icon: <Star fontSize="small" />,
-											},
-											{
-												label: "Followers",
-												value: githubStats.followers,
-												icon: <People fontSize="small" />,
-											},
-										].map((stat) => (
-											<Grid key={stat.label} size={{ xs: 4 }}>
-												<Box
-													sx={{
-														display: "flex",
-														alignItems: "center",
-														gap: 0.75,
-													}}
-												>
-													{stat.icon}
-													<Typography variant="h6" sx={{ fontWeight: 800 }}>
-														{stat.value}
-													</Typography>
-												</Box>
-												<Typography variant="caption" color="text.secondary">
-													{stat.label}
-												</Typography>
-											</Grid>
-										))}
-									</Grid>
-									{githubStats.languages.length > 0 && (
-										<Box
-											sx={{
-												display: "flex",
-												flexWrap: "wrap",
-												gap: 1,
-												mt: 2,
-											}}
-										>
-											{githubStats.languages.map((language) => (
-												<Chip
-													key={language.name}
-													label={`${language.name} · ${language.count}`}
-													size="small"
-													variant="outlined"
-												/>
-											))}
-										</Box>
-									)}
-								</>
-							)}
-							{addonStats.addonCount > 0 && (
+							{ledgerEntries.map((entry) => (
 								<Box
+									key={entry.label}
 									sx={{
-										display: "flex",
-										flexWrap: "wrap",
-										alignItems: "center",
-										gap: 2,
-										mt: githubStats ? 3 : 0,
+										flex: { xs: "1 1 40%", sm: "1 1 auto" },
+										minWidth: 120,
+										px: { xs: 0, sm: 4 },
+										py: { xs: 1, sm: 0 },
+										"& + &": {
+											borderLeft: { xs: "none", sm: "1px solid" },
+											borderColor: "divider",
+											pl: { sm: 4 },
+										},
 									}}
 								>
-									<Box
-										sx={{ display: "flex", alignItems: "center", gap: 0.75 }}
+									<Typography
+										variant="h4"
+										component="p"
+										sx={{ lineHeight: 1.2 }}
 									>
-										<Download fontSize="small" />
-										<Typography variant="overline" color="text.secondary">
-											{formatCompact(addonStats.totalUsers)} users across{" "}
-											{addonStats.addonCount} extensions
-										</Typography>
-									</Box>
-									<Box
-										sx={{ display: "flex", alignItems: "center", gap: 0.75 }}
-									>
-										<Star fontSize="small" />
-										<Typography variant="overline" color="text.secondary">
-											{formatCompact(addonStats.totalDownloads)} weekly
-											downloads
-										</Typography>
-									</Box>
+										{entry.value}
+									</Typography>
+									<Typography variant="overline" color="text.secondary">
+										{entry.label}
+									</Typography>
 								</Box>
-							)}
+							))}
 						</Box>
 					)}
 				</motion.div>
 			</Container>
 
-			<Container maxWidth="lg" sx={{ mt: 10 }}>
+			<Container maxWidth="lg" sx={{ mt: { xs: 8, md: 12 } }}>
 				<Box
 					sx={{
-						p: { xs: 2, sm: 4 },
-						border: "1px solid",
+						display: "flex",
+						alignItems: "baseline",
+						justifyContent: "space-between",
+						flexWrap: "wrap",
+						gap: 1,
+						borderTop: "1px solid",
 						borderColor: "divider",
-						borderRadius: 2,
-						backgroundColor: "background.paper",
+						pt: 3,
+						mb: 4,
 					}}
 				>
-					<Typography
-						variant="h4"
-						sx={{
-							fontWeight: 800,
-							mb: 1,
-							textTransform: "uppercase",
-							letterSpacing: "-0.02em",
-						}}
-					>
-						Featured Projects
+					<Typography variant="h3">Featured Work</Typography>
+					<Typography variant="overline" color="text.secondary">
+						{featuredProjects.length} of {projectsData.length} entries
 					</Typography>
-					<Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-						I try to learn and make things I like — here are the ones that
-						stuck.
-					</Typography>
-					<Box
-						sx={{
-							display: "grid",
-							gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-							gap: { xs: 2, md: 3 },
-						}}
-					>
-						{featuredProjects.map((project) => {
-							const meta = featuredMeta[project.githubName] || {};
-							return (
+				</Box>
+				<Box
+					sx={{
+						display: "grid",
+						gridTemplateColumns: {
+							xs: "1fr",
+							md: `repeat(${Math.min(featuredProjects.length, 3)}, 1fr)`,
+						},
+						gap: { xs: 0, md: 4 },
+					}}
+				>
+					{featuredProjects.map((project) => {
+						const meta = featuredMeta[project.githubName] || {};
+						return (
+							<Box
+								key={project.githubName}
+								component={Link}
+								to={`/projects/${project.githubName}`}
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+									gap: 1.5,
+									py: { xs: 3, md: 0 },
+									textDecoration: "none",
+									color: "text.primary",
+									transition: "background-color 0.3s ease",
+									"&:hover": { bgcolor: "action.hover" },
+									"&:hover .featured-thumb img": {
+										filter: "grayscale(0%) contrast(100%)",
+									},
+								}}
+							>
 								<Box
-									key={project.githubName}
-									component={Link}
-									to={`/projects/${project.githubName}`}
+									className="featured-thumb"
 									sx={{
-										display: "flex",
-										flexDirection: "column",
-										gap: 1.5,
-										p: 2.5,
+										width: 88,
+										height: 88,
+										flexShrink: 0,
 										border: "1px solid",
 										borderColor: "divider",
-										borderRadius: 0,
-										textDecoration: "none",
-										color: "text.primary",
-										transition: "background-color 0.3s ease",
-										"&:hover": { bgcolor: "action.hover" },
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										p: 1.5,
+										bgcolor: "background.paper",
+										mb: 1,
 									}}
 								>
 									<Box
+										component="img"
+										src={project.githubImg}
+										alt=""
+										loading="lazy"
 										sx={{
-											display: "flex",
-											alignItems: "center",
-											gap: 1.5,
+											maxWidth: "100%",
+											maxHeight: "100%",
+											objectFit: "contain",
+											filter: "grayscale(100%) contrast(115%)",
+											transition: "filter 0.5s ease-in-out",
 										}}
-									>
-										<Box
-											component="img"
-											src={project.githubImg}
-											alt=""
-											loading="lazy"
-											sx={{
-												width: { xs: 40, md: 44 },
-												height: { xs: 40, md: 44 },
-												objectFit: "contain",
-												opacity: 0.85,
-												filter: "grayscale(100%) contrast(115%)",
-												transition: "all 0.5s ease-in-out",
-												"&:hover": {
-													opacity: 1,
-													filter: "grayscale(0%) contrast(100%)",
-												},
-											}}
-										/>
-										<Typography variant="h6" sx={{ fontWeight: 800 }}>
-											{project.githubName}
-										</Typography>
-									</Box>
+									/>
+								</Box>
+								<Typography variant="h5">{project.githubName}</Typography>
+								<Typography
+									variant="body2"
+									color="text.secondary"
+									sx={{
+										lineHeight: 1.6,
+										display: "-webkit-box",
+										WebkitLineClamp: 2,
+										WebkitBoxOrient: "vertical",
+										overflow: "hidden",
+									}}
+								>
+									{project.tagline}
+								</Typography>
+								<Box
+									sx={{
+										display: "flex",
+										flexWrap: "wrap",
+										alignItems: "center",
+										columnGap: 1.5,
+										rowGap: 0.5,
+										mt: "auto",
+										pt: 1,
+									}}
+								>
 									<Typography
-										variant="body2"
-										color="text.secondary"
-										sx={{ lineHeight: 1.6 }}
+										variant="overline"
+										color="secondary.main"
+										component="span"
 									>
-										{project.tagline}
+										{project.category}
 									</Typography>
-									<Box sx={{ mt: "auto" }}>
-										<Box
-											sx={{
-												display: "flex",
-												flexWrap: "wrap",
-												alignItems: "center",
-												gap: 1.5,
-												mt: 1,
-											}}
-										>
-											{meta.stars > 0 && (
-												<Box
-													sx={{
-														display: "flex",
-														alignItems: "center",
-														gap: 0.5,
-													}}
-												>
-													<Star fontSize="small" color="secondary" />
-													<Typography
-														variant="overline"
-														sx={{ fontSize: "0.7rem" }}
-													>
-														{formatNumber(meta.stars)} stars
-													</Typography>
-												</Box>
-											)}
-											{meta.addon?.averageDailyUsers > 0 && (
-												<Box
-													sx={{
-														display: "flex",
-														alignItems: "center",
-														gap: 0.5,
-													}}
-												>
-													<People fontSize="small" color="secondary" />
-													<Typography
-														variant="overline"
-														sx={{ fontSize: "0.7rem" }}
-													>
-														{formatNumber(meta.addon.averageDailyUsers)} users
-													</Typography>
-												</Box>
-											)}
-											{meta.addon?.weeklyDownloads > 0 && (
-												<Box
-													sx={{
-														display: "flex",
-														alignItems: "center",
-														gap: 0.5,
-													}}
-												>
-													<Download fontSize="small" color="secondary" />
-													<Typography
-														variant="overline"
-														sx={{ fontSize: "0.7rem" }}
-													>
-														{formatNumber(meta.addon.weeklyDownloads)} weekly
-														downloads
-													</Typography>
-												</Box>
-											)}
-										</Box>
+									{meta.stars > 0 && (
 										<Typography
 											variant="overline"
-											color="secondary.main"
-											sx={{ display: "block", mt: 1 }}
+											color="text.secondary"
+											component="span"
 										>
-											{project.category}
+											{formatNumber(meta.stars)} stars
 										</Typography>
-									</Box>
+									)}
+									{meta.addon?.averageDailyUsers > 0 && (
+										<Typography
+											variant="overline"
+											color="text.secondary"
+											component="span"
+										>
+											{formatNumber(meta.addon.averageDailyUsers)} users
+										</Typography>
+									)}
 								</Box>
-							);
-						})}
-					</Box>
+							</Box>
+						);
+					})}
 				</Box>
 			</Container>
 
-			<Container maxWidth="lg" sx={{ mt: 10 }}>
+			<Container maxWidth="lg" sx={{ mt: { xs: 9, md: 14 } }}>
 				<Typography
 					variant="h2"
+					component="h2"
 					sx={{
 						textAlign: "center",
-						mb: { xs: 3, md: 4 },
-						fontFamily: '"Newsreader", serif',
-						fontWeight: 800,
-						textTransform: "uppercase",
-						letterSpacing: "-0.02em",
-						fontSize: { xs: "1.9rem", sm: "2.5rem", md: "3.25rem" },
-						lineHeight: 1.15,
+						mb: 1,
+						fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
 					}}
 				>
 					The Visual Archive
 				</Typography>
 				<Typography
-					variant="body1"
+					variant="body2"
+					component="p"
 					sx={{
 						textAlign: "center",
-						mb: { xs: 5, md: 8 },
-						fontFamily: '"Noto Serif", serif',
 						fontStyle: "italic",
-						opacity: 0.7,
-						maxWidth: 600,
-						mx: "auto",
+						color: "text.secondary",
+						mb: { xs: 5, md: 8 },
 					}}
 				>
-					A curated selection from the living archive.
+					Photographs and kinetic studies, preserved for the record.
 				</Typography>
 				<Suspense
 					fallback={
@@ -479,8 +390,15 @@ export default function LandingPage() {
 								justifyContent: "center",
 								py: 8,
 							}}
+							role="status"
+							aria-label="Loading gallery"
 						>
-							<CircularProgress size={40} thickness={3} />
+							<CircularProgress
+								size={32}
+								thickness={2}
+								color="inherit"
+								sx={{ color: "text.secondary" }}
+							/>
 						</Box>
 					}
 				>
@@ -489,13 +407,7 @@ export default function LandingPage() {
 			</Container>
 
 			<Container maxWidth="lg">
-				<Divider
-					sx={{
-						my: { xs: 5, md: 10 },
-						borderColor: "text.primary",
-						borderWidth: "2px",
-					}}
-				/>
+				<Divider sx={{ my: { xs: 6, md: 10 }, borderColor: "divider" }} />
 			</Container>
 
 			<Box
@@ -503,15 +415,26 @@ export default function LandingPage() {
 				sx={{
 					borderTop: "1px solid",
 					borderColor: "divider",
-					py: 6,
+					py: 4,
 					px: 2,
-					textAlign: "center",
-					mt: 10,
 				}}
 			>
-				<Typography variant="overline" sx={{ fontWeight: 800 }}>
-					© {new Date().getFullYear()} MANAS DOSHI — ALL RIGHTS RESERVED
-				</Typography>
+				<Container
+					maxWidth="lg"
+					sx={{
+						display: "flex",
+						justifyContent: "space-between",
+						flexWrap: "wrap",
+						gap: 1,
+					}}
+				>
+					<Typography variant="overline" color="text.secondary">
+						© {new Date().getFullYear()} Manas Doshi
+					</Typography>
+					<Typography variant="overline" color="text.secondary">
+						Set in Newsreader &amp; Noto Serif
+					</Typography>
+				</Container>
 			</Box>
 		</Box>
 	);

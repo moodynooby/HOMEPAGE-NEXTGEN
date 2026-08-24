@@ -60,12 +60,25 @@ MUI variant map (from the theme): `h1`–`h6` use Newsreader (weights 800/700/70
 - **Embrace whitespace** at the `20`–`24` spacing levels to let the ink breathe.
 - **Asymmetry is allowed — misalignment is not.** Editorial offsets and centered medallions create character; every list row keeps one consistent left edge for scanning.
 
+### The Landing Hero & Stats Strip
+
+- The hero is an **overline dateline** (`MANAS DOSHI · STUDENT · ENGINEER`) above a Newsreader deck — sentence case, one italic accent phrase for contrast. Never an all-caps shout line.
+- Live metrics (repos, stars, users, downloads) render as a **classifieds strip**: a single row between two hairlines, Newsreader values over Work Sans `overline` labels, separated by vertical hairlines. No boxes, no icons, no rounded cards.
+- One source of truth per screen: never show the same metric twice on a page.
+
 ### The Project Ledger (signature component)
 
 - Full-width rows on desktop, grouped under circular **year medallions** (italic Newsreader year, hairline ring) on a central timeline rule.
 - Each row: entry number (`No. 01`) → square thumbnail (grayscale, colorizes on hover) → Newsreader title → two-line tagline (clamped) → `overline` meta (`CATEGORY · YEAR · LANGUAGE`).
+- Rows are real links (not click-through divs) so keyboard and middle-click behave.
 - Rows are separated by ghost hairlines; hover lifts the row with a subtle `action.hover` background and slides the arrow.
 - On mobile: the timeline and entry numbers disappear, thumbnails shrink, rows stack.
+
+### The Article Page (project detail)
+
+- Reads as a newspaper clipping: back-link to the ledger → sepia category overline → Newsreader headline → italic tagline deck → hairline byline rule carrying meta (year · language · stars · users) and actions.
+- README content renders in a measure-limited column (~72ch): links inherit ink with a sepia underline, blockquotes get a ghost left rule, code blocks sit in boxed paper (hairline border, faint tint — never dark-mode-inverted), tables use hairline rules with Work Sans headers.
+- Pagination is a **pager row** ("Previous entry / Next entry") split across the width below a full-width hairline — never floating action buttons.
 
 ## 6. Elevation & Texture
 
@@ -80,9 +93,13 @@ MUI variant map (from the theme): `h1`–`h6` use Newsreader (weights 800/700/70
 | --- | --- |
 | **Buttons** | Primary: ink gradient (`primary.main → primary.dark`), sharp corners, no shadow. Secondary: `outline` frame at 20% opacity. Tertiary: text with a hairline underline that expands on hover. |
 | **Cards & lists** | No divider lines between items — separate with whitespace or the ghost border. The ledger row (see §5) is the canonical list item. |
+| **Directory row** | Icon (muted) → name → outward arrow that slides on hover, separated by ghost hairlines. The `/links` page pattern — no gradients, no scale effects. |
+| **Command palette** | Square panel, ink hairline frame, no shadow; active rows get a 2px sepia left rule and square shortcut keys in Work Sans caps. |
+| **Masthead** | Newsreader wordmark over a two-rule dateline: name · date · edition line (`overline`, Work Sans). Navigation is a vellum bar of text buttons with expanding underlines. |
 | **Inputs** | Bottom-only hairline rule; on focus the line shifts to `primary` and the label to sepia. |
 | **Chips** | Work Sans, uppercase, letter-spacing `0.1em`, square corners. |
 | **Links** | Inherit text color, hairline underline offset 4px; underline darkens on hover. |
+| **Colophon footer** | Ghost top rule, `overline` meta left/right (copyright · type credit). No centered shout lines. |
 
 ## 8. Content Guidelines (Portfolio)
 
@@ -112,3 +129,13 @@ The design only shines if the content is curated. Follow the content model in [A
 - Heavy shadows, pure black (`#000000`), or center-aligned body text.
 - Strong 1px borders for sectioning — use tonal shifts or the 10–15% ghost border.
 - Add container chrome around content the type hierarchy can carry alone.
+
+**Never (the generated-look ban list):**
+- **Scrolling tickers or marquees of self-metrics.** Stats live in one static classifieds strip; a site congratulating itself in an infinite loop is the loudest "auto-generated" signal there is.
+- **Glassmorphism on gradients** — translucent chips, blurred pills, or white-on-gradient text with shadows. If a surface needs `rgba(255,255,255,0.1)` + blur, the surface is wrong.
+- **Floating action buttons** for navigation. Wayfinding is typographic (pager rows, back links), never orphaned circles in corners.
+- **Full-screen gradient backgrounds** as page chrome. The parchment is the background; gradients exist only inside primary buttons.
+- **Icons standing in for headings** (a pin before "Featured Projects") and **emoji as icon substitutes**. Hierarchy is type; icons are functional only.
+- **Filler metadata** — meaningless badges ("DEV"), fake coordinates, decorative status dots. Every label must inform.
+- **Hover-only content that can never fire** — verify selectors actually match (no invented class names like `.motion-box`); captions must be reachable by real hover/focus states.
+- **Hard-coded hex outside `theme.js`/`index.css`.** Components read tokens only; scrims behind modals are the sole exception.
