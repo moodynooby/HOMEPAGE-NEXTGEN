@@ -10,6 +10,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
+import TechRadar from "@/components/TechRadar";
 import projectsData from "@/content/projects.json";
 import {
 	fetchAddonMetadata,
@@ -33,6 +34,7 @@ export default function LandingPage() {
 		addonCount: 0,
 	});
 	const [featuredMeta, setFeaturedMeta] = useState({});
+	const [activeRadarProjects, setActiveRadarProjects] = useState([]);
 	const shouldReduceMotion = useReducedMotion();
 
 	useEffect(() => {
@@ -260,6 +262,9 @@ export default function LandingPage() {
 				>
 					{featuredProjects.map((project) => {
 						const meta = featuredMeta[project.githubName] || {};
+						const isHighlighted = activeRadarProjects.includes(
+							project.githubName,
+						);
 						return (
 							<Box
 								key={project.githubName}
@@ -272,7 +277,10 @@ export default function LandingPage() {
 									py: { xs: 3, md: 0 },
 									textDecoration: "none",
 									color: "text.primary",
-									transition: "background-color 0.3s ease",
+									transition: "background-color 0.3s ease, outline 0.3s ease",
+									outline: isHighlighted ? "2px solid #93c47d" : "none",
+									outlineOffset: "4px",
+									borderRadius: 1,
 									"&:hover": { bgcolor: "action.hover" },
 									"&:hover .featured-thumb img": {
 										filter: "grayscale(0%) contrast(100%)",
@@ -364,6 +372,42 @@ export default function LandingPage() {
 						);
 					})}
 				</Box>
+			</Container>
+
+			<Container
+				maxWidth="lg"
+				sx={{ mt: { xs: 9, md: 14 } }}
+				id="tech-radar-section"
+			>
+				<Typography
+					variant="h2"
+					component="h2"
+					sx={{
+						textAlign: "center",
+						mb: 1,
+						fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
+					}}
+				>
+					Tech Stack Radar
+				</Typography>
+				<Typography
+					variant="body2"
+					component="p"
+					sx={{
+						textAlign: "center",
+						fontStyle: "italic",
+						color: "text.secondary",
+						mb: { xs: 5, md: 8 },
+					}}
+				>
+					An interactive overview of technologies I adopt, trial, assess, or
+					hold.
+				</Typography>
+				<TechRadar
+					onActiveBlipChange={(blip) =>
+						setActiveRadarProjects(blip ? blip.projects : [])
+					}
+				/>
 			</Container>
 
 			<Container
