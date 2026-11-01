@@ -13,6 +13,7 @@ import {
 	Language,
 	LinkedIn,
 	Link as LinkIcon,
+	Lock,
 	Person,
 } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -147,6 +148,13 @@ export default function CommandPalette({ children }) {
 			keywords: "shortcuts cheatsheet help",
 			perform: () => setShortcutsOpen(true),
 			icon: <Keyboard />,
+		},
+		{
+			id: "admin",
+			name: "Admin Dashboard",
+			keywords: "admin dashboard manage edit projects login",
+			perform: () => navigate("/admin"),
+			icon: <Lock />,
 		},
 		{
 			id: "filter-react",

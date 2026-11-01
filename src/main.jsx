@@ -26,6 +26,7 @@ const Projects = lazy(() => import("@/components/Projects"));
 const ProjectDetail = lazy(() => import("@/components/ProjectDetail"));
 const LinkTree = lazy(() => import("@/components/LinkTree"));
 const Gallery = lazy(() => import("@/components/Gallery"));
+const AdminDashboard = lazy(() => import("@/components/admin/AdminDashboard"));
 
 const AppContent = () => {
 	const { mode } = useThemeContext();
@@ -53,6 +54,7 @@ const AppContent = () => {
 									/>
 									<Route path="/links" element={<LinkTree />} />
 									<Route path="/gallery" element={<Gallery />} />
+									<Route path="/admin" element={<AdminDashboard />} />
 								</Routes>
 							</Suspense>
 						</ErrorBoundary>

@@ -444,7 +444,13 @@ export default function LandingPage() {
 						© {new Date().getFullYear()} Manas Doshi
 					</Typography>
 					<Typography variant="overline" color="text.secondary">
-						Set in Newsreader &amp; Noto Serif
+						Set in Newsreader &amp; Noto Serif ·{" "}
+						<Link
+							to="/admin"
+							style={{ color: "inherit", textDecoration: "none" }}
+						>
+							Admin
+						</Link>
 					</Typography>
 				</Container>
 			</Box>
