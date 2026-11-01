@@ -18,6 +18,7 @@ import CommandPalette from "@/components/CommandPalette";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LandingPage from "@/components/LandingPage";
 import RouteLoader from "@/components/RouteLoader";
+import { BookmarksContextProvider } from "@/contexts/BookmarksContext";
 import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
 import { getTheme } from "@/theme/theme";
 
@@ -67,7 +68,9 @@ const root = createRoot(document.getElementById("root"));
 root.render(
 	<StrictMode>
 		<ThemeContextProvider>
-			<AppContent />
+			<BookmarksContextProvider>
+				<AppContent />
+			</BookmarksContextProvider>
 		</ThemeContextProvider>
 	</StrictMode>,
 );

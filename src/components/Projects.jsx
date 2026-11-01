@@ -1,5 +1,7 @@
 import {
 	ArrowForward,
+	Bookmark,
+	BookmarkBorder,
 	Download,
 	RestartAlt,
 	Search,
@@ -13,6 +15,7 @@ import {
 	Chip,
 	Container,
 	FormControl,
+	IconButton,
 	InputAdornment,
 	InputLabel,
 	MenuItem,
@@ -29,6 +32,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
 import projectsData from "@/content/projects.json";
+import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import {
 	fetchAddonMetadata,
 	fetchRepoMetadata,
@@ -52,6 +56,7 @@ export default function Projects({ limit, showAppBar = true }) {
 	const [sortBy, setSortBy] = useState("Recently Updated");
 	const [selectedLanguages, setSelectedLanguages] = useState([]);
 	const shouldReduceMotion = useReducedMotion();
+	const { bookmarks, isBookmarked } = useBookmarksContext();
 
 	const allLanguages = useMemo(() => {
 		const langs = new Set();
@@ -186,6 +191,7 @@ export default function Projects({ limit, showAppBar = true }) {
 	];
 	const categories = [
 		"All",
+		"Bookmarked",
 		...categoryOrder.filter((category) => categoryCounts[category]),
 	];
 
@@ -195,15 +201,22 @@ export default function Projects({ limit, showAppBar = true }) {
 		[project.githubName, project.tagline, project.category, project.language]
 			.filter(Boolean)
 			.some((value) => value.toLowerCase().includes(normalizedQuery));
-
-	const filteredProjects = projects.filter(
-		(project) =>
+	const filteredProjects = projects.filter((project) => {
+		const matchesTech =
+			selectedLanguages.length === 0 ||
+			(project.language && selectedLanguages.includes(project.language)) ||
+			project.tags?.some((tag) => selectedLanguages.includes(tag));
+		if (activeCategory === "Bookmarked") {
+			return (
+				isBookmarked(project.githubName) && matchesQuery(project) && matchesTech
+			);
+		}
+		return (
 			(activeCategory === "All" || project.category === activeCategory) &&
 			matchesQuery(project) &&
-			(selectedLanguages.length === 0 ||
-				(project.language && selectedLanguages.includes(project.language)) ||
-				project.tags?.some((tag) => selectedLanguages.includes(tag))),
-	);
+			matchesTech
+		);
+	});
 
 	const sortedFilteredProjects = [...filteredProjects].sort((a, b) => {
 		switch (sortBy) {
@@ -389,14 +402,22 @@ export default function Projects({ limit, showAppBar = true }) {
 							</Typography>
 							<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
 								{categories.map((category) => {
-									const count =
-										category === "All"
-											? projects.length
-											: categoryCounts[category];
+									let count = 0;
+									if (category === "All") {
+										count = projects.length;
+									} else if (category === "Bookmarked") {
+										count = bookmarks.length;
+									} else {
+										count = categoryCounts[category];
+									}
+									const label =
+										category === "Bookmarked"
+											? `Saved (${count})`
+											: `${category} · ${count}`;
 									return (
 										<Chip
 											key={category}
-											label={`${category} · ${count}`}
+											label={label}
 											onClick={() => setActiveCategory(category)}
 											variant={
 												activeCategory === category ? "filled" : "outlined"
@@ -446,7 +467,9 @@ export default function Projects({ limit, showAppBar = true }) {
 							variant="body1"
 							sx={{ textAlign: "center", py: 10, color: "text.secondary" }}
 						>
-							Nothing filed under this heading yet.
+							{activeCategory === "Bookmarked"
+								? "No bookmarked projects yet. Click the bookmark icon on any project to save it here."
+								: "Nothing filed under this heading yet."}
 						</Typography>
 					) : (
 						<Box key={activeCategory} sx={{ position: "relative" }}>
@@ -508,7 +531,6 @@ export default function Projects({ limit, showAppBar = true }) {
 												{year}
 											</Typography>
 										</MotionBox>
-
 										<Box sx={{ width: "100%" }}>
 											{groupedProjects[year].map((project) => (
 												<ProjectCard
@@ -520,7 +542,7 @@ export default function Projects({ limit, showAppBar = true }) {
 													year={year}
 												/>
 											))}
-										</Box>
+										</Box>{" "}
 									</Box>
 								))
 							) : (
@@ -552,6 +574,7 @@ function ProjectCard({
 	shouldReduceMotion,
 	year,
 }) {
+	const { isBookmarked, toggleBookmark } = useBookmarksContext();
 	return (
 		<MotionBox
 			initial={shouldReduceMotion ? false : { y: 16, opacity: 0 }}
@@ -724,6 +747,26 @@ function ProjectCard({
 						)}
 					</Box>
 				</Box>
+
+				<IconButton
+					size="small"
+					onClick={(e) => {
+						e.preventDefault();
+						toggleBookmark(project.githubName);
+					}}
+					aria-label={
+						isBookmarked(project.githubName)
+							? "Remove bookmark"
+							: "Bookmark project"
+					}
+					sx={{ mr: 1, zIndex: 2 }}
+				>
+					{isBookmarked(project.githubName) ? (
+						<Bookmark color="primary" />
+					) : (
+						<BookmarkBorder />
+					)}
+				</IconButton>
 
 				<Box
 					className="ledger-arrow"

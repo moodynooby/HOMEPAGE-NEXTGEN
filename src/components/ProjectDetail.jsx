@@ -1,10 +1,19 @@
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import {
+	ArrowBack,
+	ArrowForward,
+	Bookmark,
+	BookmarkBorder,
+	Share,
+} from "@mui/icons-material";
 import {
 	Box,
 	Button,
 	Container,
 	Divider,
+	IconButton,
 	Skeleton,
+	Snackbar,
+	Tooltip,
 	Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
@@ -17,6 +26,7 @@ import remarkGfm from "remark-gfm";
 
 import ButtonAppBar from "@/components/Header";
 import projects from "@/content/projects.json";
+import { useBookmarksContext } from "@/contexts/BookmarksContext";
 
 const MONO_STACK =
 	'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace';
@@ -139,6 +149,9 @@ export default function ProjectDetail({ limit }) {
 	const [loading, setLoading] = useState(true);
 	const [repoStats, setRepoStats] = useState(null);
 	const [addonStats, setAddonStats] = useState(null);
+	const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+	const { isBookmarked, toggleBookmark } = useBookmarksContext();
 
 	useEffect(() => {
 		if (!project) {
@@ -211,6 +224,11 @@ export default function ProjectDetail({ limit }) {
 
 	if (!project) return null;
 
+	const handleShare = () => {
+		navigator.clipboard.writeText(window.location.href);
+		setSnackbarOpen(true);
+	};
+
 	const prevProject =
 		currentIndex > 0 ? displayedProjects[currentIndex - 1] : null;
 	const nextProject =
@@ -228,15 +246,57 @@ export default function ProjectDetail({ limit }) {
 				transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.4 }}
 			>
 				<Container maxWidth="md" sx={{ pt: { xs: 5, md: 7 }, pb: 10 }}>
-					<Button
-						component={RouterLink}
-						to="/projects"
-						color="inherit"
-						startIcon={<ArrowBack fontSize="small" />}
-						sx={{ mb: 5 }}
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							mb: 5,
+						}}
 					>
-						Project Ledger
-					</Button>
+						<Button
+							component={RouterLink}
+							to="/projects"
+							color="inherit"
+							startIcon={<ArrowBack fontSize="small" />}
+						>
+							Project Ledger
+						</Button>
+						<Box sx={{ display: "flex", gap: 1 }}>
+							<Tooltip title="Share Project">
+								<IconButton
+									onClick={handleShare}
+									aria-label="Share Project"
+									size="small"
+								>
+									<Share fontSize="small" />
+								</IconButton>
+							</Tooltip>
+							<Tooltip
+								title={
+									isBookmarked(project.githubName)
+										? "Remove bookmark"
+										: "Bookmark project"
+								}
+							>
+								<IconButton
+									onClick={() => toggleBookmark(project.githubName)}
+									aria-label={
+										isBookmarked(project.githubName)
+											? "Remove bookmark"
+											: "Bookmark project"
+									}
+									size="small"
+								>
+									{isBookmarked(project.githubName) ? (
+										<Bookmark color="primary" fontSize="small" />
+									) : (
+										<BookmarkBorder fontSize="small" />
+									)}
+								</IconButton>
+							</Tooltip>
+						</Box>
+					</Box>
 
 					<Typography variant="overline" color="secondary.main">
 						{project.category}
@@ -474,6 +534,12 @@ export default function ProjectDetail({ limit }) {
 					</Box>
 				</Container>
 			</motion.div>
+			<Snackbar
+				open={snackbarOpen}
+				autoHideDuration={3000}
+				onClose={() => setSnackbarOpen(false)}
+				message="Project link copied to clipboard!"
+			/>
 		</Box>
 	);
 }
