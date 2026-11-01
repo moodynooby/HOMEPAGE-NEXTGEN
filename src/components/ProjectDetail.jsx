@@ -25,6 +25,7 @@ import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import remarkGfm from "remark-gfm";
 
 import ButtonAppBar from "@/components/Header";
+import TerminalDemo from "@/components/TerminalDemo";
 import projects from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 
@@ -383,6 +384,8 @@ export default function ProjectDetail({ limit }) {
 							)}
 						</Box>
 					</Box>
+
+					{project.cliDemo && <TerminalDemo projectName={project.githubName} />}
 
 					{loading ? (
 						<Box

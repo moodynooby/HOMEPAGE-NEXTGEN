@@ -101,7 +101,8 @@
 		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/WEB_CONTRACTOR/master/README.md",
 		"githubImg": "https://github.com/moodynooby/WEB_CONTRACTOR/blob/master/img.png?raw=true",
 		"tagline": "An LLM-powered pipeline builder with a Streamlit dashboard and Telegram bot.",
-		"category": "AI Tool"
+		"category": "AI Tool",
+		"cliDemo": true
 	},
 	{
 		"githubName": "whatsapp-web-incognito",
@@ -119,7 +120,8 @@
 		"tagline": "NanoBrowser — an open-source AI web agent for extracting data and automating browser tasks.",
 		"category": "AI Tool",
 		"addonId": "nanobrowser-ai-web-agent",
-		"chromeStatsId": "nanobrowser-ai-web-agent"
+		"chromeStatsId": "nanobrowser-ai-web-agent",
+		"cliDemo": true
 	},
 	{
 		"githubName": "Club-Carnival-26",
