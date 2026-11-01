@@ -14,7 +14,7 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
 import projectsData from "@/content/projects.json";
 import {
@@ -31,9 +31,22 @@ export default function Projects({ limit, showAppBar = true }) {
 	const [projects, setProjects] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [loadError, setLoadError] = useState("");
+	const location = useLocation();
 	const [activeCategory, setActiveCategory] = useState("All");
-	const [searchQuery, setSearchQuery] = useState("");
+
+	const [searchQuery, setSearchQuery] = useState(() => {
+		const params = new URLSearchParams(location.search);
+		return params.get("q") || "";
+	});
 	const shouldReduceMotion = useReducedMotion();
+
+	useEffect(() => {
+		const params = new URLSearchParams(location.search);
+		const q = params.get("q");
+		if (q !== null) {
+			setSearchQuery(q);
+		}
+	}, [location.search]);
 
 	useEffect(() => {
 		let isMounted = true;

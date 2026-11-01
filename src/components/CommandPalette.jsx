@@ -4,13 +4,26 @@ import {
 	Brightness7,
 	BrightnessAuto,
 	Collections,
+	Email,
+	FilterList,
 	GitHub,
 	Home,
+	Info,
+	Keyboard,
 	Language,
 	LinkedIn,
+	Link as LinkIcon,
 	Person,
 } from "@mui/icons-material";
-import { Box, Typography, useTheme } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+	Box,
+	Fade,
+	IconButton,
+	Modal,
+	Typography,
+	useTheme,
+} from "@mui/material";
 import {
 	KBarAnimator,
 	KBarPortal,
@@ -21,14 +34,54 @@ import {
 	useMatches,
 } from "kbar";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useThemeContext } from "@/contexts/ThemeContext";
 
 export default function CommandPalette({ children }) {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { setThemeMode } = useThemeContext();
 	const theme = useTheme();
+	const [shortcutsOpen, setShortcutsOpen] = useState(false);
+
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			if (
+				e.key === "?" &&
+				!["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)
+			) {
+				e.preventDefault();
+				setShortcutsOpen(true);
+			}
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
+
+	const handleJumpToSection = (sectionId) => {
+		if (location.pathname !== "/") {
+			navigate("/");
+			setTimeout(() => {
+				const element = document.getElementById(sectionId);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth" });
+				}
+			}, 100);
+		} else {
+			const element = document.getElementById(sectionId);
+			if (element) {
+				element.scrollIntoView({ behavior: "smooth" });
+			}
+		}
+	};
+
+	const copyToClipboard = (text, _message) => {
+		navigator.clipboard.writeText(text);
+		// Assuming there is some global notification system or simple alert
+		// alert(message);
+	};
 
 	const actions = [
 		{
@@ -86,6 +139,85 @@ export default function CommandPalette({ children }) {
 			keywords: "theme-system-auto",
 			perform: () => setThemeMode("system"),
 			icon: <BrightnessAuto />,
+		},
+		{
+			id: "shortcuts",
+			name: "Keyboard Shortcuts",
+			shortcut: ["?"],
+			keywords: "shortcuts cheatsheet help",
+			perform: () => setShortcutsOpen(true),
+			icon: <Keyboard />,
+		},
+		{
+			id: "filter-react",
+			name: "Filter Projects: React",
+			keywords: "react",
+			perform: () => navigate("/projects?q=React"),
+			icon: <FilterList />,
+		},
+		{
+			id: "filter-python",
+			name: "Filter Projects: Python",
+			keywords: "python",
+			perform: () => navigate("/projects?q=Python"),
+			icon: <FilterList />,
+		},
+		{
+			id: "filter-ml",
+			name: "Filter Projects: Machine Learning",
+			keywords: "machine learning ml",
+			perform: () => navigate("/projects?q=Machine Learning"),
+			icon: <FilterList />,
+		},
+		{
+			id: "filter-web3",
+			name: "Filter Projects: Web3",
+			keywords: "web3 crypto blockchain",
+			perform: () => navigate("/projects?q=Web3"),
+			icon: <FilterList />,
+		},
+		{
+			id: "filter-rust",
+			name: "Filter Projects: Rust",
+			keywords: "rust",
+			perform: () => navigate("/projects?q=Rust"),
+			icon: <FilterList />,
+		},
+		{
+			id: "copy-link",
+			name: "Copy Portfolio Link",
+			keywords: "copy link url share",
+			perform: () =>
+				copyToClipboard(window.location.origin, "Portfolio link copied!"),
+			icon: <LinkIcon />,
+		},
+		{
+			id: "copy-email",
+			name: "Copy Email",
+			keywords: "copy email contact",
+			perform: () => copyToClipboard("doshimanas27@gmail.com", "Email copied!"),
+			icon: <Email />,
+		},
+		{
+			id: "jump-projects",
+			name: "Jump to Section: Projects",
+			keywords: "jump navigate section projects featured",
+			perform: () => handleJumpToSection("projects-section"),
+			icon: <AccountTree />,
+		},
+		{
+			id: "jump-experience",
+			name: "Jump to Section: Experience",
+			keywords: "jump navigate section experience visual archive",
+			perform: () => handleJumpToSection("experience-section"),
+			icon: <Collections />,
+		},
+		{
+			id: "jump-about",
+			name: "Jump to Section: About",
+			keywords: "jump navigate section about intro",
+			perform: () => handleJumpToSection("about-section"),
+			icon: <Info />,
 		},
 		{
 			id: "github",
@@ -170,6 +302,107 @@ export default function CommandPalette({ children }) {
 				</KBarPositioner>
 			</KBarPortal>
 			{children}
+
+			<Modal
+				open={shortcutsOpen}
+				onClose={() => setShortcutsOpen(false)}
+				aria-labelledby="shortcuts-modal-title"
+				aria-describedby="shortcuts-modal-description"
+				closeAfterTransition
+				sx={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					zIndex: 10000,
+					backdropFilter: "blur(4px)",
+				}}
+			>
+				<Fade in={shortcutsOpen}>
+					<Box
+						sx={{
+							bgcolor: "background.paper",
+							border: `1px solid ${theme.palette.text.primary}`,
+							boxShadow: 24,
+							p: 4,
+							maxWidth: 500,
+							width: "90%",
+							borderRadius: 0,
+							outline: "none",
+						}}
+					>
+						<Box
+							sx={{
+								display: "flex",
+								justifyContent: "space-between",
+								alignItems: "center",
+								mb: 3,
+							}}
+						>
+							<Typography
+								id="shortcuts-modal-title"
+								variant="h4"
+								component="h2"
+							>
+								Keyboard Shortcuts
+							</Typography>
+							<IconButton
+								onClick={() => setShortcutsOpen(false)}
+								sx={{ color: "text.primary" }}
+								aria-label="Close shortcuts modal"
+							>
+								<CloseIcon />
+							</IconButton>
+						</Box>
+						<Box
+							id="shortcuts-modal-description"
+							sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+						>
+							{[
+								{ key: "Cmd/Ctrl + K", desc: "Open Command Palette" },
+								{ key: "H", desc: "Go to Home" },
+								{ key: "P", desc: "Go to Projects" },
+								{ key: "L", desc: "Go to Profile / Links" },
+								{ key: "G", desc: "Go to Media Gallery" },
+								{ key: "T L", desc: "Theme: Light" },
+								{ key: "T D", desc: "Theme: Dark" },
+								{ key: "T S", desc: "Theme: System" },
+								{ key: "?", desc: "Toggle this cheatsheet" },
+							].map((sc) => (
+								<Box
+									key={sc.desc}
+									sx={{
+										display: "flex",
+										justifyContent: "space-between",
+										alignItems: "center",
+										borderBottom: `1px solid ${theme.palette.divider}`,
+										pb: 1,
+									}}
+								>
+									<Typography variant="body1">{sc.desc}</Typography>
+									<Box sx={{ display: "flex", gap: 0.5 }}>
+										{sc.key.split(" ").map((k) => (
+											<Box
+												key={`${sc.desc}-${k}`}
+												sx={{
+													px: 1,
+													py: 0.5,
+													bgcolor: "action.selected",
+													fontSize: "0.75rem",
+													fontWeight: 600,
+													textTransform: "uppercase",
+													border: `1px solid ${theme.palette.divider}`,
+												}}
+											>
+												{k}
+											</Box>
+										))}
+									</Box>
+								</Box>
+							))}
+						</Box>
+					</Box>
+				</Fade>
+			</Modal>
 		</KBarProvider>
 	);
 }

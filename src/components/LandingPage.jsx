@@ -120,7 +120,11 @@ export default function LandingPage() {
 		<Box sx={{ minHeight: "100vh", pb: 8 }}>
 			<ButtonAppBar />
 
-			<Container maxWidth="lg" sx={{ mt: { xs: 7, md: 10 } }}>
+			<Container
+				maxWidth="lg"
+				sx={{ mt: { xs: 7, md: 10 } }}
+				id="about-section"
+			>
 				<motion.div
 					initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -221,7 +225,11 @@ export default function LandingPage() {
 				</motion.div>
 			</Container>
 
-			<Container maxWidth="lg" sx={{ mt: { xs: 8, md: 12 } }}>
+			<Container
+				maxWidth="lg"
+				sx={{ mt: { xs: 8, md: 12 } }}
+				id="projects-section"
+			>
 				<Box
 					sx={{
 						display: "flex",
@@ -358,7 +366,11 @@ export default function LandingPage() {
 				</Box>
 			</Container>
 
-			<Container maxWidth="lg" sx={{ mt: { xs: 9, md: 14 } }}>
+			<Container
+				maxWidth="lg"
+				sx={{ mt: { xs: 9, md: 14 } }}
+				id="experience-section"
+			>
 				<Typography
 					variant="h2"
 					component="h2"
