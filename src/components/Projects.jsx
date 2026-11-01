@@ -1,10 +1,22 @@
-import { ArrowForward, Download, Search, Star } from "@mui/icons-material";
+import {
+	ArrowForward,
+	Download,
+	RestartAlt,
+	Search,
+	Star,
+} from "@mui/icons-material";
 import {
 	Alert,
+	Badge,
 	Box,
+	Button,
 	Chip,
 	Container,
+	FormControl,
 	InputAdornment,
+	InputLabel,
+	MenuItem,
+	Select,
 	Skeleton,
 	TextField,
 	Typography,
@@ -13,7 +25,7 @@ import {
 } from "@mui/material";
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
 import projectsData from "@/content/projects.json";
@@ -33,12 +45,26 @@ export default function Projects({ limit, showAppBar = true }) {
 	const [loadError, setLoadError] = useState("");
 	const location = useLocation();
 	const [activeCategory, setActiveCategory] = useState("All");
-
 	const [searchQuery, setSearchQuery] = useState(() => {
 		const params = new URLSearchParams(location.search);
 		return params.get("q") || "";
 	});
+	const [sortBy, setSortBy] = useState("Recently Updated");
+	const [selectedLanguages, setSelectedLanguages] = useState([]);
 	const shouldReduceMotion = useReducedMotion();
+
+	const allLanguages = useMemo(() => {
+		const langs = new Set();
+		for (const p of projects) {
+			if (p.language) langs.add(p.language);
+			if (p.tags && Array.isArray(p.tags)) {
+				for (const tag of p.tags) {
+					langs.add(tag);
+				}
+			}
+		}
+		return Array.from(langs).sort();
+	}, [projects]);
 
 	useEffect(() => {
 		const params = new URLSearchParams(location.search);
@@ -63,6 +89,7 @@ export default function Projects({ limit, showAppBar = true }) {
 							...project,
 							year: metadata?.year || new Date().getFullYear(),
 							date: metadata?.created_at || "",
+							pushed_at: metadata?.pushed_at || "",
 							language: metadata?.language || "",
 							stars: metadata?.stars || 0,
 							forks: metadata?.forks || 0,
@@ -70,9 +97,15 @@ export default function Projects({ limit, showAppBar = true }) {
 						};
 					}),
 				);
-				const sortedProjects = projectsWithMetadata.sort(
-					(a, b) => new Date(b.date) - new Date(a.date),
-				);
+				const sortedProjects = projectsWithMetadata.sort((a, b) => {
+					const dateB = b.pushed_at
+						? new Date(b.pushed_at)
+						: new Date(b.year, 0, 1);
+					const dateA = a.pushed_at
+						? new Date(a.pushed_at)
+						: new Date(a.year, 0, 1);
+					return dateB - dateA;
+				});
 
 				if (isMounted) {
 					setProjects(limit ? sortedProjects.slice(0, limit) : sortedProjects);
@@ -155,27 +188,82 @@ export default function Projects({ limit, showAppBar = true }) {
 		"All",
 		...categoryOrder.filter((category) => categoryCounts[category]),
 	];
+
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 	const matchesQuery = (project) =>
 		!normalizedQuery ||
 		[project.githubName, project.tagline, project.category, project.language]
 			.filter(Boolean)
 			.some((value) => value.toLowerCase().includes(normalizedQuery));
+
 	const filteredProjects = projects.filter(
 		(project) =>
 			(activeCategory === "All" || project.category === activeCategory) &&
-			matchesQuery(project),
+			matchesQuery(project) &&
+			(selectedLanguages.length === 0 ||
+				(project.language && selectedLanguages.includes(project.language)) ||
+				project.tags?.some((tag) => selectedLanguages.includes(tag))),
 	);
 
-	const groupedProjects = groupProjectsByYear(filteredProjects);
+	const sortedFilteredProjects = [...filteredProjects].sort((a, b) => {
+		switch (sortBy) {
+			case "Most Stars":
+				return (b.stars || 0) - (a.stars || 0);
+			case "Name (A-Z)":
+				return a.githubName.localeCompare(b.githubName);
+			case "Name (Z-A)":
+				return b.githubName.localeCompare(a.githubName);
+			case "Year (Newest)":
+				return (b.year || 0) - (a.year || 0);
+			case "Year (Oldest)":
+				return (a.year || 0) - (b.year || 0);
+			default: {
+				const dateB = b.pushed_at
+					? new Date(b.pushed_at)
+					: new Date(b.year, 0, 1);
+				const dateA = a.pushed_at
+					? new Date(a.pushed_at)
+					: new Date(a.year, 0, 1);
+				return dateB - dateA;
+			}
+		}
+	});
+
+	const groupedProjects = groupProjectsByYear(sortedFilteredProjects);
 	const years = Object.keys(groupedProjects).sort((a, b) => {
 		if (a === "Unknown") return 1;
 		if (b === "Unknown") return -1;
+		if (sortBy === "Year (Oldest)") return Number(a) - Number(b);
 		return Number(b) - Number(a);
 	});
+
 	const entryNumbers = new Map(
 		projects.map((project, idx) => [project.githubName, idx + 1]),
 	);
+
+	const activeFiltersCount =
+		(activeCategory !== "All" ? 1 : 0) +
+		(searchQuery.trim() !== "" ? 1 : 0) +
+		selectedLanguages.length +
+		(sortBy !== "Recently Updated" ? 1 : 0);
+
+	const handleResetFilters = () => {
+		setActiveCategory("All");
+		setSearchQuery("");
+		setSortBy("Recently Updated");
+		setSelectedLanguages([]);
+	};
+
+	const toggleLanguage = (lang) => {
+		setSelectedLanguages((prev) =>
+			prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang],
+		);
+	};
+
+	const isGroupedByYear =
+		sortBy === "Recently Updated" ||
+		sortBy === "Year (Newest)" ||
+		sortBy === "Year (Oldest)";
 
 	return (
 		<>
@@ -206,63 +294,151 @@ export default function Projects({ limit, showAppBar = true }) {
 								borderBottom: "1px solid",
 								borderColor: "divider",
 								pb: 3,
-								mb: 5,
+								mb: 4,
 							}}
 						>
-							<Typography variant="h2" component="h1">
-								The Project Ledger
-							</Typography>
-							<Typography variant="overline" color="text.secondary">
-								A running index of shipped work
-							</Typography>
+							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+								<Typography variant="h2" component="h1">
+									The Project Ledger
+								</Typography>
+								{activeFiltersCount > 0 && (
+									<Badge
+										badgeContent={activeFiltersCount}
+										color="primary"
+										sx={{ ml: 1 }}
+									>
+										<Box sx={{ width: 8, height: 8 }} />
+									</Badge>
+								)}
+							</Box>
+							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+								{activeFiltersCount > 0 && (
+									<Button
+										size="small"
+										startIcon={<RestartAlt />}
+										onClick={handleResetFilters}
+										sx={{ textTransform: "none" }}
+									>
+										Reset All Filters
+									</Button>
+								)}
+								<Typography variant="overline" color="text.secondary">
+									A running index of shipped work
+								</Typography>
+							</Box>
 						</Box>
-
-						<TextField
-							fullWidth
-							variant="standard"
-							value={searchQuery}
-							onChange={(event) => setSearchQuery(event.target.value)}
-							placeholder="Filter by name, tagline, or technology"
-							aria-label="Search projects"
-							sx={{ maxWidth: 560, mb: 4 }}
-							slotProps={{
-								input: {
-									startAdornment: (
-										<InputAdornment position="start">
-											<Search fontSize="small" />
-										</InputAdornment>
-									),
-									sx: { fontFamily: '"Work Sans Variable", sans-serif' },
-								},
-							}}
-						/>
 
 						<Box
 							sx={{
 								display: "flex",
 								flexWrap: "wrap",
-								gap: 1,
-								mb: 7,
+								gap: 2,
+								mb: 4,
+								alignItems: "flex-end",
 							}}
 						>
-							{categories.map((category) => {
-								const count =
-									category === "All"
-										? projects.length
-										: categoryCounts[category];
-								return (
-									<Chip
-										key={category}
-										label={`${category} · ${count}`}
-										onClick={() => setActiveCategory(category)}
-										variant={
-											activeCategory === category ? "filled" : "outlined"
-										}
-										color={activeCategory === category ? "primary" : "default"}
-									/>
-								);
-							})}
+							<TextField
+								fullWidth
+								variant="standard"
+								value={searchQuery}
+								onChange={(event) => setSearchQuery(event.target.value)}
+								placeholder="Filter by name, tagline, or technology"
+								aria-label="Search projects"
+								sx={{ maxWidth: 560, flex: "1 1 300px" }}
+								slotProps={{
+									input: {
+										startAdornment: (
+											<InputAdornment position="start">
+												<Search fontSize="small" />
+											</InputAdornment>
+										),
+										sx: { fontFamily: '"Work Sans Variable", sans-serif' },
+									},
+								}}
+							/>
+
+							<FormControl
+								variant="standard"
+								sx={{ minWidth: 200, flexShrink: 0 }}
+							>
+								<InputLabel id="sort-select-label">Sort By</InputLabel>
+								<Select
+									labelId="sort-select-label"
+									value={sortBy}
+									onChange={(e) => setSortBy(e.target.value)}
+									label="Sort By"
+									sx={{ fontFamily: '"Work Sans Variable", sans-serif' }}
+								>
+									<MenuItem value="Recently Updated">Recently Updated</MenuItem>
+									<MenuItem value="Most Stars">Most Stars</MenuItem>
+									<MenuItem value="Name (A-Z)">Name (A-Z)</MenuItem>
+									<MenuItem value="Name (Z-A)">Name (Z-A)</MenuItem>
+									<MenuItem value="Year (Newest)">Year (Newest)</MenuItem>
+									<MenuItem value="Year (Oldest)">Year (Oldest)</MenuItem>
+								</Select>
+							</FormControl>
 						</Box>
+
+						<Box sx={{ mb: 2 }}>
+							<Typography
+								variant="overline"
+								color="text.secondary"
+								sx={{ display: "block", mb: 1 }}
+							>
+								Categories
+							</Typography>
+							<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+								{categories.map((category) => {
+									const count =
+										category === "All"
+											? projects.length
+											: categoryCounts[category];
+									return (
+										<Chip
+											key={category}
+											label={`${category} · ${count}`}
+											onClick={() => setActiveCategory(category)}
+											variant={
+												activeCategory === category ? "filled" : "outlined"
+											}
+											color={
+												activeCategory === category ? "primary" : "default"
+											}
+										/>
+									);
+								})}
+							</Box>
+						</Box>
+
+						{allLanguages.length > 0 && (
+							<Box sx={{ mb: 6 }}>
+								<Typography
+									variant="overline"
+									color="text.secondary"
+									sx={{ display: "block", mb: 1 }}
+								>
+									Technologies / Languages
+								</Typography>
+								<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+									{allLanguages.map((lang) => (
+										<Chip
+											key={lang}
+											label={lang}
+											onClick={() => toggleLanguage(lang)}
+											variant={
+												selectedLanguages.includes(lang) ? "filled" : "outlined"
+											}
+											color={
+												selectedLanguages.includes(lang)
+													? "secondary"
+													: "default"
+											}
+											size="small"
+										/>
+									))}
+								</Box>
+							</Box>
+						)}
 					</motion.div>
 
 					{filteredProjects.length === 0 ? (
@@ -274,7 +450,7 @@ export default function Projects({ limit, showAppBar = true }) {
 						</Typography>
 					) : (
 						<Box key={activeCategory} sx={{ position: "relative" }}>
-							{!isMobile && (
+							{!isMobile && isGroupedByYear && (
 								<Box
 									sx={{
 										position: "absolute",
@@ -288,256 +464,79 @@ export default function Projects({ limit, showAppBar = true }) {
 								/>
 							)}
 
-							{years.map((year) => (
-								<Box
-									key={year}
-									sx={{
-										mb: { xs: 7, md: 12 },
-										display: "flex",
-										flexDirection: "column",
-										alignItems: "center",
-										position: "relative",
-									}}
-								>
-									<MotionBox
-										initial={
-											shouldReduceMotion ? false : { scale: 0.9, opacity: 0 }
-										}
-										whileInView={
-											shouldReduceMotion ? undefined : { scale: 1, opacity: 1 }
-										}
-										viewport={{ once: true }}
+							{isGroupedByYear ? (
+								years.map((year) => (
+									<Box
+										key={year}
 										sx={{
-											bgcolor: "background.default",
-											border: "1px solid",
-											borderColor: "divider",
+											mb: { xs: 7, md: 12 },
 											display: "flex",
+											flexDirection: "column",
 											alignItems: "center",
-											justifyContent: "center",
-											width: 128,
-											height: 128,
-											borderRadius: "50%",
-											mb: 7,
-											zIndex: 2,
+											position: "relative",
 										}}
 									>
-										<Typography
-											variant="h3"
-											component="p"
-											sx={{ fontStyle: "italic", fontWeight: 400 }}
+										<MotionBox
+											initial={
+												shouldReduceMotion ? false : { scale: 0.9, opacity: 0 }
+											}
+											whileInView={
+												shouldReduceMotion
+													? undefined
+													: { scale: 1, opacity: 1 }
+											}
+											viewport={{ once: true }}
+											sx={{
+												bgcolor: "background.default",
+												border: "1px solid",
+												borderColor: "divider",
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												width: 128,
+												height: 128,
+												borderRadius: "50%",
+												mb: 7,
+												zIndex: 2,
+											}}
 										>
-											{year}
-										</Typography>
-									</MotionBox>
-
-									<Box sx={{ width: "100%" }}>
-										{groupedProjects[year].map((project) => (
-											<MotionBox
-												key={project.githubName}
-												initial={
-													shouldReduceMotion ? false : { y: 16, opacity: 0 }
-												}
-												whileInView={
-													shouldReduceMotion ? undefined : { y: 0, opacity: 1 }
-												}
-												viewport={{ once: true }}
-												transition={
-													shouldReduceMotion
-														? { duration: 0 }
-														: { duration: 0.45 }
-												}
-												sx={{ bgcolor: "background.default" }}
+											<Typography
+												variant="h3"
+												component="p"
+												sx={{ fontStyle: "italic", fontWeight: 400 }}
 											>
-												<Box
-													component={RouterLink}
-													to={`/projects/${project.githubName}`}
-													aria-label={`Open project ${project.githubName}`}
-													sx={{
-														display: "flex",
-														alignItems: "center",
-														gap: { xs: 2.5, md: 4 },
-														py: { xs: 2.5, md: 3.5 },
-														px: { xs: 1.5, md: 2 },
-														cursor: "pointer",
-														textDecoration: "none",
-														color: "text.primary",
-														borderTop: "1px solid",
-														borderColor: "divider",
-														transition: "background-color 0.3s ease",
-														"&:hover": {
-															bgcolor: "action.hover",
-														},
-														"&:hover .ledger-arrow": {
-															transform: "translateX(4px)",
-															opacity: 1,
-														},
-														"&:hover .ledger-thumb img": {
-															filter: "grayscale(0%) contrast(100%)",
-														},
-													}}
-												>
-													{!isMobile && (
-														<Typography
-															variant="overline"
-															sx={{
-																width: 56,
-																flexShrink: 0,
-																color: "text.secondary",
-																lineHeight: 1,
-															}}
-														>
-															No.{" "}
-															{String(
-																entryNumbers.get(project.githubName),
-															).padStart(2, "0")}
-														</Typography>
-													)}
+												{year}
+											</Typography>
+										</MotionBox>
 
-													<Box
-														className="ledger-thumb"
-														sx={{
-															width: { xs: 56, md: 88 },
-															height: { xs: 56, md: 88 },
-															flexShrink: 0,
-															bgcolor: "background.paper",
-															border: "1px solid",
-															borderColor: "divider",
-															display: "flex",
-															alignItems: "center",
-															justifyContent: "center",
-															p: { xs: 1, md: 1.5 },
-															overflow: "hidden",
-														}}
-													>
-														<Box
-															component="img"
-															src={project.githubImg}
-															alt=""
-															loading="lazy"
-															sx={{
-																maxWidth: "100%",
-																maxHeight: "100%",
-																objectFit: "contain",
-																filter: "grayscale(100%) contrast(115%)",
-																transition: "filter 0.5s ease-in-out",
-															}}
-														/>
-													</Box>
-
-													<Box sx={{ flex: 1, minWidth: 0 }}>
-														<Typography variant="h5" sx={{ mb: 0.5 }}>
-															{project.githubName}
-														</Typography>
-														<Typography
-															variant="body2"
-															color="text.secondary"
-															sx={{
-																display: "-webkit-box",
-																WebkitLineClamp: 2,
-																WebkitBoxOrient: "vertical",
-																overflow: "hidden",
-															}}
-														>
-															{project.tagline}
-														</Typography>
-														<Box
-															sx={{
-																display: "flex",
-																alignItems: "center",
-																columnGap: 1.5,
-																rowGap: 0.5,
-																mt: 1,
-																flexWrap: "wrap",
-															}}
-														>
-															<Typography
-																variant="overline"
-																color="secondary.main"
-																lineHeight={1}
-															>
-																{project.category}
-															</Typography>
-															<Typography
-																variant="overline"
-																color="text.secondary"
-																lineHeight={1}
-																sx={{ opacity: 0.85 }}
-															>
-																{year}
-																{project.language
-																	? ` · ${project.language}`
-																	: ""}
-															</Typography>
-															{project.stars > 0 && (
-																<Box
-																	sx={{
-																		display: "flex",
-																		alignItems: "center",
-																		gap: 0.5,
-																	}}
-																>
-																	<Star
-																		sx={{
-																			fontSize: "0.8rem",
-																			color: "secondary.main",
-																		}}
-																	/>
-																	<Typography
-																		variant="overline"
-																		color="text.secondary"
-																		lineHeight={1}
-																	>
-																		{project.stars}
-																	</Typography>
-																</Box>
-															)}
-															{project.addonMetadata && (
-																<Box
-																	sx={{
-																		display: "flex",
-																		alignItems: "center",
-																		gap: 0.5,
-																	}}
-																>
-																	<Download
-																		sx={{
-																			fontSize: "0.8rem",
-																			color: "secondary.main",
-																		}}
-																	/>
-																	<Typography
-																		variant="overline"
-																		color="text.secondary"
-																		lineHeight={1}
-																	>
-																		{project.addonMetadata.averageDailyUsers.toLocaleString()}{" "}
-																		users
-																	</Typography>
-																</Box>
-															)}
-														</Box>
-													</Box>
-
-													<Box
-														className="ledger-arrow"
-														sx={{
-															flexShrink: 0,
-															color: "secondary.main",
-															display: "flex",
-															alignItems: "center",
-															opacity: 0.35,
-															transition:
-																"transform 0.3s ease, opacity 0.3s ease",
-														}}
-													>
-														<ArrowForward />
-													</Box>
-												</Box>
-											</MotionBox>
-										))}
+										<Box sx={{ width: "100%" }}>
+											{groupedProjects[year].map((project) => (
+												<ProjectCard
+													key={project.githubName}
+													project={project}
+													entryNumber={entryNumbers.get(project.githubName)}
+													isMobile={isMobile}
+													shouldReduceMotion={shouldReduceMotion}
+													year={year}
+												/>
+											))}
+										</Box>
 									</Box>
+								))
+							) : (
+								<Box sx={{ width: "100%" }}>
+									{sortedFilteredProjects.map((project) => (
+										<ProjectCard
+											key={project.githubName}
+											project={project}
+											entryNumber={entryNumbers.get(project.githubName)}
+											isMobile={isMobile}
+											shouldReduceMotion={shouldReduceMotion}
+											year={project.year || "Unknown"}
+										/>
+									))}
 								</Box>
-							))}
+							)}
 						</Box>
 					)}
 				</Container>
@@ -545,6 +544,212 @@ export default function Projects({ limit, showAppBar = true }) {
 		</>
 	);
 }
+
+function ProjectCard({
+	project,
+	entryNumber,
+	isMobile,
+	shouldReduceMotion,
+	year,
+}) {
+	return (
+		<MotionBox
+			initial={shouldReduceMotion ? false : { y: 16, opacity: 0 }}
+			whileInView={shouldReduceMotion ? undefined : { y: 0, opacity: 1 }}
+			viewport={{ once: true }}
+			transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.45 }}
+			sx={{ bgcolor: "background.default" }}
+		>
+			<Box
+				component={RouterLink}
+				to={`/projects/${project.githubName}`}
+				aria-label={`Open project ${project.githubName}`}
+				sx={{
+					display: "flex",
+					alignItems: "center",
+					gap: { xs: 2.5, md: 4 },
+					py: { xs: 2.5, md: 3.5 },
+					px: { xs: 1.5, md: 2 },
+					cursor: "pointer",
+					textDecoration: "none",
+					color: "text.primary",
+					borderTop: "1px solid",
+					borderColor: "divider",
+					transition: "background-color 0.3s ease",
+					"&:hover": {
+						bgcolor: "action.hover",
+					},
+					"&:hover .ledger-arrow": {
+						transform: "translateX(4px)",
+						opacity: 1,
+					},
+					"&:hover .ledger-thumb img": {
+						filter: "grayscale(0%) contrast(100%)",
+					},
+				}}
+			>
+				{!isMobile && (
+					<Typography
+						variant="overline"
+						sx={{
+							width: 56,
+							flexShrink: 0,
+							color: "text.secondary",
+							lineHeight: 1,
+						}}
+					>
+						No. {String(entryNumber).padStart(2, "0")}
+					</Typography>
+				)}
+
+				<Box
+					className="ledger-thumb"
+					sx={{
+						width: { xs: 56, md: 88 },
+						height: { xs: 56, md: 88 },
+						flexShrink: 0,
+						bgcolor: "background.paper",
+						border: "1px solid",
+						borderColor: "divider",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						p: { xs: 1, md: 1.5 },
+						overflow: "hidden",
+					}}
+				>
+					<Box
+						component="img"
+						src={project.githubImg}
+						alt=""
+						loading="lazy"
+						sx={{
+							maxWidth: "100%",
+							maxHeight: "100%",
+							objectFit: "contain",
+							filter: "grayscale(100%) contrast(115%)",
+							transition: "filter 0.5s ease-in-out",
+						}}
+					/>
+				</Box>
+
+				<Box sx={{ flex: 1, minWidth: 0 }}>
+					<Typography variant="h5" sx={{ mb: 0.5 }}>
+						{project.githubName}
+					</Typography>
+					<Typography
+						variant="body2"
+						color="text.secondary"
+						sx={{
+							display: "-webkit-box",
+							WebkitLineClamp: 2,
+							WebkitBoxOrient: "vertical",
+							overflow: "hidden",
+						}}
+					>
+						{project.tagline}
+					</Typography>
+					<Box
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							columnGap: 1.5,
+							rowGap: 0.5,
+							mt: 1,
+							flexWrap: "wrap",
+						}}
+					>
+						<Typography
+							variant="overline"
+							color="secondary.main"
+							lineHeight={1}
+						>
+							{project.category}
+						</Typography>
+						<Typography
+							variant="overline"
+							color="text.secondary"
+							lineHeight={1}
+							sx={{ opacity: 0.85 }}
+						>
+							{year}
+							{project.language ? ` · ${project.language}` : ""}
+						</Typography>
+						{project.stars > 0 && (
+							<Box
+								sx={{
+									display: "flex",
+									alignItems: "center",
+									gap: 0.5,
+								}}
+							>
+								<Star
+									sx={{
+										fontSize: "0.8rem",
+										color: "secondary.main",
+									}}
+								/>
+								<Typography
+									variant="overline"
+									color="text.secondary"
+									lineHeight={1}
+								>
+									{project.stars}
+								</Typography>
+							</Box>
+						)}
+						{project.addonMetadata && (
+							<Box
+								sx={{
+									display: "flex",
+									alignItems: "center",
+									gap: 0.5,
+								}}
+							>
+								<Download
+									sx={{
+										fontSize: "0.8rem",
+										color: "secondary.main",
+									}}
+								/>
+								<Typography
+									variant="overline"
+									color="text.secondary"
+									lineHeight={1}
+								>
+									{project.addonMetadata.averageDailyUsers.toLocaleString()}{" "}
+									users
+								</Typography>
+							</Box>
+						)}
+					</Box>
+				</Box>
+
+				<Box
+					className="ledger-arrow"
+					sx={{
+						flexShrink: 0,
+						color: "secondary.main",
+						display: "flex",
+						alignItems: "center",
+						opacity: 0.35,
+						transition: "transform 0.3s ease, opacity 0.3s ease",
+					}}
+				>
+					<ArrowForward />
+				</Box>
+			</Box>
+		</MotionBox>
+	);
+}
+
+ProjectCard.propTypes = {
+	project: PropTypes.object.isRequired,
+	entryNumber: PropTypes.number,
+	isMobile: PropTypes.bool,
+	shouldReduceMotion: PropTypes.bool,
+	year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
 
 Projects.propTypes = {
 	limit: PropTypes.number,
