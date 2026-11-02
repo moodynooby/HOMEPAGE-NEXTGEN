@@ -9,6 +9,14 @@
 	-webkit-font-smoothing: antialiased;
 }
 
+html[data-high-contrast="true"] {
+	--hairline-rule: #000000;
+}
+
+html[data-theme="dark"][data-high-contrast="true"] {
+	--hairline-rule: #ffffff;
+}
+
 * {
 	box-sizing: border-box;
 }

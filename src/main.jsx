@@ -30,13 +30,13 @@ const AdminDashboard = lazy(() => import("@/components/admin/AdminDashboard"));
 const TechRadar = lazy(() => import("@/components/TechRadar"));
 
 const AppContent = () => {
-	const { mode } = useThemeContext();
+	const { mode, highContrast } = useThemeContext();
 	const systemPreference = window.matchMedia("(prefers-color-scheme: dark)")
 		.matches
 		? "dark"
 		: "light";
 	const effectiveMode = mode === "system" ? systemPreference : mode;
-	const theme = getTheme(effectiveMode);
+	const theme = getTheme(effectiveMode, highContrast);
 
 	return (
 		<ThemeProvider theme={theme}>

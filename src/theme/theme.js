@@ -4,9 +4,18 @@ const INK = "#38392e";
 const PARCHMENT = "#fdffda";
 const SEPIA = "#7d5d53";
 const SEPIA_LIGHT = "#a6827a";
+const HIGH_CONTRAST_BORDER_DARK = "#ffffff";
+const HIGH_CONTRAST_BORDER_LIGHT = "#000000";
 
-const getDesignTokens = (mode) => {
+const getDesignTokens = (mode, isHighContrast) => {
 	const isLight = mode === "light";
+
+	const defaultDivider = isLight
+		? "rgba(56, 57, 46, 0.10)"
+		: "rgba(253, 255, 218, 0.15)";
+	const highContrastDivider = isLight
+		? HIGH_CONTRAST_BORDER_LIGHT
+		: HIGH_CONTRAST_BORDER_DARK;
 
 	return {
 		palette: {
@@ -29,7 +38,7 @@ const getDesignTokens = (mode) => {
 				primary: isLight ? INK : PARCHMENT,
 				secondary: isLight ? SEPIA : SEPIA_LIGHT,
 			},
-			divider: isLight ? "rgba(56, 57, 46, 0.10)" : "rgba(253, 255, 218, 0.15)",
+			divider: isHighContrast ? highContrastDivider : defaultDivider,
 			action: {
 				hover: isLight
 					? "rgba(56, 57, 46, 0.045)"
@@ -167,10 +176,14 @@ const getDesignTokens = (mode) => {
 						},
 					}),
 					outlined: ({ theme }) => ({
-						borderColor: alpha(theme.palette.primary.main, 0.2),
+						borderColor: isHighContrast
+							? theme.palette.text.primary
+							: alpha(theme.palette.primary.main, 0.2),
 						color: theme.palette.primary.main,
 						"&:hover": {
-							borderColor: alpha(theme.palette.primary.main, 0.55),
+							borderColor: isHighContrast
+								? theme.palette.text.primary
+								: alpha(theme.palette.primary.main, 0.55),
 							backgroundColor: "transparent",
 						},
 					}),
@@ -185,7 +198,9 @@ const getDesignTokens = (mode) => {
 							bottom: 4,
 							width: "100%",
 							height: "1px",
-							backgroundColor: alpha(theme.palette.text.primary, 0.35),
+							backgroundColor: isHighContrast
+								? theme.palette.text.primary
+								: alpha(theme.palette.text.primary, 0.35),
 							transform: "scaleX(0.35)",
 							transformOrigin: "left center",
 							transition: "transform 0.3s ease, background-color 0.3s ease",
@@ -255,7 +270,9 @@ const getDesignTokens = (mode) => {
 							borderBottomWidth: "1px",
 						},
 						"&:hover:not(.Mui-disabled):before": {
-							borderBottomColor: alpha(theme.palette.text.primary, 0.35),
+							borderBottomColor: isHighContrast
+								? theme.palette.text.primary
+								: alpha(theme.palette.text.primary, 0.35),
 						},
 						"&:after": {
 							borderBottomColor: theme.palette.primary.main,
@@ -296,4 +313,5 @@ const getDesignTokens = (mode) => {
 	};
 };
 
-export const getTheme = (mode) => createTheme(getDesignTokens(mode));
+export const getTheme = (mode, isHighContrast) =>
+	createTheme(getDesignTokens(mode, isHighContrast));

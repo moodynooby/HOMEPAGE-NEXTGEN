@@ -1,8 +1,6 @@
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import EmailIcon from "@mui/icons-material/Email";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import LightModeIcon from "@mui/icons-material/LightMode";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -14,8 +12,6 @@ import {
 	IconButton,
 	Menu,
 	MenuItem,
-	ToggleButton,
-	ToggleButtonGroup,
 	Toolbar,
 	Typography,
 	useMediaQuery,
@@ -25,8 +21,8 @@ import { useKBar } from "kbar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import ThemeToggle from "@/components/ThemeToggle";
 import socialLinks from "@/content/socialLinks.json";
-import { useThemeContext } from "@/contexts/ThemeContext";
 
 const iconMap = {
 	LinkedIn: LinkedInIcon,
@@ -82,7 +78,6 @@ export default function ButtonAppBar() {
 	const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-	const { mode, setThemeMode } = useThemeContext();
 	const { query } = useKBar();
 
 	const currentDate = new Date()
@@ -203,31 +198,7 @@ export default function ButtonAppBar() {
 
 					<Box sx={{ width: "1px", height: "20px", bgcolor: "divider" }} />
 
-					<ToggleButtonGroup
-						value={mode === "system" ? null : mode}
-						exclusive
-						onChange={(_, newMode) => newMode && setThemeMode(newMode)}
-						size="small"
-						sx={{
-							"& .MuiToggleButton-root": {
-								borderRadius: 0,
-								padding: "4px 8px",
-								borderColor: "divider",
-								color: "text.secondary",
-								"&.Mui-selected": {
-									backgroundColor: "action.selected",
-									color: "text.primary",
-								},
-							},
-						}}
-					>
-						<ToggleButton value="light" aria-label="Use light theme">
-							<LightModeIcon sx={{ fontSize: 15 }} />
-						</ToggleButton>
-						<ToggleButton value="dark" aria-label="Use dark theme">
-							<DarkModeIcon sx={{ fontSize: 15 }} />
-						</ToggleButton>
-					</ToggleButtonGroup>
+					<ThemeToggle />
 
 					{!isMobile && (
 						<>
