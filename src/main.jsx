@@ -28,6 +28,9 @@ const LinkTree = lazy(() => import("@/components/LinkTree"));
 const Gallery = lazy(() => import("@/components/Gallery"));
 const AdminDashboard = lazy(() => import("@/components/admin/AdminDashboard"));
 const TechRadar = lazy(() => import("@/components/TechRadar"));
+const ArchitectureTopology = lazy(
+	() => import("@/components/ArchitectureTopology"),
+);
 
 const AppContent = () => {
 	const { mode, highContrast } = useThemeContext();
@@ -57,6 +60,10 @@ const AppContent = () => {
 									<Route path="/gallery" element={<Gallery />} />
 									<Route path="/admin" element={<AdminDashboard />} />
 									<Route path="/radar" element={<TechRadar />} />
+									<Route
+										path="/architecture"
+										element={<ArchitectureTopology />}
+									/>
 								</Routes>
 							</Suspense>
 						</ErrorBoundary>

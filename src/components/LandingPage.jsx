@@ -9,6 +9,7 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import ArchitectureTopology from "@/components/ArchitectureTopology";
 import Guestbook from "@/components/Guestbook";
 import ButtonAppBar from "@/components/Header";
 import TechRadar from "@/components/TechRadar";
@@ -409,6 +410,38 @@ export default function LandingPage() {
 						setActiveRadarProjects(blip ? blip.projects : [])
 					}
 				/>
+			</Container>
+
+			<Container
+				maxWidth="lg"
+				sx={{ mt: { xs: 9, md: 14 } }}
+				id="architecture-section"
+			>
+				<Typography
+					variant="h2"
+					component="h2"
+					sx={{
+						textAlign: "center",
+						mb: 1,
+						fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
+					}}
+				>
+					Ecosystem Architecture
+				</Typography>
+				<Typography
+					variant="body2"
+					component="p"
+					sx={{
+						textAlign: "center",
+						fontStyle: "italic",
+						color: "text.secondary",
+						mb: { xs: 5, md: 8 },
+					}}
+				>
+					Cross-application topology connecting the 5 desktop workstation
+					applications.
+				</Typography>
+				<ArchitectureTopology />
 			</Container>
 
 			<Container
