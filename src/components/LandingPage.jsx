@@ -9,6 +9,7 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Guestbook from "@/components/Guestbook";
 import ButtonAppBar from "@/components/Header";
 import TechRadar from "@/components/TechRadar";
 import projectsData from "@/content/projects.json";
@@ -463,7 +464,10 @@ export default function LandingPage() {
 			</Container>
 
 			<Container maxWidth="lg">
-				<Divider sx={{ my: { xs: 6, md: 10 }, borderColor: "divider" }} />
+				<Divider
+					sx={{ mt: { xs: 6, md: 10 }, mb: 4, borderColor: "divider" }}
+				/>
+				<Guestbook />
 			</Container>
 
 			<Box
