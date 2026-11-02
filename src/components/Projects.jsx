@@ -1,12 +1,4 @@
-import {
-	ArrowForward,
-	Bookmark,
-	BookmarkBorder,
-	Download,
-	RestartAlt,
-	Search,
-	Star,
-} from "@mui/icons-material";
+import { RestartAlt, Search } from "@mui/icons-material";
 import {
 	Alert,
 	Badge,
@@ -15,7 +7,6 @@ import {
 	Chip,
 	Container,
 	FormControl,
-	IconButton,
 	InputAdornment,
 	InputLabel,
 	MenuItem,
@@ -29,8 +20,9 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
+import ProjectCard from "@/components/ProjectCard";
 import projectsData from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import {
@@ -566,233 +558,6 @@ export default function Projects({ limit, showAppBar = true }) {
 		</>
 	);
 }
-
-function ProjectCard({
-	project,
-	entryNumber,
-	isMobile,
-	shouldReduceMotion,
-	year,
-}) {
-	const { isBookmarked, toggleBookmark } = useBookmarksContext();
-	return (
-		<MotionBox
-			initial={shouldReduceMotion ? false : { y: 16, opacity: 0 }}
-			whileInView={shouldReduceMotion ? undefined : { y: 0, opacity: 1 }}
-			viewport={{ once: true }}
-			transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.45 }}
-			sx={{ bgcolor: "background.default" }}
-		>
-			<Box
-				component={RouterLink}
-				to={`/projects/${project.githubName}`}
-				aria-label={`Open project ${project.githubName}`}
-				sx={{
-					display: "flex",
-					alignItems: "center",
-					gap: { xs: 2.5, md: 4 },
-					py: { xs: 2.5, md: 3.5 },
-					px: { xs: 1.5, md: 2 },
-					cursor: "pointer",
-					textDecoration: "none",
-					color: "text.primary",
-					borderTop: "1px solid",
-					borderColor: "divider",
-					transition: "background-color 0.3s ease",
-					"&:hover": {
-						bgcolor: "action.hover",
-					},
-					"&:hover .ledger-arrow": {
-						transform: "translateX(4px)",
-						opacity: 1,
-					},
-					"&:hover .ledger-thumb img": {
-						filter: "grayscale(0%) contrast(100%)",
-					},
-				}}
-			>
-				{!isMobile && (
-					<Typography
-						variant="overline"
-						sx={{
-							width: 56,
-							flexShrink: 0,
-							color: "text.secondary",
-							lineHeight: 1,
-						}}
-					>
-						No. {String(entryNumber).padStart(2, "0")}
-					</Typography>
-				)}
-
-				<Box
-					className="ledger-thumb"
-					sx={{
-						width: { xs: 56, md: 88 },
-						height: { xs: 56, md: 88 },
-						flexShrink: 0,
-						bgcolor: "background.paper",
-						border: "1px solid",
-						borderColor: "divider",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						p: { xs: 1, md: 1.5 },
-						overflow: "hidden",
-					}}
-				>
-					<Box
-						component="img"
-						src={project.githubImg}
-						alt=""
-						loading="lazy"
-						sx={{
-							maxWidth: "100%",
-							maxHeight: "100%",
-							objectFit: "contain",
-							filter: "grayscale(100%) contrast(115%)",
-							transition: "filter 0.5s ease-in-out",
-						}}
-					/>
-				</Box>
-
-				<Box sx={{ flex: 1, minWidth: 0 }}>
-					<Typography variant="h5" sx={{ mb: 0.5 }}>
-						{project.githubName}
-					</Typography>
-					<Typography
-						variant="body2"
-						color="text.secondary"
-						sx={{
-							display: "-webkit-box",
-							WebkitLineClamp: 2,
-							WebkitBoxOrient: "vertical",
-							overflow: "hidden",
-						}}
-					>
-						{project.tagline}
-					</Typography>
-					<Box
-						sx={{
-							display: "flex",
-							alignItems: "center",
-							columnGap: 1.5,
-							rowGap: 0.5,
-							mt: 1,
-							flexWrap: "wrap",
-						}}
-					>
-						<Typography
-							variant="overline"
-							color="secondary.main"
-							lineHeight={1}
-						>
-							{project.category}
-						</Typography>
-						<Typography
-							variant="overline"
-							color="text.secondary"
-							lineHeight={1}
-							sx={{ opacity: 0.85 }}
-						>
-							{year}
-							{project.language ? ` · ${project.language}` : ""}
-						</Typography>
-						{project.stars > 0 && (
-							<Box
-								sx={{
-									display: "flex",
-									alignItems: "center",
-									gap: 0.5,
-								}}
-							>
-								<Star
-									sx={{
-										fontSize: "0.8rem",
-										color: "secondary.main",
-									}}
-								/>
-								<Typography
-									variant="overline"
-									color="text.secondary"
-									lineHeight={1}
-								>
-									{project.stars}
-								</Typography>
-							</Box>
-						)}
-						{project.addonMetadata && (
-							<Box
-								sx={{
-									display: "flex",
-									alignItems: "center",
-									gap: 0.5,
-								}}
-							>
-								<Download
-									sx={{
-										fontSize: "0.8rem",
-										color: "secondary.main",
-									}}
-								/>
-								<Typography
-									variant="overline"
-									color="text.secondary"
-									lineHeight={1}
-								>
-									{project.addonMetadata.averageDailyUsers.toLocaleString()}{" "}
-									users
-								</Typography>
-							</Box>
-						)}
-					</Box>
-				</Box>
-
-				<IconButton
-					size="small"
-					onClick={(e) => {
-						e.preventDefault();
-						toggleBookmark(project.githubName);
-					}}
-					aria-label={
-						isBookmarked(project.githubName)
-							? "Remove bookmark"
-							: "Bookmark project"
-					}
-					sx={{ mr: 1, zIndex: 2 }}
-				>
-					{isBookmarked(project.githubName) ? (
-						<Bookmark color="primary" />
-					) : (
-						<BookmarkBorder />
-					)}
-				</IconButton>
-
-				<Box
-					className="ledger-arrow"
-					sx={{
-						flexShrink: 0,
-						color: "secondary.main",
-						display: "flex",
-						alignItems: "center",
-						opacity: 0.35,
-						transition: "transform 0.3s ease, opacity 0.3s ease",
-					}}
-				>
-					<ArrowForward />
-				</Box>
-			</Box>
-		</MotionBox>
-	);
-}
-
-ProjectCard.propTypes = {
-	project: PropTypes.object.isRequired,
-	entryNumber: PropTypes.number,
-	isMobile: PropTypes.bool,
-	shouldReduceMotion: PropTypes.bool,
-	year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-};
 
 Projects.propTypes = {
 	limit: PropTypes.number,

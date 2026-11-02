@@ -56,19 +56,19 @@ vi.mock("kbar", () => ({
 }));
 
 // Mock GitHub API utils
-vi.mock("@/utils/githubUtils", () => ({
-	fetchRepoMetadata: vi.fn().mockResolvedValue({
-		year: 2024,
-		created_at: "2024-01-01T00:00:00Z",
-		language: "JavaScript",
-		stars: 10,
-		forks: 2,
-	}),
-	fetchAddonMetadata: vi.fn().mockResolvedValue({
-		averageDailyUsers: 100,
-	}),
-	groupProjectsByYear: (projects) => ({ 2024: projects }),
-}));
+
+vi.mock("@/utils/githubUtils", async (importOriginal) => {
+	const actual = await importOriginal();
+	return {
+		...actual,
+		fetchRepoMetadata: vi.fn().mockResolvedValue({
+			year: 2023,
+			stars: 10,
+		}),
+		fetchAddonMetadata: vi.fn(),
+		fetchProjectHealth: vi.fn().mockResolvedValue(null),
+	};
+});
 
 const renderWithProviders = (ui) => {
 	const theme = getTheme("light");

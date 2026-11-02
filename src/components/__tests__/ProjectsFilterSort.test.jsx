@@ -20,48 +20,27 @@ beforeAll(() => {
 	});
 });
 
-vi.mock("@/utils/githubUtils", () => ({
-	fetchRepoMetadata: vi.fn((repoName) => {
-		const mocks = {
-			"Project-A": {
-				created_at: "2023-01-01T00:00:00Z",
-				year: 2023,
-				language: "JavaScript",
-				stars: 10,
-			},
-			"Project-B": {
-				created_at: "2024-01-01T00:00:00Z",
-				year: 2024,
-				language: "Python",
-				stars: 5,
-			},
-			"Project-C": {
-				created_at: "2022-01-01T00:00:00Z",
-				year: 2022,
-				language: "Rust",
-				stars: 20,
-			},
-		};
-		return Promise.resolve(
-			mocks[repoName] || {
-				created_at: "2021-01-01T00:00:00Z",
-				year: 2021,
-				language: null,
-				stars: 0,
-			},
-		);
-	}),
-	fetchAddonMetadata: vi.fn(() => Promise.resolve(null)),
-	groupProjectsByYear: vi.fn((projects) => {
-		const grouped = {};
-		for (const p of projects) {
-			const year = p.year || "Unknown";
-			if (!grouped[year]) grouped[year] = [];
-			grouped[year].push(p);
-		}
-		return grouped;
-	}),
-}));
+vi.mock("@/utils/githubUtils", async (importOriginal) => {
+	const actual = await importOriginal();
+	return {
+		...actual,
+		fetchRepoMetadata: vi.fn().mockImplementation((name) => {
+			if (name === "Project-A")
+				return Promise.resolve({
+					year: 2023,
+					language: "JavaScript",
+					stars: 10,
+				});
+			if (name === "Project-B")
+				return Promise.resolve({ year: 2024, language: "Python", stars: 5 });
+			if (name === "Project-C")
+				return Promise.resolve({ year: 2022, language: "Rust", stars: 20 });
+			return Promise.resolve({ year: 2023, stars: 10 });
+		}),
+		fetchAddonMetadata: vi.fn(),
+		fetchProjectHealth: vi.fn().mockResolvedValue(null),
+	};
+});
 
 vi.mock("@/content/projects.json", () => ({
 	default: [

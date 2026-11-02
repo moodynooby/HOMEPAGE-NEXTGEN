@@ -228,3 +228,80 @@ export function groupProjectsByYear(projects) {
 			return acc;
 		}, {});
 }
+
+/**
+ * Fetches dynamic project health metrics (latest release, open issues, size).
+ * Caches results in localStorage for 24 hours to avoid rate limits.
+ *
+ * @param {string} repoName - The name of the repository (moodynooby/{repoName}).
+ * @returns {Promise<{latestRelease: string, openIssues: number, size: number} | null>}
+ */
+export async function fetchProjectHealth(repoName) {
+	const cacheKey = `github_health_v1_${repoName}`;
+	const cacheTimeKey = `github_health_time_v1_${repoName}`;
+	const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+	try {
+		const cachedData = localStorage.getItem(cacheKey);
+		const cachedTime = localStorage.getItem(cacheTimeKey);
+
+		if (cachedData && cachedTime) {
+			const age = Date.now() - parseInt(cachedTime, 10);
+			if (age < CACHE_DURATION) {
+				return JSON.parse(cachedData);
+			}
+		}
+
+		const [repoResponse, releasesResponse] = await Promise.all([
+			fetch(`https://api.github.com/repos/moodynooby/${repoName}`),
+			fetch(
+				`https://api.github.com/repos/moodynooby/${repoName}/releases/latest`,
+			),
+		]);
+
+		let repoData = {};
+		if (repoResponse.ok) {
+			repoData = await repoResponse.json();
+		} else if (repoResponse.status !== 404 && repoResponse.status !== 403) {
+			console.warn(`GitHub API repo error: ${repoResponse.statusText}`);
+		}
+
+		let latestRelease = "";
+		if (releasesResponse.ok) {
+			const releaseData = await releasesResponse.json();
+			latestRelease = releaseData.tag_name || "";
+		} else if (
+			releasesResponse.status !== 404 &&
+			releasesResponse.status !== 403
+		) {
+			console.warn(`GitHub API releases error: ${releasesResponse.statusText}`);
+		}
+
+		const healthData = {
+			latestRelease,
+			openIssues: repoData.open_issues_count || 0,
+			size: repoData.size || 0,
+			pushed_at: repoData.pushed_at || null,
+		};
+
+		localStorage.setItem(cacheKey, JSON.stringify(healthData));
+		localStorage.setItem(cacheTimeKey, Date.now().toString());
+
+		return healthData;
+	} catch (error) {
+		const cachedData = localStorage.getItem(cacheKey);
+		if (cachedData) {
+			console.warn(
+				`Using cached health data for ${repoName} due to error:`,
+				error.message,
+			);
+			return JSON.parse(cachedData);
+		}
+
+		console.warn(
+			`Failed to fetch project health for ${repoName}:`,
+			error.message,
+		);
+		return null;
+	}
+}
