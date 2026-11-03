@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import ArchitectureTopology from "@/components/ArchitectureTopology";
 import Guestbook from "@/components/Guestbook";
 import ButtonAppBar from "@/components/Header";
+import ProjectTimeline from "@/components/ProjectTimeline";
 import TechRadar from "@/components/TechRadar";
 import projectsData from "@/content/projects.json";
 import {
@@ -173,6 +174,14 @@ export default function LandingPage() {
 							aria-label="View Manas Doshi's projects"
 						>
 							View Projects
+						</Button>
+						<Button
+							variant="outlined"
+							color="primary"
+							href="#timeline-section"
+							aria-label="View interactive project timeline and release milestones"
+						>
+							Timeline
 						</Button>
 						<Button
 							variant="outlined"
@@ -442,6 +451,38 @@ export default function LandingPage() {
 					applications.
 				</Typography>
 				<ArchitectureTopology />
+			</Container>
+
+			<Container
+				maxWidth="lg"
+				sx={{ mt: { xs: 9, md: 14 } }}
+				id="timeline-section"
+			>
+				<Typography
+					variant="h2"
+					component="h2"
+					sx={{
+						textAlign: "center",
+						mb: 1,
+						fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
+					}}
+				>
+					Project Timeline
+				</Typography>
+				<Typography
+					variant="body2"
+					component="p"
+					sx={{
+						textAlign: "center",
+						fontStyle: "italic",
+						color: "text.secondary",
+						mb: { xs: 5, md: 8 },
+					}}
+				>
+					Chronological evolution and release milestone changelogs across the
+					ecosystem.
+				</Typography>
+				<ProjectTimeline />
 			</Container>
 
 			<Container
