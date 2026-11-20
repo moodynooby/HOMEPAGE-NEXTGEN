@@ -10,7 +10,6 @@ import {
 import "@testing-library/jest-dom";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
 
-// Mock matchMedia
 Object.defineProperty(window, "matchMedia", {
 	writable: true,
 	value: vi.fn().mockImplementation((query) => ({
@@ -25,7 +24,6 @@ Object.defineProperty(window, "matchMedia", {
 	})),
 });
 
-// Mock projects content
 vi.mock("@/content/projects.json", () => ({
 	default: [
 		{
@@ -43,7 +41,6 @@ vi.mock("@/content/projects.json", () => ({
 	],
 }));
 
-// Mock kbar to fix the 'query.toggle' TypeError in Header.jsx
 vi.mock("kbar", () => ({
 	useKBar: () => ({
 		query: {
@@ -53,7 +50,6 @@ vi.mock("kbar", () => ({
 	KBarProvider: ({ children }) => <div>{children}</div>,
 }));
 
-// Mock GitHub API utils
 
 vi.mock("@/utils/githubUtils", async (importOriginal) => {
 	const actual = await importOriginal();
@@ -148,7 +144,6 @@ describe("Bookmarks Feature", () => {
 	});
 
 	test("Projects component filters by Bookmarked category", async () => {
-		// Mock initial load state
 		localStorage.setItem(
 			"bookmarked_projects",
 			JSON.stringify(["test-project-1"]),
@@ -156,22 +151,18 @@ describe("Bookmarks Feature", () => {
 
 		renderWithProviders(<Projects limit={null} showAppBar={false} />);
 
-		// Wait for initial load to finish
 		await waitFor(() => {
 			expect(
 				screen.queryByRole("status", { name: /loading projects/i }),
 			).not.toBeInTheDocument();
 		});
 
-		// Verify both projects are rendered initially (All category)
 		expect(screen.getByText("test-project-1")).toBeInTheDocument();
 		expect(screen.getByText("test-project-2")).toBeInTheDocument();
 
-		// Click Bookmarked filter chip
 		const savedChip = screen.getByText("Saved (1)");
 		fireEvent.click(savedChip);
 
-		// Now only test-project-1 should be visible
 		expect(screen.getByText("test-project-1")).toBeInTheDocument();
 		expect(screen.queryByText("test-project-2")).not.toBeInTheDocument();
 	});
@@ -185,7 +176,6 @@ describe("Bookmarks Feature", () => {
 			).not.toBeInTheDocument();
 		});
 
-		// Click Bookmarked filter chip (should have 0 count)
 		const savedChip = screen.getByText("Saved (0)");
 		fireEvent.click(savedChip);
 
@@ -212,7 +202,6 @@ describe("Bookmarks Feature", () => {
 			</ThemeContextProvider>,
 		);
 
-		// Find the bookmark button
 		const bookmarkBtn = await screen.findByRole("button", {
 			name: /bookmark project/i,
 		});
@@ -220,7 +209,6 @@ describe("Bookmarks Feature", () => {
 
 		fireEvent.click(bookmarkBtn);
 
-		// It should change to "Remove bookmark"
 		expect(
 			await screen.findByRole("button", { name: /remove bookmark/i }),
 		).toBeInTheDocument();

@@ -59,14 +59,14 @@ describe("ProjectCard", () => {
 		expect(screen.getByText("TestProject")).toBeInTheDocument();
 		expect(screen.getByText("A test project")).toBeInTheDocument();
 		expect(screen.getByText("Web App")).toBeInTheDocument();
-		expect(screen.getByText("42")).toBeInTheDocument(); // Stars
+		expect(screen.getByText("42")).toBeInTheDocument();
 	});
 
 	it("renders dynamic health metrics when available", async () => {
 		githubUtils.fetchProjectHealth.mockResolvedValue({
 			latestRelease: "v1.0.0",
 			openIssues: 5,
-			size: 2048, // 2MB
+			size: 2048,
 			pushed_at: new Date().toISOString(),
 		});
 
@@ -112,7 +112,7 @@ describe("ProjectCard", () => {
 
 	it("renders active pulse indicator for recent updates", async () => {
 		const recentDate = new Date();
-		recentDate.setDate(recentDate.getDate() - 5); // 5 days ago (Active)
+		recentDate.setDate(recentDate.getDate() - 5);
 
 		githubUtils.fetchProjectHealth.mockResolvedValue({
 			pushed_at: recentDate.toISOString(),
@@ -136,7 +136,7 @@ describe("ProjectCard", () => {
 
 	it("renders maintenance pulse indicator for older updates", async () => {
 		const oldDate = new Date();
-		oldDate.setDate(oldDate.getDate() - 40); // 40 days ago (Maintenance)
+		oldDate.setDate(oldDate.getDate() - 40);
 
 		githubUtils.fetchProjectHealth.mockResolvedValue({
 			pushed_at: oldDate.toISOString(),

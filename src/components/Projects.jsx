@@ -8,12 +8,9 @@ import ProjectCard from "@/components/ProjectCard";
 import projectsData from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import useIsMobile from "@/hooks/useIsMobile";
-import {
-	fetchAddonMetadata,
-	fetchRepoMetadata,
-	groupProjectsByYear,
-} from "@/utils/githubUtils";
+import { fetchAddonMetadata, fetchRepoMetadata } from "@/utils/githubUtils";
 import { orderCategories } from "@/utils/projectCategories";
+import { groupProjectsByYear } from "@/utils/projects";
 
 const queryParamFromLocation = ({ search }) =>
 	new URLSearchParams(search).get("q");
@@ -410,11 +407,7 @@ export default function Projects({ showAppBar = true }) {
 										"Year (Newest)",
 										"Year (Oldest)",
 									].map((opt) => (
-										<option
-											key={opt}
-											value={opt}
-											onClick={() => setSortBy(opt)}
-										>
+										<option key={opt} value={opt}>
 											{opt}
 										</option>
 									))}

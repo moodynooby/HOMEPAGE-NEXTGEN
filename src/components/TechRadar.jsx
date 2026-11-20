@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { githubRepoUrl } from "@/config/site";
 import radarData from "@/content/techRadar.json";
 
 export const RINGS = [
@@ -44,7 +45,6 @@ export default function TechRadar({ onActiveBlipChange }) {
 	const [activeBlip, setActiveBlip] = useState(null);
 
 	const blips = useMemo(() => {
-		// Group blips by quadrant + ring to distribute automatically without manual trigonometry
 		const groups = {};
 		for (const blip of radarData.blips) {
 			const key = `${blip.quadrant}-${blip.ring}`;
@@ -63,7 +63,6 @@ export default function TechRadar({ onActiveBlipChange }) {
 			const blipIndexInGroup = groups[key].findIndex((b) => b.id === blip.id);
 			const totalInGroup = groups[key].length;
 
-			// Distribute angularly within quadrant arc
 			const span = quad.endAngle - quad.startAngle;
 			const pad = span * 0.15;
 			const effectiveSpan = span - 2 * pad;
@@ -74,7 +73,6 @@ export default function TechRadar({ onActiveBlipChange }) {
 					? quad.startAngle + pad + blipIndexInGroup * angleStep
 					: quad.startAngle + span / 2;
 
-			// Alternating radius within ring band to avoid overlap
 			const radius =
 				innerR + (blipIndexInGroup % 2 === 0 ? 0.6 : 0.3) * (outerR - innerR);
 
@@ -244,7 +242,7 @@ export default function TechRadar({ onActiveBlipChange }) {
 									{activeBlip.keyRepos.map((repo) => (
 										<a
 											key={repo}
-											href={`https://github.com/moodynooby/${repo}`}
+											href={githubRepoUrl(repo)}
 											target="_blank"
 											rel="noreferrer"
 											className="chip"

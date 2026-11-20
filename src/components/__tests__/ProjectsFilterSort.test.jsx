@@ -121,8 +121,7 @@ describe("Projects - Filter and Sort", () => {
 		expect(getProjectNames()).toEqual(["Project-B", "Project-A", "Project-C"]);
 
 		const select = screen.getByRole("combobox", { name: /sort by/i });
-		fireEvent.mouseDown(select);
-		fireEvent.click(screen.getByRole("option", { name: "Most Stars" }));
+		fireEvent.change(select, { target: { value: "Most Stars" } });
 
 		await waitFor(() => {
 			expect(getProjectNames()).toEqual([
@@ -132,8 +131,7 @@ describe("Projects - Filter and Sort", () => {
 			]);
 		});
 
-		fireEvent.mouseDown(select);
-		fireEvent.click(screen.getByRole("option", { name: "Name (Z-A)" }));
+		fireEvent.change(select, { target: { value: "Name (Z-A)" } });
 
 		await waitFor(() => {
 			expect(getProjectNames()).toEqual([

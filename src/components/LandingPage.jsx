@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import ProjectTimeline from "@/components/ProjectTimeline";
+import { SITE_OWNER, SITE_RESUME_URL } from "@/config/site";
 import projectsData from "@/content/projects.json";
 import {
 	fetchAddonMetadata,
@@ -34,7 +35,7 @@ export default function LandingPage() {
 		let mounted = true;
 
 		Promise.all([
-			fetchUserStats("moodynooby"),
+			fetchUserStats(SITE_OWNER),
 			...addonIds.map((addonId) => fetchAddonMetadata(addonId)),
 			...featuredProjects.map((project) =>
 				fetchRepoMetadata(project.githubName),
@@ -171,7 +172,7 @@ export default function LandingPage() {
 							Timeline
 						</a>
 						<a
-							href="https://flowcv.com/resume/woofkdsq4sse"
+							href={SITE_RESUME_URL}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="btn btn-outlined"

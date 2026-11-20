@@ -9,6 +9,11 @@ import ReactMarkdown from "react-markdown";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
+import {
+	amoAddonUrl,
+	chromeStatsTrendsUrl,
+	githubRepoUrl,
+} from "@/config/site";
 import projects from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
@@ -236,7 +241,7 @@ export default function ProjectDetail() {
 							}}
 						>
 							<a
-								href={`https://github.com/moodynooby/${project.githubName}`}
+								href={githubRepoUrl(project.githubName)}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="btn btn-outlined btn-sm"
@@ -245,7 +250,7 @@ export default function ProjectDetail() {
 							</a>
 							{project.addonId && (
 								<a
-									href={`https://addons.mozilla.org/en-US/firefox/addon/${project.addonId}/`}
+									href={amoAddonUrl(project.addonId)}
 									target="_blank"
 									rel="noopener noreferrer"
 									className="btn btn-outlined btn-sm"
@@ -326,7 +331,7 @@ export default function ProjectDetail() {
 								}}
 							>
 								<iframe
-									src={`https://chrome-stats.com/embed/${project.chromeStatsId}/trends?theme=${mode === "dark" ? "dark" : "light"}`}
+									src={chromeStatsTrendsUrl(project.chromeStatsId, mode)}
 									title={`${project.githubName} usage trends`}
 									style={{
 										position: "absolute",

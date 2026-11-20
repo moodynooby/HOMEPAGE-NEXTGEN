@@ -48,5 +48,3 @@ export default function useIsMobile(breakpoint = 900) {
 
 	return isMobile;
 }
-
-export { useIsMobile };

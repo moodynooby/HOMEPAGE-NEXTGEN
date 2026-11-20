@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import PropTypes from "prop-types";
 import { useMemo, useState } from "react";
+import { SITE_GITHUB_PROFILE } from "@/config/site";
 import timelineData from "@/content/timelineMilestones.json";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { socialIcons } from "@/utils/socialIcons";
@@ -906,7 +907,7 @@ export default function ProjectTimeline({ limit = null }) {
 							<a
 								href={
 									PROJECT_CONFIG[activeMilestone.project]?.repoUrl ||
-									"https://github.com/moodynooby"
+									SITE_GITHUB_PROFILE
 								}
 								target="_blank"
 								rel="noopener noreferrer"
