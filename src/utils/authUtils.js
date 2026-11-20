@@ -1,10 +1,13 @@
-const STORAGE_KEYS = {
-	PASSWORD_HASH: "editorial_admin_password_hash",
-	AUTH_SESSION: "editorial_admin_session",
-	GITHUB_TOKEN: "editorial_admin_github_token",
-};
+// All secrets are sourced from environment variables only.
+// Set VITE_ADMIN_PASSWORD_HASH and VITE_GITHUB_TOKEN in your .env file.
+// Never commit .env — it is listed in .gitignore.
 
-export const MIN_PASSWORD_LENGTH = 4;
+// ─── Password (SHA-256 hex of your admin passphrase) ────────────────────────
+// Generate: https://emn178.github.io/online-tools/sha256.html
+//           or: echo -n "yourpassword" | sha256sum
+const ENV_PASSWORD_HASH = import.meta.env.VITE_ADMIN_PASSWORD_HASH ?? "";
+
+const SESSION_KEY = "editorial_admin_session";
 
 async function hashPassword(text) {
 	const encoder = new TextEncoder();
@@ -14,81 +17,57 @@ async function hashPassword(text) {
 	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/** Returns true if a password hash is configured via VITE_ADMIN_PASSWORD_HASH. */
 export function isPasswordSet() {
-	return Boolean(localStorage.getItem(STORAGE_KEYS.PASSWORD_HASH));
-}
-
-export async function setMasterPassword(password) {
-	if (!password || password.trim().length < MIN_PASSWORD_LENGTH) {
-		throw new Error(
-			`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
-		);
-	}
-	const hash = await hashPassword(password.trim());
-	localStorage.setItem(STORAGE_KEYS.PASSWORD_HASH, hash);
-}
-
-export async function verifyPassword(password) {
-	const storedHash = localStorage.getItem(STORAGE_KEYS.PASSWORD_HASH);
-	if (!storedHash) {
-		await setMasterPassword(password);
-		return true;
-	}
-	const inputHash = await hashPassword(password.trim());
-	return inputHash === storedHash;
+	return Boolean(ENV_PASSWORD_HASH);
 }
 
 /**
- * Checks if the current session is authenticated.
- * @returns {boolean}
+ * Verifies the supplied password against VITE_ADMIN_PASSWORD_HASH.
+ * @param {string} password
+ * @returns {Promise<boolean>}
  */
-export function isAuthenticated() {
-	return sessionStorage.getItem(STORAGE_KEYS.AUTH_SESSION) === "true";
+export async function verifyPassword(password) {
+	if (!ENV_PASSWORD_HASH) {
+		// No hash configured — allow any non-empty password so the site stays
+		// usable in a local dev environment without a .env file.
+		return Boolean(password?.trim());
+	}
+	const inputHash = await hashPassword(password.trim());
+	return inputHash === ENV_PASSWORD_HASH;
 }
 
 /**
  * Logs in with the provided password.
+ * Writes an in-memory session flag (sessionStorage — cleared on tab close).
  * @param {string} password
  * @returns {Promise<boolean>}
  */
 export async function login(password) {
 	const valid = await verifyPassword(password);
 	if (valid) {
-		sessionStorage.setItem(STORAGE_KEYS.AUTH_SESSION, "true");
+		sessionStorage.setItem(SESSION_KEY, "true");
 	}
 	return valid;
 }
 
-/**
- * Logs out of the admin session.
- */
-export function logout() {
-	sessionStorage.removeItem(STORAGE_KEYS.AUTH_SESSION);
+/** Returns true if the current tab has an active admin session. */
+export function isAuthenticated() {
+	return sessionStorage.getItem(SESSION_KEY) === "true";
 }
 
+/** Clears the admin session for the current tab. */
+export function logout() {
+	sessionStorage.removeItem(SESSION_KEY);
+}
+
+// ─── GitHub PAT (read-only from env) ────────────────────────────────────────
+// Set VITE_GITHUB_TOKEN in .env.  Never stored in localStorage.
+
 /**
- * Retrieves the stored GitHub Personal Access Token.
+ * Returns the GitHub Personal Access Token from the environment.
  * @returns {string}
  */
 export function getGitHubToken() {
-	return localStorage.getItem(STORAGE_KEYS.GITHUB_TOKEN) || "";
-}
-
-/**
- * Stores the GitHub Personal Access Token.
- * @param {string} token
- */
-export function setGitHubToken(token) {
-	if (token) {
-		localStorage.setItem(STORAGE_KEYS.GITHUB_TOKEN, token.trim());
-	} else {
-		localStorage.removeItem(STORAGE_KEYS.GITHUB_TOKEN);
-	}
-}
-
-/**
- * Clears the stored GitHub token.
- */
-export function clearGitHubToken() {
-	localStorage.removeItem(STORAGE_KEYS.GITHUB_TOKEN);
+	return import.meta.env.VITE_GITHUB_TOKEN ?? "";
 }

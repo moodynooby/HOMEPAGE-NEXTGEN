@@ -7,17 +7,14 @@ import {
 	Trash2 as Delete,
 	Download,
 	Edit,
-	Key,
 	LogOut as Logout,
 	RefreshCw as Refresh,
 	Search,
 	Star,
-	Star as StarBorder,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import AdminLogin from "@/components/admin/AdminLogin";
-import GitHubTokenModal from "@/components/admin/GitHubTokenModal";
 import ProjectEditModal from "@/components/admin/ProjectEditModal";
 import defaultProjects from "@/content/projects.json";
 import { getGitHubToken, isAuthenticated, logout } from "@/utils/authUtils";
@@ -34,7 +31,8 @@ const DRAFT_STORAGE_KEY = "editorial_admin_draft_projects";
 
 export default function AdminDashboard() {
 	const [isAuthed, setIsAuthed] = useState(() => isAuthenticated());
-	const [githubToken, setLocalGithubToken] = useState(() => getGitHubToken());
+	// GitHub token is read from VITE_GITHUB_TOKEN env var — never from localStorage.
+	const githubToken = getGitHubToken();
 	const [projects, setProjects] = useState(() => {
 		try {
 			const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
@@ -51,7 +49,6 @@ export default function AdminDashboard() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("All");
 
-	const [tokenModalOpen, setTokenModalOpen] = useState(false);
 	const [editModalState, setEditModalState] = useState({
 		open: false,
 		project: null,
@@ -174,9 +171,8 @@ export default function AdminDashboard() {
 	const handlePublish = async () => {
 		if (!githubToken) {
 			setPublishModalOpen(false);
-			setTokenModalOpen(true);
 			showToast(
-				"A GitHub Personal Access Token is required to commit directly.",
+				"VITE_GITHUB_TOKEN is not set in your .env file. Add it to enable direct publishing.",
 				"warning",
 			);
 			return;
@@ -262,23 +258,17 @@ export default function AdminDashboard() {
 								View Public Ledger
 							</RouterLink>
 
-							<button
-								type="button"
-								className="btn btn-outlined btn-sm"
-								onClick={() => setTokenModalOpen(true)}
-								style={{
-									display: "inline-flex",
-									alignItems: "center",
-									gap: "4px",
-									borderColor: githubToken ? undefined : "#d97706",
-									color: githubToken ? undefined : "#d97706",
-								}}
+							<span
+								className="editorial-meta"
+								title={
+									githubToken
+										? "VITE_GITHUB_TOKEN is set — publishing enabled"
+										: "Set VITE_GITHUB_TOKEN in .env to enable direct publishing"
+								}
+								style={{ opacity: githubToken ? 1 : 0.5 }}
 							>
-								<Key size={14} />
-								<span>
-									{githubToken ? "GitHub Token (Active)" : "Set GitHub Token"}
-								</span>
-							</button>
+								{githubToken ? "GH TOKEN ✓" : "GH TOKEN —"}
+							</span>
 
 							<button
 								type="button"
@@ -310,29 +300,11 @@ export default function AdminDashboard() {
 
 			<div className="editorial-container" style={{ marginTop: "2.5rem" }}>
 				{!githubToken && (
-					<div
-						className="alert alert-info"
-						style={{
-							marginBottom: "1.5rem",
-							display: "flex",
-							justifyContent: "space-between",
-							alignItems: "center",
-							flexWrap: "wrap",
-							gap: "0.5rem",
-						}}
-					>
-						<span>
-							GitHub Personal Access Token is currently unconfigured. You can
-							modify projects and export JSON locally. To push changes directly
-							to the live repository, configure your token.
-						</span>
-						<button
-							type="button"
-							className="btn btn-outlined btn-sm"
-							onClick={() => setTokenModalOpen(true)}
-						>
-							Configure Token
-						</button>
+					<div className="alert alert-info" style={{ marginBottom: "1.5rem" }}>
+						<code>VITE_GITHUB_TOKEN</code> is not set in your <code>.env</code>{" "}
+						file. You can still edit projects and export JSON locally. To push
+						directly to the live repository, add the token to your{" "}
+						<code>.env</code> and restart the dev server.
 					</div>
 				)}
 
@@ -683,14 +655,6 @@ export default function AdminDashboard() {
 					setEditModalState({ open: false, project: null, index: null })
 				}
 				onSave={handleSaveProject}
-			/>
-
-			<GitHubTokenModal
-				open={tokenModalOpen}
-				onClose={() => setTokenModalOpen(false)}
-				onTokenUpdated={(newToken) => {
-					setLocalGithubToken(newToken);
-				}}
 			/>
 
 			{/* Delete Confirm Modal */}

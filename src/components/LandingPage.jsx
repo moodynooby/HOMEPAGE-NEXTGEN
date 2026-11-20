@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Guestbook from "@/components/Guestbook";
 import Header from "@/components/Header";
 import ProjectTimeline from "@/components/ProjectTimeline";
 import projectsData from "@/content/projects.json";
@@ -460,14 +459,6 @@ export default function LandingPage() {
 					<Gallery limit={4} showAppBar={false} />
 				</Suspense>
 			</section>
-
-			<div className="editorial-container">
-				<hr
-					className="editorial-divider"
-					style={{ marginTop: "3rem", marginBottom: "2rem" }}
-				/>
-				<Guestbook />
-			</div>
 
 			<footer
 				style={{

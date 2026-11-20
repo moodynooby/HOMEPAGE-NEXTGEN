@@ -1,12 +1,11 @@
-import { Key, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import { isPasswordSet, login, setMasterPassword } from "@/utils/authUtils";
+import { isPasswordSet, login } from "@/utils/authUtils";
 
 export default function AdminLogin({ onAuthenticated }) {
 	const hasMasterPassword = isPasswordSet();
 	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
 
@@ -21,15 +20,6 @@ export default function AdminLogin({ onAuthenticated }) {
 
 		setSubmitting(true);
 		try {
-			if (!hasMasterPassword) {
-				if (password !== confirmPassword) {
-					setError("Passwords do not match.");
-					setSubmitting(false);
-					return;
-				}
-				await setMasterPassword(password);
-			}
-
 			const valid = await login(password);
 			if (valid) {
 				if (onAuthenticated) onAuthenticated();
@@ -48,16 +38,14 @@ export default function AdminLogin({ onAuthenticated }) {
 			<div className="surface-card">
 				<div style={{ textAlign: "center", marginBottom: "2rem" }}>
 					<span className="overline mb-1">Curator Desk • Security Check</span>
-					<h2 className="mb-2">
-						{hasMasterPassword ? "Ledger Access" : "Initialize Curator Passkey"}
-					</h2>
+					<h2 className="mb-2">Ledger Access</h2>
 					<p
 						className="caption text-secondary"
 						style={{ maxWidth: 440, margin: "0 auto", lineHeight: 1.6 }}
 					>
 						{hasMasterPassword
 							? "Enter the editorial passkey to manage projects, edit metadata, and publish changes to the live portfolio."
-							: "No passkey is established yet. Set a private master password to protect editorial publication controls."}
+							: "No passkey is configured. Set VITE_ADMIN_PASSWORD_HASH in your .env file, then restart the dev server."}
 					</p>
 				</div>
 
@@ -76,7 +64,7 @@ export default function AdminLogin({ onAuthenticated }) {
 				<form onSubmit={handleLogin} className="flex flex-col gap-4">
 					<div className="form-group">
 						<label htmlFor="admin-passkey" className="form-label">
-							{hasMasterPassword ? "Master Passkey" : "Create Passkey"}
+							Master Passkey
 						</label>
 						<div
 							style={{
@@ -105,49 +93,12 @@ export default function AdminLogin({ onAuthenticated }) {
 						</div>
 					</div>
 
-					{!hasMasterPassword && (
-						<div className="form-group">
-							<label htmlFor="admin-confirm-passkey" className="form-label">
-								Confirm Passkey
-							</label>
-							<div
-								style={{
-									position: "relative",
-									display: "flex",
-									alignItems: "center",
-								}}
-							>
-								<Key
-									size={16}
-									style={{
-										position: "absolute",
-										left: 12,
-										color: "var(--color-text-secondary, #7d5d53)",
-										pointerEvents: "none",
-									}}
-								/>
-								<input
-									id="admin-confirm-passkey"
-									type="password"
-									value={confirmPassword}
-									onChange={(e) => setConfirmPassword(e.target.value)}
-									placeholder="Repeat passkey..."
-									style={{ paddingLeft: "2.4rem" }}
-								/>
-							</div>
-						</div>
-					)}
-
 					<button
 						type="submit"
 						disabled={submitting}
 						className="btn btn-primary w-full mt-2"
 					>
-						{submitting
-							? "Verifying..."
-							: hasMasterPassword
-								? "Unlock Curator Console"
-								: "Set Passkey & Enter"}
+						{submitting ? "Verifying..." : "Unlock Curator Console"}
 					</button>
 				</form>
 			</div>
