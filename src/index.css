@@ -97,6 +97,29 @@ a:hover {
 	text-decoration-color: var(--sepia);
 }
 
+.skip-link {
+	position: absolute;
+	top: -60px;
+	left: 1rem;
+	background: var(--color-background-surface, #fdffda);
+	color: var(--color-text-primary, #38392e);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-border, var(--hairline-rule));
+	font-family: var(--font-family-code, "Work Sans", sans-serif);
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	z-index: 10000;
+	transition: top 0.2s ease;
+	text-decoration: none;
+}
+
+.skip-link:focus {
+	top: 1rem;
+	outline: none;
+}
+
 :focus-visible {
 	outline: 2px solid currentColor;
 	outline-offset: 2px;

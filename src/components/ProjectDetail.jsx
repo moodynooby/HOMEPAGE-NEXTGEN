@@ -39,6 +39,16 @@ export default function ProjectDetail() {
 	const { isBookmarked, toggleBookmark } = useBookmarksContext();
 
 	useEffect(() => {
+		if (project) {
+			const prevTitle = document.title;
+			document.title = `${project.githubName} — Manas Doshi`;
+			return () => {
+				document.title = prevTitle;
+			};
+		}
+	}, [project]);
+
+	useEffect(() => {
 		if (!project) {
 			navigate("/projects");
 			return undefined;
@@ -116,7 +126,8 @@ export default function ProjectDetail() {
 				animate={{ opacity: 1 }}
 				transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.4 }}
 			>
-				<div
+				<main
+					id="main-content"
 					className="editorial-container"
 					style={{
 						maxWidth: "800px",
@@ -351,7 +362,7 @@ export default function ProjectDetail() {
 							</p>
 						</div>
 					)}
-				</div>
+				</main>
 
 				<hr className="editorial-divider" />
 

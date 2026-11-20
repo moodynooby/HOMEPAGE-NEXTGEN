@@ -14,6 +14,10 @@
           if (hc === 'true') {
             document.documentElement.setAttribute('data-high-contrast', 'true');
           }
+          const metaTheme = document.querySelector('meta[name="theme-color"]');
+          if (metaTheme) {
+            metaTheme.setAttribute('content', isDark ? '#282a21' : '#fdffda');
+          }
         } catch (_e) {}
       })();
     </script>
@@ -28,7 +32,7 @@
     <meta name="description" content="Manas Doshi — a personal project ledger featuring browser extensions, AI tools, web apps, and experiments." />
     <meta name="author" content="Manas Doshi" />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#38392e" />
+    <meta name="theme-color" content="#fdffda" />
     <link rel="canonical" href="https://github.com/moodynooby/HOMEPAGE-NEXTGEN" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Manas Doshi" />

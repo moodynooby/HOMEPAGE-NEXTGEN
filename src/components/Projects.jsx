@@ -5,27 +5,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
-import projectsData from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import useIsMobile from "@/hooks/useIsMobile";
-import { fetchAddonMetadata, fetchRepoMetadata } from "@/utils/githubUtils";
+import useProjectsData, { byRecencyDesc } from "@/hooks/useProjectsData";
 import { orderCategories } from "@/utils/projectCategories";
 import { groupProjectsByYear } from "@/utils/projects";
 
 const queryParamFromLocation = ({ search }) =>
 	new URLSearchParams(search).get("q");
 
-const byRecencyDesc = (a, b) => {
-	const dateB = b.pushed_at ? new Date(b.pushed_at) : new Date(b.year, 0, 1);
-	const dateA = a.pushed_at ? new Date(a.pushed_at) : new Date(a.year, 0, 1);
-	return dateB - dateA;
-};
-
 export default function Projects({ showAppBar = true }) {
 	const isMobile = useIsMobile();
-	const [projects, setProjects] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [loadError, setLoadError] = useState("");
+	const { projects, loading, loadError } = useProjectsData();
 	const location = useLocation();
 	const [activeCategory, setActiveCategory] = useState("All");
 	const [searchQuery, setSearchQuery] = useState(
@@ -55,50 +46,6 @@ export default function Projects({ showAppBar = true }) {
 			setSearchQuery(q);
 		}
 	}, [location]);
-
-	useEffect(() => {
-		let isMounted = true;
-
-		async function loadProjects() {
-			try {
-				const projectsWithMetadata = await Promise.all(
-					projectsData.map(async (project) => {
-						const [metadata, addonMetadata] = await Promise.all([
-							fetchRepoMetadata(project.githubName),
-							project.addonId ? fetchAddonMetadata(project.addonId) : null,
-						]);
-						return {
-							...project,
-							year: metadata?.year || new Date().getFullYear(),
-							date: metadata?.created_at || "",
-							pushed_at: metadata?.pushed_at || "",
-							language: metadata?.language || "",
-							stars: metadata?.stars || 0,
-							forks: metadata?.forks || 0,
-							addonMetadata,
-						};
-					}),
-				);
-				const sortedProjects = projectsWithMetadata.sort(byRecencyDesc);
-
-				if (isMounted) {
-					setProjects(sortedProjects);
-					setLoadError("");
-				}
-			} catch (_error) {
-				if (isMounted) {
-					setLoadError("Projects could not be loaded. Please try again.");
-				}
-			} finally {
-				if (isMounted) setLoading(false);
-			}
-		}
-
-		loadProjects();
-		return () => {
-			isMounted = false;
-		};
-	}, []);
 
 	if (loading) {
 		return (
@@ -254,7 +201,8 @@ export default function Projects({ showAppBar = true }) {
 	return (
 		<>
 			{showAppBar && <Header />}
-			<div
+			<main
+				id="main-content"
 				style={{
 					paddingTop: showAppBar ? "3rem" : 0,
 					paddingBottom: "5rem",
@@ -599,7 +547,7 @@ export default function Projects({ showAppBar = true }) {
 						</div>
 					)}
 				</div>
-			</div>
+			</main>
 		</>
 	);
 }

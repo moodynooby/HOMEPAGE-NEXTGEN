@@ -50,7 +50,6 @@ vi.mock("kbar", () => ({
 	KBarProvider: ({ children }) => <div>{children}</div>,
 }));
 
-
 vi.mock("@/utils/githubUtils", async (importOriginal) => {
 	const actual = await importOriginal();
 	return {

@@ -51,6 +51,15 @@ export default defineConfig({
 						if (id.includes("motion")) {
 							return "vendor-motion";
 						}
+						if (id.includes("@astryxdesign") || id.includes("@stylexjs")) {
+							return "vendor-astryx";
+						}
+						if (id.includes("lucide-react")) {
+							return "vendor-icons";
+						}
+						if (id.includes("kbar")) {
+							return "vendor-kbar";
+						}
 						if (
 							id.includes("/react/") ||
 							id.includes("/react-dom/") ||
