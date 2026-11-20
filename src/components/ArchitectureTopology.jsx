@@ -1,17 +1,7 @@
 import { X as CloseIcon, RotateCcw as RestartAltIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import {
-	Box,
-	Button,
-	Chip,
-	Divider,
-	IconButton,
-	Paper,
-	Stack,
-	Typography,
-	useTheme,
-} from "@/components/ui";
 import topologyData from "@/content/architectureNodes.json";
+import { useThemeContext } from "@/contexts/ThemeContext";
 
 export const ECOSYSTEM_NODES = topologyData.nodes;
 export const ECOSYSTEM_EDGES = topologyData.edges;
@@ -26,8 +16,8 @@ const CATEGORIES = [
 ];
 
 export default function ArchitectureTopology() {
-	const theme = useTheme();
-	const isDark = theme.palette.mode === "dark";
+	const { mode } = useThemeContext();
+	const isDark = mode === "dark";
 
 	const [selectedNodeId, setSelectedNodeId] = useState(null);
 	const [hoveredNodeId, setHoveredNodeId] = useState(null);
@@ -76,145 +66,116 @@ export default function ArchitectureTopology() {
 	}, []);
 
 	return (
-		<Paper
-			elevation={0}
+		<div
+			className="card"
 			data-testid="architecture-topology"
-			sx={{
-				p: { xs: 2, sm: 3, md: 4 },
-				border: "1px solid",
-				borderColor: "divider",
-				borderRadius: 2,
-				backgroundColor: isDark
+			style={{
+				padding: "1.5rem",
+				border: "1px solid var(--color-border, var(--hairline-rule))",
+				background: isDark
 					? "rgba(40, 42, 33, 0.65)"
 					: "rgba(253, 255, 218, 0.5)",
 				position: "relative",
 			}}
 		>
 			{/* Header & Controls */}
-			<Box sx={{ mb: 3 }}>
-				<Box
-					sx={{
+			<div style={{ marginBottom: "1.5rem" }}>
+				<div
+					style={{
 						display: "flex",
 						justifyContent: "space-between",
 						alignItems: "center",
 						flexWrap: "wrap",
-						gap: 1.5,
-						mb: 2,
+						gap: "0.75rem",
+						marginBottom: "1rem",
 					}}
 				>
-					<Box>
-						<Typography
-							variant="h4"
-							component="h3"
-							sx={{
-								fontFamily: '"Newsreader", serif',
-								fontWeight: 700,
-								fontSize: { xs: "1.5rem", sm: "1.85rem" },
-							}}
+					<div>
+						<h3
+							className="editorial-subheading"
+							style={{ margin: 0, fontSize: "clamp(1.5rem, 3vw, 1.85rem)" }}
 						>
 							Ecosystem Architecture &amp; Cross-App Topology
-						</Typography>
-						<Typography
-							variant="body2"
-							color="text.secondary"
-							sx={{ fontStyle: "italic", mt: 0.5 }}
+						</h3>
+						<p
+							className="editorial-body"
+							style={{
+								fontStyle: "italic",
+								margin: "0.25rem 0 0",
+								color: "var(--color-text-secondary, #7d5d53)",
+							}}
 						>
 							Interactive topology mapping data flows, contracts, and tech
 							stacks across the 5 desktop workstation applications.
-						</Typography>
-					</Box>
+						</p>
+					</div>
 
 					{(selectedNodeId || activeCategory !== "All") && (
-						<Button
-							variant="outlined"
-							size="small"
-							startIcon={<RestartAltIcon />}
+						<button
+							type="button"
 							onClick={handleReset}
-							sx={{
-								textTransform: "none",
-								fontSize: "0.8rem",
-								borderColor: "divider",
-								color: "text.secondary",
+							className="btn btn-outlined btn-sm"
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "4px",
 							}}
 						>
-							Reset View
-						</Button>
+							<RestartAltIcon size={14} />
+							<span>Reset View</span>
+						</button>
 					)}
-				</Box>
+				</div>
 
 				{/* Filter Chips */}
-				<Box
-					sx={{
+				<div
+					style={{
 						display: "flex",
-						gap: 1,
+						gap: "0.5rem",
 						flexWrap: "wrap",
 						alignItems: "center",
 					}}
 				>
-					<Typography
-						variant="caption"
-						sx={{
-							textTransform: "uppercase",
-							letterSpacing: "0.08em",
-							fontWeight: 600,
-							color: "text.secondary",
-							mr: 1,
-						}}
-					>
+					<span className="editorial-meta" style={{ marginRight: "0.25rem" }}>
 						Filter:
-					</Typography>
+					</span>
 					{CATEGORIES.map((cat) => {
 						const isSelected = activeCategory === cat;
 						return (
-							<Chip
+							<button
+								type="button"
 								key={cat}
-								label={cat}
-								size="small"
-								clickable
 								onClick={() => setActiveCategory(cat)}
-								sx={{
-									fontSize: "0.75rem",
-									height: 26,
-									fontWeight: isSelected ? 700 : 500,
-									backgroundColor: isSelected
-										? isDark
-											? "rgba(253, 255, 218, 0.15)"
-											: "rgba(56, 57, 46, 0.12)"
-										: "transparent",
-									border: "1px solid",
-									borderColor: isSelected ? "text.primary" : "divider",
-									color: isSelected ? "text.primary" : "text.secondary",
-								}}
-							/>
+								className={`chip chip-sm ${isSelected ? "chip-primary" : ""}`}
+							>
+								{cat}
+							</button>
 						);
 					})}
-				</Box>
-			</Box>
+				</div>
+			</div>
 
 			{/* Main SVG Topology Map & Detail Drawer */}
-			<Box
-				sx={{
+			<div
+				style={{
 					display: "grid",
-					gridTemplateColumns: { xs: "1fr", lg: "1fr 340px" },
-					gap: 3,
+					gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+					gap: "1.5rem",
 					alignItems: "start",
 				}}
 			>
 				{/* SVG Interactive Canvas */}
-				<Paper
-					elevation={0}
-					sx={{
-						border: "1px solid",
-						borderColor: "divider",
-						borderRadius: 2,
-						overflow: "hidden",
-						backgroundColor: isDark
+				<div
+					style={{
+						border: "1px solid var(--color-border, var(--hairline-rule))",
+						background: isDark
 							? "rgba(20, 22, 17, 0.85)"
 							: "rgba(247, 248, 220, 0.75)",
 						display: "flex",
 						justifyContent: "center",
 						alignItems: "center",
-						p: 1,
+						padding: "0.5rem",
+						overflow: "hidden",
 					}}
 				>
 					<svg
@@ -230,7 +191,6 @@ export default function ArchitectureTopology() {
 						}}
 					>
 						<defs>
-							{/* Markers for arrows */}
 							<marker
 								id="topo-arrow"
 								viewBox="0 0 10 10"
@@ -256,85 +216,45 @@ export default function ArchitectureTopology() {
 								orient="auto-start-reverse"
 							>
 								<path
-									d="M 0 1 L 9 5 L 0 9 z"
+									d="M 0 1.5 L 8 5 L 0 8.5 z"
 									fill={isDark ? "#facc15" : "#d97706"}
 								/>
 							</marker>
 						</defs>
 
-						{/* Background subtle grid lines */}
-						<g opacity={isDark ? 0.08 : 0.05}>
-							{[50, 150, 250, 350, 450, 550, 650, 750, 850].map((gx) => (
-								<line
-									key={`grid-x-${gx}`}
-									x1={gx}
-									y1={0}
-									x2={gx}
-									y2={520}
-									stroke={isDark ? "#fff" : "#000"}
-									strokeDasharray="2 6"
-								/>
-							))}
-							{[60, 160, 260, 360, 460].map((gy) => (
-								<line
-									key={`grid-y-${gy}`}
-									x1={0}
-									y1={gy}
-									x2={900}
-									y2={gy}
-									stroke={isDark ? "#fff" : "#000"}
-									strokeDasharray="2 6"
-								/>
-							))}
-						</g>
-
-						{/* Connection Edges */}
+						{/* Edge Connections */}
 						<g className="topology-edges">
 							{ECOSYSTEM_EDGES.map((edge) => {
-								const srcNode = nodeMap.get(edge.source);
-								const tgtNode = nodeMap.get(edge.target);
-								if (!srcNode || !tgtNode) return null;
+								const sourceNode = nodeMap.get(edge.source);
+								const targetNode = nodeMap.get(edge.target);
+								if (!sourceNode || !targetNode) return null;
 
 								const isConnectedToActive =
 									activeNodeId &&
 									(edge.source === activeNodeId ||
 										edge.target === activeNodeId);
-								const isDimmed = activeNodeId && !isConnectedToActive;
 
-								const dx = tgtNode.x - srcNode.x;
-								const dy = tgtNode.y - srcNode.y;
-								const cx1 = srcNode.x + dx * 0.4;
-								const cy1 = srcNode.y + dy * 0.1;
-								const cx2 = srcNode.x + dx * 0.6;
-								const cy2 = srcNode.y + dy * 0.9;
-								const pathD = `M ${srcNode.x} ${srcNode.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tgtNode.x} ${tgtNode.y}`;
+								let edgeOpacity = 0.55;
+								if (activeNodeId) {
+									edgeOpacity = isConnectedToActive ? 1 : 0.12;
+								}
 
-								// Midpoint for label
-								const midX = (srcNode.x + tgtNode.x) / 2;
-								const midY = (srcNode.y + tgtNode.y) / 2;
+								const midX = (sourceNode.x + targetNode.x) / 2;
+								const midY = (sourceNode.y + targetNode.y) / 2;
 
 								return (
 									<g
 										key={edge.id}
-										opacity={isDimmed ? 0.18 : 1}
 										style={{
+											opacity: edgeOpacity,
 											transition: "opacity 0.25s ease",
 										}}
 									>
-										{/* Glow/highlight backdrop line when active */}
-										{isConnectedToActive && (
-											<path
-												d={pathD}
-												fill="none"
-												stroke={isDark ? "#facc15" : "#d97706"}
-												strokeWidth={5}
-												strokeOpacity={0.3}
-											/>
-										)}
-
-										<path
-											d={pathD}
-											fill="none"
+										<line
+											x1={sourceNode.x}
+											y1={sourceNode.y}
+											x2={targetNode.x}
+											y2={targetNode.y}
 											stroke={
 												isConnectedToActive
 													? isDark
@@ -353,7 +273,6 @@ export default function ArchitectureTopology() {
 											}
 										/>
 
-										{/* Edge text label when active */}
 										{isConnectedToActive && (
 											<g transform={`translate(${midX}, ${midY})`}>
 												<rect
@@ -361,7 +280,7 @@ export default function ArchitectureTopology() {
 													y={-11}
 													width={150}
 													height={22}
-													rx={11}
+													rx={0}
 													fill={isDark ? "#1f211a" : "#fdf8ea"}
 													stroke={isDark ? "#facc15" : "#d97706"}
 													strokeWidth={1}
@@ -422,92 +341,70 @@ export default function ArchitectureTopology() {
 											cursor: "pointer",
 											opacity: nodeOpacity,
 											transition: "opacity 0.25s ease, transform 0.2s ease",
-											outline: "none",
 										}}
 									>
-										{/* Active Aura / Pulse ring */}
+										{/* Outer aura on active */}
 										{isActive && (
 											<circle
-												r={isHub ? 52 : 46}
+												r={isHub ? 52 : 44}
 												fill="none"
 												stroke={node.color}
 												strokeWidth={2}
-												strokeOpacity={0.4}
-												strokeDasharray="4 4"
+												strokeDasharray="4 3"
+												opacity={0.8}
 											/>
 										)}
 
-										{/* Node background circle */}
+										{/* Main node circle */}
 										<circle
-											r={isHub ? 44 : 38}
+											r={isHub ? 44 : 36}
 											fill={
-												isDark
-													? isSelected
-														? "#2a2d22"
-														: "#1e2018"
-													: isSelected
-														? "#fff"
-														: "#f9fae6"
+												isActive
+													? isDark
+														? "#303428"
+														: "#f5f6ce"
+													: isDark
+														? "#1d2019"
+														: "#fbfce3"
 											}
 											stroke={
 												isActive
 													? node.color
 													: isDark
-														? "rgba(253, 255, 218, 0.25)"
-														: "rgba(56, 57, 46, 0.2)"
+														? "rgba(253, 255, 218, 0.3)"
+														: "rgba(56, 57, 46, 0.25)"
 											}
-											strokeWidth={isActive ? 3 : 1.5}
-											filter="drop-shadow(0 2px 6px rgba(0,0,0,0.18))"
+											strokeWidth={isActive ? 2.5 : 1.5}
 										/>
 
-										{/* Inner Accent Ring */}
-										<circle
-											r={isHub ? 36 : 30}
-											fill="none"
-											stroke={node.color}
-											strokeWidth={1.5}
-											strokeOpacity={0.65}
-										/>
-
-										{/* Node Monogram / Abbreviation */}
+										{/* Short name text */}
 										<text
 											textAnchor="middle"
-											dominantBaseline="central"
-											y={-2}
-											fontSize={isHub ? 16 : 14}
-											fontWeight={800}
-											fontFamily='"Newsreader", serif'
-											fill={
-												isActive ? node.color : isDark ? "#fdffda" : "#38392e"
-											}
-										>
-											{node.shortName
-												.split(/[- ]/)
-												.map((w) => w[0])
-												.join("")
-												.toUpperCase()
-												.slice(0, 3)}
-										</text>
-
-										{/* Node Label Below */}
-										<text
-											textAnchor="middle"
-											y={isHub ? 58 : 52}
-											fontSize={13}
-											fontWeight={isActive ? 700 : 600}
+											dy="-2"
+											fontSize={isHub ? 13 : 11.5}
+											fontWeight={700}
 											fill={isDark ? "#fdffda" : "#38392e"}
+											style={{
+												fontFamily:
+													"var(--font-family-code, 'Work Sans', sans-serif)",
+											}}
 										>
 											{node.shortName}
 										</text>
 
-										{/* Node Category Badge */}
+										{/* Category label */}
 										<text
 											textAnchor="middle"
-											y={isHub ? 73 : 67}
-											fontSize={10.5}
-											fontWeight={500}
+											dy="14"
+											fontSize={9}
+											fontWeight={600}
 											fill={node.color}
 											letterSpacing="0.04em"
+											style={{
+												fontFamily:
+													"var(--font-family-code, 'Work Sans', sans-serif)",
+												textTransform: "uppercase",
+											}}
 										>
 											{node.category}
 										</text>
@@ -516,278 +413,261 @@ export default function ArchitectureTopology() {
 							})}
 						</g>
 					</svg>
-				</Paper>
+				</div>
 
-				{/* Detail Drawer / Side Inspector */}
-				<Paper
-					elevation={0}
-					data-testid="topology-detail-panel"
-					sx={{
-						p: 2.5,
-						border: "1px solid",
-						borderColor: "divider",
-						borderRadius: 2,
-						backgroundColor: isDark
-							? "rgba(35, 37, 29, 0.7)"
-							: "rgba(253, 255, 218, 0.7)",
-						minHeight: 460,
+				{/* Detail Drawer Panel */}
+				<div
+					style={{
+						border: "1px solid var(--color-border, var(--hairline-rule))",
+						background: isDark
+							? "rgba(20, 22, 17, 0.75)"
+							: "rgba(255, 255, 255, 0.7)",
+						padding: "1.25rem",
+						minHeight: "420px",
 						display: "flex",
 						flexDirection: "column",
 					}}
 				>
 					{activeNode ? (
-						<Box
-							sx={{ display: "flex", flexDirection: "column", height: "100%" }}
-						>
-							{/* Panel Header */}
-							<Box
-								sx={{
+						<div>
+							<div
+								style={{
 									display: "flex",
 									justifyContent: "space-between",
 									alignItems: "flex-start",
-									mb: 1.5,
+									marginBottom: "0.75rem",
 								}}
 							>
-								<Box>
-									<Chip
-										label={activeNode.category}
-										size="small"
-										sx={{
-											fontSize: "0.7rem",
-											height: 20,
-											fontWeight: 700,
+								<div>
+									<span
+										className="chip chip-sm"
+										style={{
 											color: activeNode.color,
 											borderColor: activeNode.color,
-											border: "1px solid",
-											backgroundColor: "transparent",
-											mb: 1,
+											marginBottom: "0.5rem",
 										}}
-									/>
-									<Typography
-										variant="h5"
-										component="h4"
-										sx={{
-											fontWeight: 700,
-											fontFamily: '"Newsreader", serif',
-											lineHeight: 1.2,
-										}}
+									>
+										{activeNode.category}
+									</span>
+									<h4
+										className="editorial-card-title"
+										style={{ margin: "0.25rem 0", fontSize: "1.3rem" }}
 									>
 										{activeNode.name}
-									</Typography>
-								</Box>
+									</h4>
+								</div>
 
 								{selectedNodeId && (
-									<IconButton
-										size="small"
+									<button
+										type="button"
 										aria-label="Close details"
 										onClick={() => setSelectedNodeId(null)}
-										sx={{ color: "text.secondary" }}
+										className="icon-btn"
 									>
-										<CloseIcon fontSize="small" />
-									</IconButton>
+										<CloseIcon size={16} />
+									</button>
 								)}
-							</Box>
+							</div>
 
-							<Typography
-								variant="body2"
-								color="text.secondary"
-								sx={{ mb: 2, fontStyle: "italic" }}
+							<p
+								className="editorial-body"
+								style={{
+									fontStyle: "italic",
+									color: "var(--color-text-secondary, #7d5d53)",
+									marginBottom: "0.75rem",
+									fontSize: "0.85rem",
+								}}
 							>
 								{activeNode.tagline}
-							</Typography>
+							</p>
 
-							<Typography variant="body2" sx={{ mb: 2.5, lineHeight: 1.5 }}>
+							<p
+								className="editorial-body"
+								style={{
+									fontSize: "0.875rem",
+									lineHeight: 1.5,
+									marginBottom: "1rem",
+								}}
+							>
 								{activeNode.description}
-							</Typography>
+							</p>
 
-							<Divider sx={{ mb: 2, borderColor: "divider" }} />
+							<hr className="editorial-divider" style={{ margin: "1rem 0" }} />
 
 							{/* Tech Stack Chips */}
-							<Box sx={{ mb: 2.5 }}>
-								<Typography
-									variant="caption"
-									sx={{
-										textTransform: "uppercase",
-										letterSpacing: "0.08em",
-										fontWeight: 700,
-										color: "text.secondary",
-										display: "block",
-										mb: 1,
-									}}
+							<div style={{ marginBottom: "1rem" }}>
+								<p
+									className="editorial-meta"
+									style={{ marginBottom: "0.5rem" }}
 								>
 									Tech Stack
-								</Typography>
-								<Box
-									sx={{
+								</p>
+								<div
+									style={{
 										display: "flex",
 										flexWrap: "wrap",
-										gap: 0.6,
+										gap: "0.35rem",
 									}}
 								>
 									{activeNode.techStack.map((tech) => (
-										<Chip
-											key={tech}
-											label={tech}
-											size="small"
-											sx={{
-												fontSize: "0.72rem",
-												height: 22,
-												backgroundColor: isDark
-													? "rgba(253, 255, 218, 0.08)"
-													: "rgba(56, 57, 46, 0.06)",
-												color: "text.primary",
-												border: "1px solid",
-												borderColor: "divider",
-											}}
-										/>
+										<span key={tech} className="chip chip-sm">
+											{tech}
+										</span>
 									))}
-								</Box>
-							</Box>
+								</div>
+							</div>
 
-							{/* Connected Data Flows */}
-							<Box sx={{ mb: 2.5 }}>
-								<Typography
-									variant="caption"
-									sx={{
-										textTransform: "uppercase",
-										letterSpacing: "0.08em",
-										fontWeight: 700,
-										color: "text.secondary",
-										display: "block",
-										mb: 1,
+							{/* Architectural Role */}
+							<div style={{ marginBottom: "1rem" }}>
+								<p
+									className="editorial-meta"
+									style={{ marginBottom: "0.25rem" }}
+								>
+									Architectural Role
+								</p>
+								<p
+									className="editorial-body"
+									style={{
+										fontSize: "0.85rem",
+										lineHeight: 1.45,
+										margin: 0,
 									}}
 								>
+									{activeNode.architecturalRole}
+								</p>
+							</div>
+
+							{/* Connected Data Flows */}
+							<div style={{ marginBottom: "1rem" }}>
+								<p
+									className="editorial-meta"
+									style={{ marginBottom: "0.5rem" }}
+								>
 									Active Data Flows ({connectedEdges.length})
-								</Typography>
-								<Stack spacing={1}>
+								</p>
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										gap: "0.5rem",
+									}}
+								>
 									{connectedEdges.map((edge) => {
 										const otherNodeId =
 											edge.source === activeNode.id ? edge.target : edge.source;
 										const otherNode = nodeMap.get(otherNodeId);
 										return (
-											<Box
+											<div
 												key={edge.id}
-												sx={{
-													p: 1.2,
-													borderRadius: 1.5,
-													border: "1px solid",
-													borderColor: "divider",
-													backgroundColor: isDark
+												style={{
+													padding: "0.6rem",
+													border:
+														"1px solid var(--color-border, var(--hairline-rule))",
+													background: isDark
 														? "rgba(20, 22, 17, 0.5)"
 														: "rgba(255, 255, 255, 0.6)",
 												}}
 											>
-												<Box
-													sx={{
+												<div
+													style={{
 														display: "flex",
 														justifyContent: "space-between",
 														alignItems: "center",
-														mb: 0.5,
+														marginBottom: "0.25rem",
 													}}
 												>
-													<Typography
-														variant="caption"
-														sx={{
+													<span
+														style={{
 															fontWeight: 700,
-															color: "text.primary",
+															fontSize: "0.78rem",
+															fontFamily:
+																"var(--font-family-code, 'Work Sans', sans-serif)",
 														}}
 													>
 														{edge.label}
-													</Typography>
-													<Typography
-														variant="caption"
-														sx={{
+													</span>
+													<span
+														style={{
 															fontWeight: 600,
+															fontSize: "0.75rem",
 															color: otherNode?.color,
 														}}
 													>
 														↔ {otherNode?.shortName}
-													</Typography>
-												</Box>
-												<Typography
-													variant="caption"
-													color="text.secondary"
-													sx={{
+													</span>
+												</div>
+												<span
+													style={{
+														fontSize: "0.75rem",
+														color: "var(--color-text-secondary, #7d5d53)",
 														display: "block",
 														lineHeight: 1.35,
 													}}
 												>
 													{edge.flow}
-												</Typography>
-											</Box>
+												</span>
+											</div>
 										);
 									})}
-								</Stack>
-							</Box>
+								</div>
+							</div>
 
 							{/* Key Capabilities */}
-							<Box sx={{ mt: "auto" }}>
-								<Typography
-									variant="caption"
-									sx={{
-										textTransform: "uppercase",
-										letterSpacing: "0.08em",
-										fontWeight: 700,
-										color: "text.secondary",
-										display: "block",
-										mb: 1,
-									}}
+							<div>
+								<p
+									className="editorial-meta"
+									style={{ marginBottom: "0.5rem" }}
 								>
 									Architectural Capabilities
-								</Typography>
-								<Box
-									component="ul"
-									sx={{
-										m: 0,
-										pl: 2,
-										"& li": {
-											fontSize: "0.78rem",
-											color: "text.secondary",
-											mb: 0.5,
-										},
+								</p>
+								<ul
+									style={{
+										margin: 0,
+										paddingLeft: "1.25rem",
+										fontSize: "0.78rem",
+										color: "var(--color-text-secondary, #7d5d53)",
+										lineHeight: 1.5,
 									}}
 								>
 									{activeNode.keyCapabilities.map((cap) => (
 										<li key={cap}>{cap}</li>
 									))}
-								</Box>
-							</Box>
-						</Box>
+								</ul>
+							</div>
+						</div>
 					) : (
-						<Box
-							sx={{
+						<div
+							style={{
 								display: "flex",
 								flexDirection: "column",
 								alignItems: "center",
 								justifyContent: "center",
 								height: "100%",
 								textAlign: "center",
-								py: 6,
-								px: 2,
+								padding: "2rem 1rem",
 							}}
 						>
-							<Typography
-								variant="h6"
-								sx={{
-									fontFamily: '"Newsreader", serif',
-									fontWeight: 700,
-									mb: 1,
-								}}
+							<h4
+								className="editorial-card-title"
+								style={{ marginBottom: "0.5rem" }}
 							>
 								Select an Application
-							</Typography>
-							<Typography
-								variant="body2"
-								color="text.secondary"
-								sx={{ maxWidth: 260 }}
+							</h4>
+							<p
+								className="editorial-body"
+								style={{
+									maxWidth: "260px",
+									fontSize: "0.85rem",
+									color: "var(--color-text-secondary, #7d5d53)",
+								}}
 							>
 								Hover or click any node in the topology map to explore its
 								architectural role, data flows, and tech stack.
-							</Typography>
-						</Box>
+							</p>
+						</div>
 					)}
-				</Paper>
-			</Box>
-		</Paper>
+				</div>
+			</div>
+		</div>
 	);
 }

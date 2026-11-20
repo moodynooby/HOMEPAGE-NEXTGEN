@@ -19,35 +19,6 @@ import { Link as RouterLink } from "react-router-dom";
 import AdminLogin from "@/components/admin/AdminLogin";
 import GitHubTokenModal from "@/components/admin/GitHubTokenModal";
 import ProjectEditModal from "@/components/admin/ProjectEditModal";
-import {
-	Alert,
-	Box,
-	Button,
-	Card,
-	Chip,
-	CircularProgress,
-	Container,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	FormControl,
-	IconButton,
-	InputAdornment,
-	InputLabel,
-	MenuItem,
-	Select,
-	Snackbar,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	TextField,
-	Tooltip,
-	Typography,
-} from "@/components/ui";
 import defaultProjects from "@/content/projects.json";
 import { getGitHubToken, isAuthenticated, logout } from "@/utils/authUtils";
 import {
@@ -110,93 +81,88 @@ export default function AdminDashboard() {
 		} catch {}
 	}, [projects]);
 
+	const categories = useMemo(() => {
+		const raw = [...new Set(projects.map((p) => p.category).filter(Boolean))];
+		return ["All", ...orderCategories(raw)];
+	}, [projects]);
+
+	const filteredProjects = useMemo(() => {
+		const query = searchQuery.trim().toLowerCase();
+		return projects
+			.map((project, originalIndex) => ({ project, originalIndex }))
+			.filter(({ project }) => {
+				const matchesCategory =
+					categoryFilter === "All" || project.category === categoryFilter;
+				if (!matchesCategory) return false;
+
+				if (!query) return true;
+				return (
+					project.githubName?.toLowerCase().includes(query) ||
+					project.tagline?.toLowerCase().includes(query) ||
+					project.category?.toLowerCase().includes(query)
+				);
+			});
+	}, [projects, searchQuery, categoryFilter]);
+
+	const showToast = (message, severity = "info") => {
+		setToast({ open: true, message, severity });
+		setTimeout(() => setToast((prev) => ({ ...prev, open: false })), 4000);
+	};
+
 	const handleLogout = () => {
 		logout();
 		setIsAuthed(false);
 	};
 
-	const showToast = (message, severity = "info") => {
-		setToast({ open: true, message, severity });
-	};
-
-	const categories = useMemo(() => {
-		const cats = new Set(projects.map((p) => p.category).filter(Boolean));
-		return ["All", ...orderCategories([...cats])];
-	}, [projects]);
-
-	const filteredProjects = useMemo(() => {
-		return projects
-			.map((p, originalIndex) => ({ ...p, originalIndex }))
-			.filter((p) => {
-				const matchesCategory =
-					categoryFilter === "All" || p.category === categoryFilter;
-				const q = searchQuery.toLowerCase().trim();
-				const matchesSearch =
-					!q ||
-					p.githubName.toLowerCase().includes(q) ||
-					p.tagline?.toLowerCase().includes(q);
-				return matchesCategory && matchesSearch;
-			});
-	}, [projects, categoryFilter, searchQuery]);
-
-	const moveProject = (index, direction) => {
-		const newIndex = index + direction;
-		if (newIndex < 0 || newIndex >= projects.length) return;
-
+	const handleSaveProject = (savedProject) => {
 		setProjects((prev) => {
-			const copy = [...prev];
-			const [moved] = copy.splice(index, 1);
-			copy.splice(newIndex, 0, moved);
-			return copy;
+			if (editModalState.index !== null && editModalState.index >= 0) {
+				const next = [...prev];
+				next[editModalState.index] = savedProject;
+				return next;
+			}
+			return [savedProject, ...prev];
 		});
-		showToast(
-			`Moved "${projects[index].githubName}" ${direction > 0 ? "down" : "up"}.`,
-		);
-	};
 
-	const toggleFeatured = (index) => {
-		setProjects((prev) => {
-			const copy = [...prev];
-			copy[index] = { ...copy[index], featured: !copy[index].featured };
-			return copy;
-		});
 		showToast(
-			`Project "${projects[index].githubName}" ${
-				!projects[index].featured ? "featured" : "unfeatured"
-			}.`,
+			editModalState.index !== null
+				? `Updated monograph "${savedProject.githubName}".`
+				: `Created monograph "${savedProject.githubName}".`,
+			"success",
 		);
-	};
-
-	const handleSaveProject = (savedData) => {
-		if (editModalState.index !== null) {
-			setProjects((prev) => {
-				const copy = [...prev];
-				copy[editModalState.index] = savedData;
-				return copy;
-			});
-			showToast(`Updated "${savedData.githubName}".`, "success");
-		} else {
-			setProjects((prev) => [savedData, ...prev]);
-			showToast(`Added "${savedData.githubName}" to ledger.`, "success");
-		}
-		setEditModalState({ open: false, project: null, index: null });
 	};
 
 	const confirmDelete = () => {
-		if (deleteConfirmState.index !== null) {
-			const name = projects[deleteConfirmState.index]?.githubName;
-			setProjects((prev) =>
-				prev.filter((_, i) => i !== deleteConfirmState.index),
-			);
-			showToast(`Deleted "${name}".`, "info");
+		const { index, project } = deleteConfirmState;
+		if (index !== null) {
+			setProjects((prev) => prev.filter((_, i) => i !== index));
+			showToast(`Removed "${project?.githubName}" from the ledger.`, "info");
 		}
 		setDeleteConfirmState({ open: false, index: null, project: null });
+	};
+
+	const handleMove = (fromIndex, toIndex) => {
+		if (toIndex < 0 || toIndex >= projects.length) return;
+		setProjects((prev) => {
+			const next = [...prev];
+			const [item] = next.splice(fromIndex, 1);
+			next.splice(toIndex, 0, item);
+			return next;
+		});
+	};
+
+	const handleToggleFeatured = (index) => {
+		setProjects((prev) => {
+			const next = [...prev];
+			next[index] = { ...next[index], featured: !next[index].featured };
+			return next;
+		});
 	};
 
 	const handleResetToDefault = () => {
 		if (
 			window.confirm(
-				"Reset all changes back to projects.json from repository source? Local uncommitted drafts will be discarded.",
+				"Reset all changes and restore original repository projects data?",
 			)
 		) {
 			localStorage.removeItem(DRAFT_STORAGE_KEY);
@@ -247,563 +213,467 @@ export default function AdminDashboard() {
 	}
 
 	return (
-		<Box
-			sx={{ minHeight: "100vh", backgroundColor: "background.default", pb: 12 }}
-		>
-			<Box
-				sx={{
-					borderBottom: 1,
-					borderColor: "divider",
-					backgroundColor: "background.paper",
-					py: 3,
+		<div style={{ minHeight: "100vh", paddingBottom: "5rem" }}>
+			<div
+				style={{
+					borderBottom: "1px solid var(--color-border, var(--hairline-rule))",
+					background: "var(--color-background-surface, #fdffda)",
+					padding: "1.5rem 0",
 				}}
 			>
-				<Container maxWidth="lg">
-					<Box
-						sx={{
+				<div className="editorial-container">
+					<div
+						style={{
 							display: "flex",
 							justifyContent: "space-between",
 							alignItems: "center",
 							flexWrap: "wrap",
-							gap: 2,
+							gap: "1rem",
 						}}
 					>
-						<Box>
-							<Typography
-								variant="overline"
-								sx={{
-									color: "secondary.main",
-									letterSpacing: "0.15em",
-									fontWeight: 600,
+						<div>
+							<span
+								className="editorial-meta"
+								style={{
+									color: "var(--color-accent, #7d5d53)",
 									display: "block",
+									marginBottom: "0.25rem",
 								}}
 							>
 								Curator Archive Ledger • Administration
-							</Typography>
-							<Typography
-								variant="h4"
-								component="h1"
-								sx={{
-									fontFamily: "Newsreader, serif",
-									fontWeight: 700,
-									color: "text.primary",
-									letterSpacing: "-0.01em",
-								}}
+							</span>
+							<h1
+								className="editorial-headline"
+								style={{ margin: 0, fontSize: "2rem" }}
 							>
 								Monograph Curator Desk
-							</Typography>
-						</Box>
+							</h1>
+						</div>
 
-						<Box
-							sx={{
+						<div
+							style={{
 								display: "flex",
 								alignItems: "center",
-								gap: 1.5,
+								gap: "0.75rem",
 								flexWrap: "wrap",
 							}}
 						>
-							<Button
-								component={RouterLink}
-								to="/projects"
-								variant="outlined"
-								size="small"
-								sx={{
-									borderColor: "divider",
-									color: "text.primary",
-									textTransform: "none",
-								}}
-							>
+							<RouterLink to="/projects" className="btn btn-outlined btn-sm">
 								View Public Ledger
-							</Button>
+							</RouterLink>
 
-							<Button
-								variant="outlined"
-								size="small"
+							<button
+								type="button"
+								className="btn btn-outlined btn-sm"
 								onClick={() => setTokenModalOpen(true)}
-								startIcon={<Key fontSize="small" />}
-								sx={{
-									borderColor: githubToken ? "divider" : "warning.main",
-									color: githubToken ? "text.primary" : "warning.main",
-									textTransform: "none",
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "4px",
+									borderColor: githubToken ? undefined : "#d97706",
+									color: githubToken ? undefined : "#d97706",
 								}}
 							>
-								{githubToken ? "GitHub Token (Active)" : "Set GitHub Token"}
-							</Button>
+								<Key size={14} />
+								<span>
+									{githubToken ? "GitHub Token (Active)" : "Set GitHub Token"}
+								</span>
+							</button>
 
-							<Button
-								variant="outlined"
-								size="small"
+							<button
+								type="button"
+								className="btn btn-outlined btn-sm"
 								onClick={() => exportProjectsJson(projects)}
-								startIcon={<Download fontSize="small" />}
-								sx={{
-									borderColor: "divider",
-									color: "text.primary",
-									textTransform: "none",
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "4px",
 								}}
 							>
-								Export JSON
-							</Button>
+								<Download size={14} />
+								<span>Export JSON</span>
+							</button>
 
-							<IconButton
+							<button
+								type="button"
 								onClick={handleLogout}
-								size="small"
 								aria-label="Logout"
 								title="Lock Curator Console"
-								sx={{
-									border: 1,
-									borderColor: "divider",
-									borderRadius: 1,
-									p: 0.75,
-								}}
+								className="icon-btn"
 							>
-								<Logout fontSize="small" />
-							</IconButton>
-						</Box>
-					</Box>
-				</Container>
-			</Box>
+								<Logout size={16} />
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
-			<Container maxWidth="lg" sx={{ mt: 5 }}>
+			<div className="editorial-container" style={{ marginTop: "2.5rem" }}>
 				{!githubToken && (
-					<Alert
-						severity="info"
-						action={
-							<Button
-								color="inherit"
-								size="small"
-								onClick={() => setTokenModalOpen(true)}
-							>
-								Configure Token
-							</Button>
-						}
-						sx={{ mb: 4, border: 1, borderColor: "divider" }}
+					<div
+						className="alert alert-info"
+						style={{
+							marginBottom: "1.5rem",
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							flexWrap: "wrap",
+							gap: "0.5rem",
+						}}
 					>
-						GitHub Personal Access Token is currently unconfigured. You can
-						modify projects and export JSON locally. To push changes directly to
-						the live repository, configure your token.
-					</Alert>
+						<span>
+							GitHub Personal Access Token is currently unconfigured. You can
+							modify projects and export JSON locally. To push changes directly
+							to the live repository, configure your token.
+						</span>
+						<button
+							type="button"
+							className="btn btn-outlined btn-sm"
+							onClick={() => setTokenModalOpen(true)}
+						>
+							Configure Token
+						</button>
+					</div>
 				)}
 
-				<Box
-					sx={{
+				<div
+					style={{
 						display: "flex",
 						justifyContent: "space-between",
 						alignItems: "center",
 						flexWrap: "wrap",
-						gap: 2,
-						mb: 3,
+						gap: "1rem",
+						marginBottom: "1.5rem",
 					}}
 				>
-					<Box
-						sx={{
+					<div
+						style={{
 							display: "flex",
-							gap: 1.5,
+							gap: "0.75rem",
 							alignItems: "center",
 							flexWrap: "wrap",
 						}}
 					>
-						<Button
-							variant="contained"
-							startIcon={<Add />}
+						<button
+							type="button"
+							className="btn btn-contained btn-sm"
 							onClick={() =>
 								setEditModalState({ open: true, project: null, index: null })
 							}
-							sx={{
-								backgroundColor: "primary.main",
-								color: "primary.contrastText",
-								fontWeight: 600,
-								letterSpacing: "0.08em",
-								textTransform: "uppercase",
-								"&:hover": { backgroundColor: "primary.dark" },
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "4px",
 							}}
 						>
-							New Project
-						</Button>
+							<Add size={16} />
+							<span>New Project</span>
+						</button>
 
-						<Button
-							variant="contained"
-							color="secondary"
-							startIcon={<CloudUpload />}
+						<button
+							type="button"
+							className="btn btn-contained btn-sm"
 							onClick={() => {
 								setPublishResult(null);
 								setPublishModalOpen(true);
 							}}
-							sx={{
-								backgroundColor: "secondary.main",
-								color: "#fff",
-								fontWeight: 600,
-								letterSpacing: "0.08em",
-								textTransform: "uppercase",
-								"&:hover": { opacity: 0.9 },
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "4px",
+								background: "var(--color-accent, #7d5d53)",
 							}}
 						>
-							Publish to GitHub
-						</Button>
+							<CloudUpload size={16} />
+							<span>Publish to GitHub</span>
+						</button>
 
-						<Button
-							variant="text"
-							size="small"
-							startIcon={<Refresh />}
+						<button
+							type="button"
+							className="btn btn-outlined btn-sm"
 							onClick={handleResetToDefault}
-							sx={{ color: "text.secondary", textTransform: "none" }}
-						>
-							Reset Draft
-						</Button>
-					</Box>
-
-					<Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
-						<TextField
-							size="small"
-							placeholder="Filter ledger..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<Search fontSize="small" sx={{ color: "text.secondary" }} />
-									</InputAdornment>
-								),
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "4px",
 							}}
-							sx={{ minWidth: 200 }}
-						/>
+						>
+							<Refresh size={14} />
+							<span>Reset Draft</span>
+						</button>
+					</div>
 
-						<FormControl size="small" sx={{ minWidth: 150 }}>
-							<InputLabel id="admin-category-filter">Category</InputLabel>
-							<Select
-								labelId="admin-category-filter"
-								value={categoryFilter}
-								label="Category"
-								onChange={(e) => setCategoryFilter(e.target.value)}
-							>
-								{categories.map((c) => (
-									<MenuItem key={c} value={c}>
-										{c}
-									</MenuItem>
-								))}
-							</Select>
-						</FormControl>
-					</Box>
-				</Box>
+					<div
+						style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}
+					>
+						<div style={{ position: "relative", minWidth: "200px" }}>
+							<Search
+								size={14}
+								style={{
+									position: "absolute",
+									left: "10px",
+									top: "50%",
+									transform: "translateY(-50%)",
+									color: "var(--color-text-secondary, #7d5d53)",
+									pointerEvents: "none",
+								}}
+							/>
+							<input
+								type="search"
+								placeholder="Filter ledger..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								className="input"
+								style={{ paddingLeft: "32px", width: "100%" }}
+							/>
+						</div>
 
-				<Card
-					elevation={0}
-					sx={{
-						border: 1,
-						borderColor: "divider",
-						backgroundColor: "background.paper",
-					}}
-				>
-					<TableContainer>
-						<Table aria-label="Projects Curator Ledger">
-							<TableHead sx={{ backgroundColor: "background.default" }}>
-								<TableRow>
-									<TableCell
-										sx={{
-											width: 60,
-											fontWeight: 700,
-											fontSize: "0.75rem",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-										}}
+						<select
+							value={categoryFilter}
+							onChange={(e) => setCategoryFilter(e.target.value)}
+							className="select"
+							style={{ minWidth: "150px" }}
+						>
+							{categories.map((c) => (
+								<option key={c} value={c}>
+									{c}
+								</option>
+							))}
+						</select>
+					</div>
+				</div>
+
+				<div className="table-container">
+					<table className="table" aria-label="Projects Curator Ledger">
+						<thead>
+							<tr>
+								<th style={{ width: 60 }}>#</th>
+								<th style={{ width: 70 }}>Order</th>
+								<th style={{ width: 60 }}>Mark</th>
+								<th>Project &amp; Tagline</th>
+								<th style={{ width: 150 }}>Category</th>
+								<th style={{ width: 90 }}>Addon ID</th>
+								<th style={{ width: 100, textAlign: "right" }}>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{filteredProjects.length === 0 ? (
+								<tr>
+									<td
+										colSpan={7}
+										style={{ textAlign: "center", padding: "3rem" }}
 									>
-										#
-									</TableCell>
-									<TableCell
-										sx={{
-											width: 70,
-											fontWeight: 700,
-											fontSize: "0.75rem",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-										}}
-									>
-										Order
-									</TableCell>
-									<TableCell
-										sx={{
-											width: 60,
-											fontWeight: 700,
-											fontSize: "0.75rem",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-										}}
-									>
-										Mark
-									</TableCell>
-									<TableCell
-										sx={{
-											fontWeight: 700,
-											fontSize: "0.75rem",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-										}}
-									>
-										Project & Tagline
-									</TableCell>
-									<TableCell
-										sx={{
-											width: 150,
-											fontWeight: 700,
-											fontSize: "0.75rem",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-										}}
-									>
-										Category
-									</TableCell>
-									<TableCell
-										sx={{
-											width: 90,
-											textAlign: "center",
-											fontWeight: 700,
-											fontSize: "0.75rem",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-										}}
-									>
-										Featured
-									</TableCell>
-									<TableCell
-										sx={{
-											width: 120,
-											textAlign: "right",
-											fontWeight: 700,
-											fontSize: "0.75rem",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-										}}
-									>
-										Actions
-									</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{filteredProjects.length === 0 ? (
-									<TableRow>
-										<TableCell colSpan={7} sx={{ py: 6, textAlign: "center" }}>
-											<Typography
-												variant="body2"
-												sx={{ color: "text.secondary" }}
-											>
-												No projects found matching the filter criteria.
-											</Typography>
-										</TableCell>
-									</TableRow>
-								) : (
-									filteredProjects.map((p) => {
-										const index = p.originalIndex;
-										return (
-											<TableRow
-												key={p.githubName}
-												hover
-												sx={{
-													"&:last-child td, &:last-child th": { border: 0 },
+										No monographs match current filters.
+									</td>
+								</tr>
+							) : (
+								filteredProjects.map(({ project: p, originalIndex: index }) => {
+									const isFirst = index === 0;
+									const isLast = index === projects.length - 1;
+
+									return (
+										<tr key={p.githubName}>
+											<td
+												style={{
+													fontFamily: "monospace",
+													fontSize: "0.78rem",
 												}}
 											>
-												<TableCell
-													sx={{
-														color: "text.secondary",
-														fontFamily: "Newsreader, serif",
-														fontSize: "1rem",
-													}}
-												>
-													{index + 1}
-												</TableCell>
-
-												<TableCell>
-													<Box
-														sx={{ display: "flex", flexDirection: "column" }}
+												{String(index + 1).padStart(2, "0")}
+											</td>
+											<td>
+												<div style={{ display: "flex", gap: "2px" }}>
+													<button
+														type="button"
+														disabled={isFirst}
+														onClick={() => handleMove(index, index - 1)}
+														aria-label={`Move ${p.githubName} up`}
+														className="icon-btn"
+														style={{
+															opacity: isFirst ? 0.3 : 1,
+															cursor: isFirst ? "default" : "pointer",
+														}}
 													>
-														<IconButton
-															size="small"
-															disabled={index === 0}
-															onClick={() => moveProject(index, -1)}
-															aria-label={`Move ${p.githubName} up`}
-														>
-															<ArrowUpward fontSize="inherit" />
-														</IconButton>
-														<IconButton
-															size="small"
-															disabled={index === projects.length - 1}
-															onClick={() => moveProject(index, 1)}
-															aria-label={`Move ${p.githubName} down`}
-														>
-															<ArrowDownward fontSize="inherit" />
-														</IconButton>
-													</Box>
-												</TableCell>
-
-												<TableCell>
-													{p.githubImg ? (
-														<Box
-															component="img"
-															src={p.githubImg}
-															alt={p.githubName}
-															sx={{
-																width: 36,
-																height: 36,
-																objectFit: "contain",
-																p: 0.25,
-																border: 1,
-																borderColor: "divider",
-																backgroundColor: "background.default",
-															}}
-															onError={(e) => {
-																e.target.style.display = "none";
-															}}
+														<ArrowUpward size={14} />
+													</button>
+													<button
+														type="button"
+														disabled={isLast}
+														onClick={() => handleMove(index, index + 1)}
+														aria-label={`Move ${p.githubName} down`}
+														className="icon-btn"
+														style={{
+															opacity: isLast ? 0.3 : 1,
+															cursor: isLast ? "default" : "pointer",
+														}}
+													>
+														<ArrowDownward size={14} />
+													</button>
+												</div>
+											</td>
+											<td>
+												<button
+													type="button"
+													onClick={() => handleToggleFeatured(index)}
+													aria-label={
+														p.featured
+															? `Unmark ${p.githubName} as featured`
+															: `Mark ${p.githubName} as featured`
+													}
+													className="icon-btn"
+												>
+													{p.featured ? (
+														<Star
+															size={16}
+															fill="var(--color-accent, #7d5d53)"
 														/>
 													) : (
-														<Box
-															sx={{
-																width: 36,
-																height: 36,
-																display: "flex",
-																alignItems: "center",
-																justifyContent: "center",
-																border: 1,
-																borderColor: "divider",
-																fontSize: "0.75rem",
-																fontWeight: 700,
+														<StarBorder size={16} />
+													)}
+												</button>
+											</td>
+											<td>
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: "0.75rem",
+													}}
+												>
+													<div
+														style={{
+															width: 32,
+															height: 32,
+															flexShrink: 0,
+															border:
+																"1px solid var(--color-border, var(--hairline-rule))",
+															display: "flex",
+															alignItems: "center",
+															justifyContent: "center",
+															padding: 2,
+															background:
+																"var(--color-background-surface, #fdffda)",
+														}}
+													>
+														<img
+															src={p.githubImg}
+															alt=""
+															style={{
+																maxWidth: "100%",
+																maxHeight: "100%",
+																objectFit: "contain",
+															}}
+														/>
+													</div>
+													<div>
+														<div
+															style={{
+																fontWeight: 600,
+																fontFamily:
+																	"var(--font-family-heading, 'Newsreader', serif)",
+																fontSize: "1rem",
 															}}
 														>
-															{p.githubName.slice(0, 2).toUpperCase()}
-														</Box>
-													)}
-												</TableCell>
-
-												<TableCell>
-													<Typography
-														variant="subtitle1"
-														component="div"
-														sx={{
-															fontFamily: "Newsreader, serif",
-															fontWeight: 700,
-															color: "text.primary",
-															lineHeight: 1.2,
+															{p.githubName}
+														</div>
+														<div
+															style={{
+																fontSize: "0.78rem",
+																color: "var(--color-text-secondary, #7d5d53)",
+																maxWidth: "400px",
+																overflow: "hidden",
+																textOverflow: "ellipsis",
+																whiteSpace: "nowrap",
+															}}
+														>
+															{p.tagline}
+														</div>
+													</div>
+												</div>
+											</td>
+											<td>
+												<span className="chip chip-sm">{p.category}</span>
+											</td>
+											<td>
+												{p.addonId ? (
+													<span
+														style={{
+															fontSize: "0.75rem",
+															fontFamily: "monospace",
 														}}
 													>
-														{p.githubName}
-													</Typography>
-													<Typography
-														variant="body2"
-														sx={{
-															color: "text.secondary",
-															fontFamily: "Noto Serif, serif",
-															fontSize: "0.85rem",
-															mt: 0.5,
-															maxWidth: 550,
-														}}
-													>
-														{p.tagline}
-													</Typography>
-												</TableCell>
-
-												<TableCell>
-													<Chip
-														label={p.category}
-														size="small"
-														variant="outlined"
-														sx={{
-															fontSize: "0.68rem",
-															height: 22,
-															borderColor: "divider",
-															textTransform: "uppercase",
-															letterSpacing: "0.06em",
-														}}
-													/>
-												</TableCell>
-
-												<TableCell sx={{ textAlign: "center" }}>
-													<IconButton
-														size="small"
-														onClick={() => toggleFeatured(index)}
-														aria-label={
-															p.featured ? "Unmark featured" : "Mark featured"
+														{p.addonId}
+													</span>
+												) : (
+													<span style={{ opacity: 0.4 }}>—</span>
+												)}
+											</td>
+											<td style={{ textAlign: "right" }}>
+												<div
+													style={{
+														display: "flex",
+														justifyContent: "flex-end",
+														gap: "4px",
+													}}
+												>
+													<button
+														type="button"
+														onClick={() =>
+															setEditModalState({
+																open: true,
+																project: p,
+																index,
+															})
 														}
+														aria-label={`Edit ${p.githubName}`}
+														className="icon-btn"
 													>
-														{p.featured ? (
-															<Star
-																fontSize="small"
-																sx={{ color: "secondary.main" }}
-															/>
-														) : (
-															<StarBorder
-																fontSize="small"
-																sx={{ color: "text.secondary" }}
-															/>
-														)}
-													</IconButton>
-												</TableCell>
+														<Edit size={14} />
+													</button>
+													<button
+														type="button"
+														onClick={() =>
+															setDeleteConfirmState({
+																open: true,
+																index,
+																project: p,
+															})
+														}
+														aria-label={`Delete ${p.githubName}`}
+														className="icon-btn"
+														style={{ color: "#ef4444" }}
+													>
+														<Delete size={14} />
+													</button>
+												</div>
+											</td>
+										</tr>
+									);
+								})
+							)}
+						</tbody>
+					</table>
 
-												<TableCell sx={{ textAlign: "right" }}>
-													<Tooltip title="Edit project details">
-														<IconButton
-															size="small"
-															onClick={() =>
-																setEditModalState({
-																	open: true,
-																	project: p,
-																	index,
-																})
-															}
-															aria-label={`Edit ${p.githubName}`}
-														>
-															<Edit fontSize="small" />
-														</IconButton>
-													</Tooltip>
-
-													<Tooltip title="Remove from ledger">
-														<IconButton
-															size="small"
-															color="error"
-															onClick={() =>
-																setDeleteConfirmState({
-																	open: true,
-																	index,
-																	project: p,
-																})
-															}
-															aria-label={`Delete ${p.githubName}`}
-														>
-															<Delete fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												</TableCell>
-											</TableRow>
-										);
-									})
-								)}
-							</TableBody>
-						</Table>
-					</TableContainer>
-
-					<Box
-						sx={{
-							p: 2,
-							borderTop: 1,
-							borderColor: "divider",
-							backgroundColor: "background.default",
+					<div
+						style={{
+							padding: "0.75rem 1rem",
+							borderTop: "1px solid var(--color-border, var(--hairline-rule))",
+							background: "var(--color-background-surface, #fdffda)",
 							display: "flex",
 							justifyContent: "space-between",
 							alignItems: "center",
 						}}
 					>
-						<Typography
-							variant="caption"
-							sx={{ color: "text.secondary", letterSpacing: "0.05em" }}
-						>
+						<span className="editorial-meta">
 							LEDGER CATALOG: {projects.length} MONOGRAPHS (
 							{projects.filter((p) => p.featured).length} FEATURED)
-						</Typography>
-						<Typography
-							variant="caption"
-							sx={{ color: "text.secondary", letterSpacing: "0.05em" }}
-						>
+						</span>
+						<span className="editorial-meta">
 							DRAFT AUTO-SAVED TO LOCAL STORAGE
-						</Typography>
-					</Box>
-				</Card>
-			</Container>
+						</span>
+					</div>
+				</div>
+			</div>
 
 			<ProjectEditModal
 				open={editModalState.open}
@@ -823,168 +693,237 @@ export default function AdminDashboard() {
 				}}
 			/>
 
-			<Dialog
-				open={deleteConfirmState.open}
-				onClose={() =>
-					setDeleteConfirmState({ open: false, index: null, project: null })
-				}
-				PaperProps={{
-					sx: {
-						backgroundColor: "background.paper",
-						border: 1,
-						borderColor: "divider",
-					},
-				}}
-			>
-				<DialogTitle sx={{ fontFamily: "Newsreader, serif", fontWeight: 700 }}>
-					Confirm Removal
-				</DialogTitle>
-				<DialogContent>
-					<Typography variant="body2">
-						Are you sure you want to remove{" "}
-						<strong>{deleteConfirmState.project?.githubName}</strong> from the
-						monograph ledger?
-					</Typography>
-				</DialogContent>
-				<DialogActions sx={{ p: 2, borderTop: 1, borderColor: "divider" }}>
-					<Button
-						onClick={() =>
+			{/* Delete Confirm Modal */}
+			{deleteConfirmState.open && (
+				<div
+					className="modal-backdrop"
+					role="presentation"
+					onClick={(e) => {
+						if (e.target === e.currentTarget) {
 							setDeleteConfirmState({
 								open: false,
 								index: null,
 								project: null,
-							})
+							});
 						}
-					>
-						Cancel
-					</Button>
-					<Button onClick={confirmDelete} color="error" variant="contained">
-						Delete
-					</Button>
-				</DialogActions>
-			</Dialog>
-
-			<Dialog
-				open={publishModalOpen}
-				onClose={() => {
-					if (!publishing) setPublishModalOpen(false);
-				}}
-				maxWidth="sm"
-				fullWidth
-				PaperProps={{
-					sx: {
-						backgroundColor: "background.paper",
-						border: 1,
-						borderColor: "divider",
-					},
-				}}
-			>
-				<DialogTitle
-					sx={{
-						borderBottom: 1,
-						borderColor: "divider",
-						py: 2,
-						fontFamily: "Newsreader, serif",
-						fontWeight: 700,
 					}}
 				>
-					Publish Ledger to GitHub
-				</DialogTitle>
-				<DialogContent sx={{ py: 3 }}>
-					{publishResult ? (
-						publishResult.success ? (
-							<Box sx={{ textAlign: "center", py: 2 }}>
-								<Alert severity="success" sx={{ mb: 2 }}>
-									Publication successfully committed to <code>main</code>!
-								</Alert>
-								<Typography variant="body2" sx={{ mb: 2 }}>
-									Commit SHA: <code>{publishResult.commitSha.slice(0, 7)}</code>
-								</Typography>
-								{publishResult.commitUrl && (
-									<Button
-										href={publishResult.commitUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										variant="outlined"
-										size="small"
-										endIcon={<ArrowForward />}
-									>
-										View Commit on GitHub
-									</Button>
-								)}
-								<Typography
-									variant="caption"
-									sx={{ display: "block", color: "text.secondary", mt: 3 }}
-								>
-									GitHub Pages / Actions will build and deploy the update
-									automatically.
-								</Typography>
-							</Box>
-						) : (
-							<Alert severity="error" sx={{ mb: 2 }}>
-								{publishResult.error}
-							</Alert>
-						)
-					) : (
-						<Box>
-							<Typography
-								variant="body2"
-								sx={{ mb: 2, color: "text.secondary" }}
-							>
-								You are about to commit {projects.length} project monographs to{" "}
-								<strong>src/content/projects.json</strong> on branch{" "}
-								<strong>main</strong>.
-							</Typography>
-
-							<TextField
-								fullWidth
-								label="Commit Message"
-								value={commitMessage}
-								onChange={(e) => setCommitMessage(e.target.value)}
-								size="small"
-								margin="normal"
-							/>
-						</Box>
-					)}
-				</DialogContent>
-				<DialogActions sx={{ p: 2, borderTop: 1, borderColor: "divider" }}>
-					<Button
-						onClick={() => setPublishModalOpen(false)}
-						disabled={publishing}
-					>
-						{publishResult?.success ? "Close" : "Cancel"}
-					</Button>
-					{!publishResult?.success && (
-						<Button
-							variant="contained"
-							onClick={handlePublish}
-							disabled={publishing}
-							startIcon={
-								publishing ? (
-									<CircularProgress size={16} color="inherit" />
-								) : (
-									<GitHub />
-								)
+					<div
+						className="modal-panel"
+						role="dialog"
+						aria-modal="true"
+						tabIndex={-1}
+						onKeyDown={(e) => {
+							if (e.key === "Escape") {
+								setDeleteConfirmState({
+									open: false,
+									index: null,
+									project: null,
+								});
 							}
-							sx={{
-								backgroundColor: "primary.main",
-								color: "primary.contrastText",
-								"&:hover": { backgroundColor: "primary.dark" },
-							}}
-						>
-							{publishing ? "Committing..." : "Commit to GitHub"}
-						</Button>
-					)}
-				</DialogActions>
-			</Dialog>
+						}}
+						style={{ maxWidth: "440px" }}
+					>
+						<div className="dialog-header">
+							<h3 className="editorial-card-title" style={{ margin: 0 }}>
+								Confirm Removal
+							</h3>
+						</div>
+						<p className="editorial-body" style={{ margin: "1rem 0" }}>
+							Are you sure you want to remove{" "}
+							<strong>{deleteConfirmState.project?.githubName}</strong> from the
+							monograph ledger?
+						</p>
+						<div className="dialog-footer">
+							<button
+								type="button"
+								className="btn btn-outlined btn-sm"
+								onClick={() =>
+									setDeleteConfirmState({
+										open: false,
+										index: null,
+										project: null,
+									})
+								}
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								className="btn btn-contained btn-sm"
+								onClick={confirmDelete}
+								style={{ background: "#ef4444" }}
+							>
+								Delete
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 
-			<Snackbar
-				open={toast.open}
-				autoHideDuration={4000}
-				onClose={() => setToast((prev) => ({ ...prev, open: false }))}
-				message={toast.message}
-				anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-			/>
-		</Box>
+			{/* Publish Modal */}
+			{publishModalOpen && (
+				<div
+					className="modal-backdrop"
+					role="presentation"
+					onClick={(e) => {
+						if (!publishing && e.target === e.currentTarget) {
+							setPublishModalOpen(false);
+						}
+					}}
+				>
+					<div
+						className="modal-panel"
+						role="dialog"
+						aria-modal="true"
+						tabIndex={-1}
+						onKeyDown={(e) => {
+							if (!publishing && e.key === "Escape") setPublishModalOpen(false);
+						}}
+						style={{ maxWidth: "520px" }}
+					>
+						<div className="dialog-header">
+							<h3 className="editorial-card-title" style={{ margin: 0 }}>
+								Publish Ledger to GitHub
+							</h3>
+						</div>
+
+						<div style={{ padding: "1rem 0" }}>
+							{publishResult ? (
+								publishResult.success ? (
+									<div style={{ textAlign: "center" }}>
+										<div
+											className="alert alert-success"
+											style={{ marginBottom: "1rem" }}
+										>
+											Publication successfully committed to <code>main</code>!
+										</div>
+										<p
+											className="editorial-body"
+											style={{ marginBottom: "1rem" }}
+										>
+											Commit SHA:{" "}
+											<code>{publishResult.commitSha.slice(0, 7)}</code>
+										</p>
+										{publishResult.commitUrl && (
+											<a
+												href={publishResult.commitUrl}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="btn btn-outlined btn-sm"
+												style={{
+													display: "inline-flex",
+													alignItems: "center",
+													gap: "4px",
+												}}
+											>
+												<span>View Commit on GitHub</span>
+												<ArrowForward size={14} />
+											</a>
+										)}
+										<p
+											className="editorial-meta"
+											style={{ marginTop: "1.5rem" }}
+										>
+											GitHub Pages / Actions will build and deploy the update
+											automatically.
+										</p>
+									</div>
+								) : (
+									<div className="alert alert-error">{publishResult.error}</div>
+								)
+							) : (
+								<div>
+									<p
+										className="editorial-body"
+										style={{
+											marginBottom: "1rem",
+											color: "var(--color-text-secondary, #7d5d53)",
+										}}
+									>
+										You are about to commit {projects.length} project monographs
+										to <strong>src/content/projects.json</strong> on branch{" "}
+										<strong>main</strong>.
+									</p>
+
+									<label
+										htmlFor="commit-msg-input"
+										className="editorial-meta"
+										style={{ display: "block", marginBottom: "0.25rem" }}
+									>
+										Commit Message
+									</label>
+									<input
+										id="commit-msg-input"
+										type="text"
+										className="input"
+										value={commitMessage}
+										onChange={(e) => setCommitMessage(e.target.value)}
+										style={{ width: "100%" }}
+									/>
+								</div>
+							)}
+						</div>
+
+						<div className="dialog-footer">
+							<button
+								type="button"
+								className="btn btn-outlined btn-sm"
+								onClick={() => setPublishModalOpen(false)}
+								disabled={publishing}
+							>
+								{publishResult?.success ? "Close" : "Cancel"}
+							</button>
+
+							{!publishResult?.success && (
+								<button
+									type="button"
+									className="btn btn-contained btn-sm"
+									onClick={handlePublish}
+									disabled={publishing}
+									style={{
+										display: "inline-flex",
+										alignItems: "center",
+										gap: "6px",
+									}}
+								>
+									{publishing && (
+										<div
+											className="spinner"
+											style={{ width: 14, height: 14 }}
+										/>
+									)}
+									{!publishing && GitHub && <GitHub size={14} />}
+									<span>
+										{publishing ? "Committing..." : "Commit to GitHub"}
+									</span>
+								</button>
+							)}
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Toast notification */}
+			{toast.open && (
+				<div
+					style={{
+						position: "fixed",
+						bottom: "24px",
+						right: "24px",
+						background: "var(--color-primary, #38392e)",
+						color: "var(--color-background-body, #fdffda)",
+						padding: "10px 16px",
+						fontSize: "0.85rem",
+						fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
+						letterSpacing: "0.05em",
+						zIndex: 9999,
+						boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+					}}
+				>
+					{toast.message}
+				</div>
+			)}
+		</div>
 	);
 }

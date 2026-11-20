@@ -56,7 +56,7 @@ Typographic roles: Heading tags (`h1`–`h6`) use Newsreader (weights 800/700/70
 
 ## 5. Layout & Spacing
 
-- **Spacing scale:** MUI's 8px base (`theme.spacing(n)`). The ledger uses `mb: 12` (96px) between year groups, `py: 3.5` (28px) within rows, `gap: 4` (32px) between row elements.
+- **Spacing scale:** Consistent 8px base rhythm (`0.5rem`, `1rem`, `1.5rem`, `2rem`, `3rem`, etc.). The ledger uses 96px (`6rem`) between year groups, 28px (`1.75rem`) within rows, 32px (`2rem`) between row elements.
 - **Embrace whitespace** at the `20`–`24` spacing levels to let the ink breathe.
 - **Asymmetry is allowed — misalignment is not.** Editorial offsets and centered medallions create character; every list row keeps one consistent left edge for scanning.
 

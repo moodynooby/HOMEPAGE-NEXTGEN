@@ -4,14 +4,6 @@ import { Link } from "react-router-dom";
 import Guestbook from "@/components/Guestbook";
 import ButtonAppBar from "@/components/Header";
 import ProjectTimeline from "@/components/ProjectTimeline";
-import {
-	Box,
-	Button,
-	CircularProgress,
-	Container,
-	Divider,
-	Typography,
-} from "@/components/ui";
 import projectsData from "@/content/projects.json";
 import {
 	fetchAddonMetadata,
@@ -124,303 +116,234 @@ export default function LandingPage() {
 	].filter(Boolean);
 
 	return (
-		<Box sx={{ minHeight: "100vh", pb: 8 }}>
+		<div style={{ minHeight: "100vh", paddingBottom: "2rem" }}>
 			<ButtonAppBar />
 
-			<Container
-				maxWidth="lg"
-				sx={{ mt: { xs: 7, md: 10 } }}
+			<div
+				className="editorial-container"
 				id="about-section"
+				style={{ marginTop: "3rem" }}
 			>
 				<motion.div
 					initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7 }}
 				>
-					<Typography variant="overline" color="text.secondary">
-						Manas Doshi · Student · Engineer
-					</Typography>
-					<Typography
-						variant="h2"
-						component="h1"
-						sx={{
-							fontSize: { xs: "2.6rem", md: "4rem" },
+					<p className="editorial-meta">Manas Doshi · Student · Engineer</p>
+					<h1
+						className="editorial-headline"
+						style={{
+							fontSize: "clamp(2.6rem, 5vw, 4rem)",
 							lineHeight: 1.08,
-							mt: 1.5,
-							mb: 3.5,
+							marginTop: "0.5rem",
+							marginBottom: "1.25rem",
 							maxWidth: "17ch",
 						}}
 					>
 						I see something I like — then build{" "}
-						<Box component="em" sx={{ fontStyle: "italic", fontWeight: 400 }}>
+						<em style={{ fontStyle: "italic", fontWeight: 400 }}>
 							my own version.
-						</Box>
-					</Typography>
-					<Typography variant="body1" sx={{ mb: 4, maxWidth: "58ch" }}>
+						</em>
+					</h1>
+					<p
+						className="editorial-body"
+						style={{ marginBottom: "1.5rem", maxWidth: "58ch" }}
+					>
 						Browser extensions, hardware-software experiments, and the
 						occasional breakage it takes to learn something properly.
-					</Typography>
-					<Box
-						sx={{
+					</p>
+					<div
+						style={{
 							display: "flex",
 							flexWrap: "wrap",
-							gap: 2,
-							mb: { xs: 6, md: 9 },
+							gap: "0.75rem",
+							marginBottom: "3rem",
 						}}
 					>
-						<Button
-							variant="contained"
-							color="primary"
-							component={Link}
+						<Link
 							to="/projects"
+							className="btn btn-contained"
 							aria-label="View Manas Doshi's projects"
 						>
 							View Projects
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
+						</Link>
+						<a
 							href="#timeline-section"
+							className="btn btn-outlined"
 							aria-label="View interactive project timeline and release milestones"
 						>
 							Timeline
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
+						</a>
+						<a
 							href="https://flowcv.com/resume/woofkdsq4sse"
 							target="_blank"
 							rel="noopener noreferrer"
+							className="btn btn-outlined"
 							aria-label="Open Manas Doshi's resume in a new tab"
 						>
 							View Résumé
-						</Button>
-					</Box>
+						</a>
+					</div>
 
 					{ledgerEntries.length > 0 && (
-						<Box
-							sx={{
-								borderTop: "1px solid",
-								borderBottom: "1px solid",
-								borderColor: "divider",
-								py: 2.5,
+						<div
+							style={{
+								borderTop:
+									"1px solid var(--color-border, var(--hairline-rule))",
+								borderBottom:
+									"1px solid var(--color-border, var(--hairline-rule))",
+								padding: "1.25rem 0",
 								display: "flex",
 								flexWrap: "wrap",
 							}}
 						>
-							{ledgerEntries.map((entry) => (
-								<Box
+							{ledgerEntries.map((entry, index) => (
+								<div
 									key={entry.label}
-									sx={{
-										flex: { xs: "1 1 40%", sm: "1 1 auto" },
-										minWidth: 120,
-										px: { xs: 0, sm: 4 },
-										py: { xs: 1, sm: 0 },
-										"& + &": {
-											borderLeft: { xs: "none", sm: "1px solid" },
-											borderColor: "divider",
-											pl: { sm: 4 },
-										},
+									style={{
+										flex: "1 1 auto",
+										minWidth: "120px",
+										padding: "0.5rem 1.5rem",
+										borderLeft:
+											index > 0
+												? "1px solid var(--color-border, var(--hairline-rule))"
+												: "none",
 									}}
 								>
-									<Typography
-										variant="h4"
-										component="p"
-										sx={{ lineHeight: 1.2 }}
-									>
-										{entry.value}
-									</Typography>
-									<Typography variant="overline" color="text.secondary">
-										{entry.label}
-									</Typography>
-								</Box>
+									<p className="editorial-stat-value">{entry.value}</p>
+									<p className="editorial-meta">{entry.label}</p>
+								</div>
 							))}
-						</Box>
+						</div>
 					)}
 				</motion.div>
-			</Container>
+			</div>
 
-			<Container
-				maxWidth="lg"
-				sx={{ mt: { xs: 8, md: 12 } }}
+			<section
+				className="editorial-container"
 				id="projects-section"
+				style={{ marginTop: "4rem" }}
 			>
-				<Box
-					sx={{
+				<div
+					style={{
 						display: "flex",
 						alignItems: "baseline",
 						justifyContent: "space-between",
 						flexWrap: "wrap",
-						gap: 1,
-						borderTop: "1px solid",
-						borderColor: "divider",
-						pt: 3,
-						mb: 4,
+						gap: "0.5rem",
+						borderTop: "1px solid var(--color-border, var(--hairline-rule))",
+						paddingTop: "1.25rem",
+						marginBottom: "1.5rem",
 					}}
 				>
-					<Typography variant="h3">Featured Work</Typography>
-					<Typography variant="overline" color="text.secondary">
+					<h2 className="editorial-subheading">Featured Work</h2>
+					<p className="editorial-meta">
 						{featuredProjects.length} of {projectsData.length} entries
-					</Typography>
-				</Box>
-				<Box
-					sx={{
-						display: "grid",
-						gridTemplateColumns: {
-							xs: "1fr",
-							md: `repeat(${Math.min(featuredProjects.length, 3)}, 1fr)`,
-						},
-						gap: { xs: 0, md: 4 },
-					}}
-				>
+					</p>
+				</div>
+				<div className="featured-grid">
 					{featuredProjects.map((project) => {
 						const meta = featuredMeta[project.githubName] || {};
 						const isHighlighted = activeRadarProjects.includes(
 							project.githubName,
 						);
 						return (
-							<Box
+							<Link
 								key={project.githubName}
-								component={Link}
 								to={`/projects/${project.githubName}`}
-								sx={{
-									display: "flex",
-									flexDirection: "column",
-									gap: 1.5,
-									py: { xs: 3, md: 0 },
-									textDecoration: "none",
-									color: "text.primary",
-									transition: "background-color 0.3s ease, outline 0.3s ease",
+								className="featured-card"
+								style={{
 									outline: isHighlighted ? "2px solid #93c47d" : "none",
 									outlineOffset: "4px",
-									borderRadius: 1,
-									"&:hover": { bgcolor: "action.hover" },
-									"&:hover .featured-thumb img": {
-										filter: "grayscale(0%) contrast(100%)",
-									},
 								}}
 							>
-								<Box
-									className="featured-thumb"
-									sx={{
-										width: 88,
-										height: 88,
-										flexShrink: 0,
-										border: "1px solid",
-										borderColor: "divider",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-										p: 1.5,
-										bgcolor: "background.paper",
-										mb: 1,
-									}}
-								>
-									<Box
-										component="img"
-										src={project.githubImg}
-										alt=""
-										loading="lazy"
-										sx={{
-											maxWidth: "100%",
-											maxHeight: "100%",
-											objectFit: "contain",
-											filter: "grayscale(100%) contrast(115%)",
-											transition: "filter 0.5s ease-in-out",
-										}}
-									/>
-								</Box>
-								<Typography variant="h5">{project.githubName}</Typography>
-								<Typography
-									variant="body2"
-									color="text.secondary"
-									sx={{
-										lineHeight: 1.6,
+								<div className="featured-thumb">
+									<img src={project.githubImg} alt="" loading="lazy" />
+								</div>
+								<h3 className="editorial-card-title">{project.githubName}</h3>
+								<p
+									className="editorial-body"
+									style={{
+										fontSize: "0.875rem",
+										lineHeight: 1.5,
 										display: "-webkit-box",
 										WebkitLineClamp: 2,
 										WebkitBoxOrient: "vertical",
 										overflow: "hidden",
+										marginBottom: 0,
 									}}
 								>
 									{project.tagline}
-								</Typography>
-								<Box
-									sx={{
+								</p>
+								<div
+									style={{
 										display: "flex",
 										flexWrap: "wrap",
 										alignItems: "center",
-										columnGap: 1.5,
-										rowGap: 0.5,
-										mt: "auto",
-										pt: 1,
+										gap: "0.75rem",
+										marginTop: "auto",
+										paddingTop: "0.5rem",
+										fontFamily:
+											"var(--font-family-code, 'Work Sans', sans-serif)",
+										fontSize: "0.7rem",
+										letterSpacing: "0.1em",
+										textTransform: "uppercase",
 									}}
 								>
-									<Typography
-										variant="overline"
-										color="secondary.main"
-										component="span"
-									>
+									<span style={{ color: "var(--color-accent, #7d5d53)" }}>
 										{project.category}
-									</Typography>
+									</span>
 									{meta.stars > 0 && (
-										<Typography
-											variant="overline"
-											color="text.secondary"
-											component="span"
-										>
+										<span style={{ color: "var(--color-text-secondary)" }}>
 											{formatNumber(meta.stars)} stars
-										</Typography>
+										</span>
 									)}
 									{meta.addon?.averageDailyUsers > 0 && (
-										<Typography
-											variant="overline"
-											color="text.secondary"
-											component="span"
-										>
+										<span style={{ color: "var(--color-text-secondary)" }}>
 											{formatNumber(meta.addon.averageDailyUsers)} users
-										</Typography>
+										</span>
 									)}
-								</Box>
-							</Box>
+								</div>
+							</Link>
 						);
 					})}
-				</Box>
-			</Container>
+				</div>
+			</section>
 
-			<Container
-				maxWidth="lg"
-				sx={{ mt: { xs: 9, md: 14 } }}
+			<section
+				className="editorial-container"
 				id="tech-radar-section"
+				style={{ marginTop: "4.5rem" }}
 			>
-				<Typography
-					variant="h2"
-					component="h2"
-					sx={{
-						textAlign: "center",
-						mb: 1,
-						fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
-					}}
+				<h2
+					className="editorial-section-title"
+					style={{ textAlign: "center", marginBottom: "0.5rem" }}
 				>
 					Tech Stack Radar
-				</Typography>
-				<Typography
-					variant="body2"
-					component="p"
-					sx={{
+				</h2>
+				<p
+					className="editorial-body"
+					style={{
 						textAlign: "center",
 						fontStyle: "italic",
-						color: "text.secondary",
-						mb: { xs: 5, md: 8 },
+						color: "var(--color-text-secondary, #7d5d53)",
+						marginBottom: "2.5rem",
 					}}
 				>
 					An interactive overview of technologies I adopt, trial, assess, or
 					hold.
-				</Typography>
+				</p>
 				<Suspense
 					fallback={
-						<Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-							<CircularProgress size={32} />
-						</Box>
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								padding: "2rem",
+							}}
+						>
+							<div className="spinner" />
+						</div>
 					}
 				>
 					<TechRadar
@@ -429,161 +352,143 @@ export default function LandingPage() {
 						}
 					/>
 				</Suspense>
-			</Container>
+			</section>
 
-			<Container
-				maxWidth="lg"
-				sx={{ mt: { xs: 9, md: 14 } }}
+			<section
+				className="editorial-container"
 				id="architecture-section"
+				style={{ marginTop: "4.5rem" }}
 			>
-				<Typography
-					variant="h2"
-					component="h2"
-					sx={{
-						textAlign: "center",
-						mb: 1,
-						fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
-					}}
+				<h2
+					className="editorial-section-title"
+					style={{ textAlign: "center", marginBottom: "0.5rem" }}
 				>
 					Ecosystem Architecture
-				</Typography>
-				<Typography
-					variant="body2"
-					component="p"
-					sx={{
+				</h2>
+				<p
+					className="editorial-body"
+					style={{
 						textAlign: "center",
 						fontStyle: "italic",
-						color: "text.secondary",
-						mb: { xs: 5, md: 8 },
+						color: "var(--color-text-secondary, #7d5d53)",
+						marginBottom: "2.5rem",
 					}}
 				>
 					Cross-application topology connecting the 5 desktop workstation
 					applications.
-				</Typography>
+				</p>
 				<Suspense
 					fallback={
-						<Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-							<CircularProgress size={32} />
-						</Box>
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								padding: "2rem",
+							}}
+						>
+							<div className="spinner" />
+						</div>
 					}
 				>
 					<ArchitectureTopology />
 				</Suspense>
-			</Container>
+			</section>
 
-			<Container
-				maxWidth="lg"
-				sx={{ mt: { xs: 9, md: 14 } }}
+			<section
+				className="editorial-container"
 				id="timeline-section"
+				style={{ marginTop: "4.5rem" }}
 			>
-				<Typography
-					variant="h2"
-					component="h2"
-					sx={{
-						textAlign: "center",
-						mb: 1,
-						fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
-					}}
+				<h2
+					className="editorial-section-title"
+					style={{ textAlign: "center", marginBottom: "0.5rem" }}
 				>
 					Project Timeline
-				</Typography>
-				<Typography
-					variant="body2"
-					component="p"
-					sx={{
+				</h2>
+				<p
+					className="editorial-body"
+					style={{
 						textAlign: "center",
 						fontStyle: "italic",
-						color: "text.secondary",
-						mb: { xs: 5, md: 8 },
+						color: "var(--color-text-secondary, #7d5d53)",
+						marginBottom: "2.5rem",
 					}}
 				>
 					Chronological evolution and release milestone changelogs across the
 					ecosystem.
-				</Typography>
+				</p>
 				<ProjectTimeline />
-			</Container>
+			</section>
 
-			<Container
-				maxWidth="lg"
-				sx={{ mt: { xs: 9, md: 14 } }}
+			<section
+				className="editorial-container"
 				id="experience-section"
+				style={{ marginTop: "4.5rem" }}
 			>
-				<Typography
-					variant="h2"
-					component="h2"
-					sx={{
-						textAlign: "center",
-						mb: 1,
-						fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
-					}}
+				<h2
+					className="editorial-section-title"
+					style={{ textAlign: "center", marginBottom: "0.5rem" }}
 				>
 					The Visual Archive
-				</Typography>
-				<Typography
-					variant="body2"
-					component="p"
-					sx={{
+				</h2>
+				<p
+					className="editorial-body"
+					style={{
 						textAlign: "center",
 						fontStyle: "italic",
-						color: "text.secondary",
-						mb: { xs: 5, md: 8 },
+						color: "var(--color-text-secondary, #7d5d53)",
+						marginBottom: "2.5rem",
 					}}
 				>
 					Photographs and kinetic studies, preserved for the record.
-				</Typography>
+				</p>
 				<Suspense
 					fallback={
-						<Box
-							sx={{
+						<div
+							style={{
 								display: "flex",
 								justifyContent: "center",
-								py: 8,
+								padding: "4rem 0",
 							}}
 							role="status"
 							aria-label="Loading gallery"
 						>
-							<CircularProgress
-								size={32}
-								thickness={2}
-								color="inherit"
-								sx={{ color: "text.secondary" }}
-							/>
-						</Box>
+							<div className="spinner" />
+						</div>
 					}
 				>
 					<Gallery limit={4} showAppBar={false} />
 				</Suspense>
-			</Container>
+			</section>
 
-			<Container maxWidth="lg">
-				<Divider
-					sx={{ mt: { xs: 6, md: 10 }, mb: 4, borderColor: "divider" }}
+			<div className="editorial-container">
+				<hr
+					className="editorial-divider"
+					style={{ marginTop: "3rem", marginBottom: "2rem" }}
 				/>
 				<Guestbook />
-			</Container>
+			</div>
 
-			<Box
-				component="footer"
-				sx={{
-					borderTop: "1px solid",
-					borderColor: "divider",
-					py: 4,
-					px: 2,
+			<footer
+				style={{
+					borderTop: "1px solid var(--color-border, var(--hairline-rule))",
+					padding: "1.5rem 0",
+					marginTop: "3rem",
 				}}
 			>
-				<Container
-					maxWidth="lg"
-					sx={{
+				<div
+					className="editorial-container"
+					style={{
 						display: "flex",
 						justifyContent: "space-between",
 						flexWrap: "wrap",
-						gap: 1,
+						gap: "0.5rem",
 					}}
 				>
-					<Typography variant="overline" color="text.secondary">
+					<p className="editorial-meta">
 						© {new Date().getFullYear()} Manas Doshi
-					</Typography>
-					<Typography variant="overline" color="text.secondary">
+					</p>
+					<p className="editorial-meta">
 						Set in Newsreader &amp; Noto Serif ·{" "}
 						<Link
 							to="/admin"
@@ -591,9 +496,9 @@ export default function LandingPage() {
 						>
 							Admin
 						</Link>
-					</Typography>
-				</Container>
-			</Box>
-		</Box>
+					</p>
+				</div>
+			</footer>
+		</div>
 	);
 }

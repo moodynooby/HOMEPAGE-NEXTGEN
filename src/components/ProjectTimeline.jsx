@@ -10,24 +10,8 @@ import {
 	ArrowUpDown as SwapVertIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import {
-	Box,
-	Button,
-	Card,
-	CardActionArea,
-	CardContent,
-	Chip,
-	Divider,
-	Drawer,
-	IconButton,
-	InputAdornment,
-	Paper,
-	Stack,
-	TextField,
-	Typography,
-	useTheme,
-} from "@/components/ui";
 import timelineData from "@/content/timelineMilestones.json";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import { socialIcons } from "@/utils/socialIcons";
 
 const GitHubIcon = socialIcons.GitHub;
@@ -35,20 +19,9 @@ const GitHubIcon = socialIcons.GitHub;
 export const PROJECT_CONFIG = timelineData.projectConfig;
 export const TIMELINE_MILESTONES = timelineData.milestones;
 
-const BADGE_COLOR_MAP = {
-	Feature: "primary",
-	Major: "secondary",
-	Initial: "default",
-	"Initial Release": "default",
-	Enhancement: "info",
-	Resilience: "warning",
-	Architecture: "secondary",
-	Privacy: "info",
-};
-
 export default function ProjectTimeline() {
-	const theme = useTheme();
-	const isDark = theme.palette.mode === "dark";
+	const { mode } = useThemeContext();
+	const isDark = mode === "dark";
 
 	const [selectedProject, setSelectedProject] = useState("All");
 	const [searchQuery, setSearchQuery] = useState("");
@@ -116,773 +89,816 @@ export default function ProjectTimeline() {
 	};
 
 	return (
-		<Paper
-			elevation={0}
+		<div
+			className="card"
 			data-testid="project-timeline"
-			sx={{
-				p: { xs: 2, sm: 3, md: 4 },
-				border: "1px solid",
-				borderColor: "divider",
-				borderRadius: 2,
-				backgroundColor: isDark
+			style={{
+				padding: "1.5rem",
+				border: "1px solid var(--color-border, var(--hairline-rule))",
+				background: isDark
 					? "rgba(40, 42, 33, 0.65)"
 					: "rgba(253, 255, 218, 0.5)",
 				position: "relative",
 			}}
 		>
-			<Box sx={{ mb: 3 }}>
-				<Box
-					sx={{
+			<div style={{ marginBottom: "1.5rem" }}>
+				<div
+					style={{
 						display: "flex",
 						justifyContent: "space-between",
 						alignItems: "flex-start",
 						flexWrap: "wrap",
-						gap: 1.5,
-						mb: 2,
+						gap: "0.75rem",
+						marginBottom: "1rem",
 					}}
 				>
-					<Box>
-						<Typography
-							variant="h4"
-							component="h3"
-							sx={{
-								fontFamily: '"Newsreader", serif',
-								fontWeight: 700,
-								fontSize: { xs: "1.5rem", sm: "1.85rem" },
-							}}
+					<div>
+						<h3
+							className="editorial-subheading"
+							style={{ margin: 0, fontSize: "clamp(1.5rem, 3vw, 1.85rem)" }}
 						>
 							Interactive Project Timeline &amp; Release Milestones
-						</Typography>
-						<Typography
-							variant="body2"
-							color="text.secondary"
-							sx={{ fontStyle: "italic", mt: 0.5 }}
+						</h3>
+						<p
+							className="editorial-body"
+							style={{
+								fontStyle: "italic",
+								margin: "0.25rem 0 0",
+								color: "var(--color-text-secondary, #7d5d53)",
+							}}
 						>
 							Chronological evolution and release changelog across the 5
 							ecosystem applications.
-						</Typography>
-					</Box>
+						</p>
+					</div>
 
-					<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-						<Button
-							variant="outlined"
-							size="small"
-							startIcon={<SwapVertIcon />}
+					<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+						<button
+							type="button"
 							onClick={() => setSortDesc(!sortDesc)}
-							sx={{
-								textTransform: "none",
-								fontSize: "0.8rem",
-								py: 0.5,
-								px: 1.25,
-								borderColor: "divider",
-								color: "text.primary",
-								"&:hover": { borderColor: "text.primary" },
+							className="btn btn-outlined btn-sm"
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "4px",
 							}}
 							aria-label={sortDesc ? "Sort oldest first" : "Sort newest first"}
 						>
-							{sortDesc ? "Newest first" : "Oldest first"}
-						</Button>
+							<SwapVertIcon size={14} />
+							<span>{sortDesc ? "Newest first" : "Oldest first"}</span>
+						</button>
 
 						{(selectedProject !== "All" || searchQuery) && (
-							<Button
-								variant="outlined"
-								size="small"
-								startIcon={<RestartAltIcon />}
+							<button
+								type="button"
 								onClick={handleResetFilters}
-								sx={{
-									textTransform: "none",
-									fontSize: "0.8rem",
-									py: 0.5,
-									px: 1.25,
-									borderColor: "divider",
-									color: "text.primary",
-									"&:hover": { borderColor: "text.primary" },
+								className="btn btn-outlined btn-sm"
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "4px",
 								}}
 								aria-label="Reset filters"
 							>
-								Reset Filters
-							</Button>
+								<RestartAltIcon size={14} />
+								<span>Reset Filters</span>
+							</button>
 						)}
-					</Box>
-				</Box>
+					</div>
+				</div>
 
-				<Box sx={{ mb: 2.5 }}>
-					<TextField
-						fullWidth
-						size="small"
-						label="Search milestones"
+				<div style={{ position: "relative", marginBottom: "1rem" }}>
+					<SearchIcon
+						size={16}
+						style={{
+							position: "absolute",
+							left: "12px",
+							top: "50%",
+							transform: "translateY(-50%)",
+							color: "var(--color-text-secondary, #7d5d53)",
+							pointerEvents: "none",
+						}}
+					/>
+					<input
+						type="text"
 						placeholder="Search milestones, versions, features, or commits..."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
 						data-testid="milestone-search"
-						inputProps={{
-							"aria-label": "Search milestones",
-						}}
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<SearchIcon
-										fontSize="small"
-										sx={{ color: "text.secondary" }}
-									/>
-								</InputAdornment>
-							),
-							endAdornment: searchQuery ? (
-								<InputAdornment position="end">
-									<IconButton
-										size="small"
-										onClick={() => setSearchQuery("")}
-										aria-label="Clear search query"
-									>
-										<ClearIcon fontSize="small" />
-									</IconButton>
-								</InputAdornment>
-							) : null,
-						}}
-						sx={{
-							"& .MuiOutlinedInput-root": {
-								bgcolor: isDark
-									? "rgba(40, 42, 33, 0.5)"
-									: "rgba(255, 255, 255, 0.7)",
-								borderRadius: 1,
-							},
+						aria-label="Search milestones"
+						className="input"
+						style={{
+							width: "100%",
+							paddingLeft: "36px",
+							paddingRight: searchQuery ? "36px" : "12px",
 						}}
 					/>
-				</Box>
+					{searchQuery && (
+						<button
+							type="button"
+							onClick={() => setSearchQuery("")}
+							aria-label="Clear search query"
+							className="icon-btn"
+							style={{
+								position: "absolute",
+								right: "8px",
+								top: "50%",
+								transform: "translateY(-50%)",
+								padding: "4px",
+							}}
+						>
+							<ClearIcon size={16} />
+						</button>
+					)}
+				</div>
 
-				<Box
-					sx={{
+				<div
+					style={{
 						display: "flex",
 						alignItems: "center",
-						gap: 1,
+						gap: "0.5rem",
 						flexWrap: "wrap",
 					}}
 				>
-					<Typography
-						variant="caption"
-						color="text.secondary"
-						sx={{
+					<span
+						className="editorial-meta"
+						style={{
 							display: "flex",
 							alignItems: "center",
-							gap: 0.5,
-							fontWeight: 600,
-							letterSpacing: "0.05em",
-							textTransform: "uppercase",
-							mr: 0.5,
+							gap: "4px",
+							marginRight: "0.25rem",
 						}}
 					>
-						<FilterAltIcon sx={{ fontSize: 14 }} /> Repos:
-					</Typography>
+						<FilterAltIcon size={14} /> Repos:
+					</span>
 
 					{projectFilterOptions.map((opt) => {
 						const isSelected = selectedProject === opt.id;
-						const dotColor = opt.color || theme.palette.text.primary;
+						const dotColor = opt.color || "var(--color-text-primary, #38392e)";
 						return (
-							<Chip
+							<button
+								type="button"
 								key={opt.id}
-								clickable
-								label={`${opt.label} (${opt.count})`}
-								size="small"
 								onClick={() => setSelectedProject(opt.id)}
 								aria-label={`Filter by ${opt.label}`}
 								data-testid={`filter-${opt.id}`}
-								variant={isSelected ? "filled" : "outlined"}
-								icon={
-									opt.id !== "All" ? (
-										<Box
-											component="span"
-											sx={{
-												width: 8,
-												height: 8,
-												borderRadius: "50%",
-												bgcolor: dotColor,
-												ml: 1,
-												mr: -0.5,
-											}}
-										/>
-									) : undefined
-								}
-								sx={{
-									cursor: "pointer",
-									fontWeight: isSelected ? 600 : 400,
-									borderColor: isSelected ? "text.primary" : "divider",
-									bgcolor: isSelected
-										? isDark
-											? "rgba(253, 255, 218, 0.15)"
-											: "rgba(56, 57, 46, 0.1)"
-										: "transparent",
-									"&:hover": {
-										bgcolor: isDark
-											? "rgba(253, 255, 218, 0.1)"
-											: "rgba(56, 57, 46, 0.05)",
-									},
+								className={`chip chip-sm ${isSelected ? "chip-primary" : ""}`}
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "6px",
 								}}
-							/>
+							>
+								{opt.id !== "All" && (
+									<span
+										style={{
+											width: 8,
+											height: 8,
+											borderRadius: "50%",
+											backgroundColor: dotColor,
+											display: "inline-block",
+										}}
+									/>
+								)}
+								<span>
+									{opt.label} ({opt.count})
+								</span>
+							</button>
 						);
 					})}
-				</Box>
-			</Box>
+				</div>
+			</div>
 
-			<Divider sx={{ mb: 3 }} />
+			<hr className="editorial-divider" style={{ marginBottom: "1.5rem" }} />
 
-			<Box
-				sx={{
+			<div
+				style={{
 					display: "flex",
 					justifyContent: "space-between",
 					alignItems: "center",
-					mb: 2,
+					marginBottom: "1rem",
 				}}
 			>
-				<Typography variant="caption" color="text.secondary">
+				<span className="editorial-meta">
 					Showing {filteredMilestones.length} of {TIMELINE_MILESTONES.length}{" "}
 					milestones
 					{selectedProject !== "All" && ` in ${selectedProject}`}
 					{searchQuery && ` matching "${searchQuery}"`}
-				</Typography>
-				<Typography
-					variant="caption"
-					color="text.secondary"
-					sx={{ fontStyle: "italic" }}
-				>
+				</span>
+				<span className="editorial-meta" style={{ fontStyle: "italic" }}>
 					Click any card to open changelog details
-				</Typography>
-			</Box>
+				</span>
+			</div>
 
 			{filteredMilestones.length === 0 ? (
-				<Box
-					sx={{
-						py: 6,
+				<div
+					style={{
+						padding: "3rem 1rem",
 						textAlign: "center",
-						borderRadius: 1,
-						border: "1px dashed",
-						borderColor: "divider",
+						border: "1px dashed var(--color-border, var(--hairline-rule))",
 					}}
 				>
-					<Typography variant="body1" color="text.secondary" sx={{ mb: 1.5 }}>
-						No milestones found matching your filters.
-					</Typography>
-					<Button
-						variant="outlined"
-						size="small"
-						onClick={handleResetFilters}
-						startIcon={<RestartAltIcon />}
+					<p
+						className="editorial-body"
+						style={{
+							color: "var(--color-text-secondary, #7d5d53)",
+							marginBottom: "1rem",
+						}}
 					>
-						Clear Filters
-					</Button>
-				</Box>
+						No milestones found matching your filters.
+					</p>
+					<button
+						type="button"
+						onClick={handleResetFilters}
+						className="btn btn-outlined btn-sm"
+						style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
+					>
+						<RestartAltIcon size={14} />
+						<span>Clear Filters</span>
+					</button>
+				</div>
 			) : (
-				<Box
-					sx={{
+				<div
+					style={{
 						position: "relative",
-						pl: { xs: 2.5, sm: 4 },
-						"&::before": {
-							content: '""',
+						paddingLeft: "1.75rem",
+					}}
+				>
+					<div
+						style={{
 							position: "absolute",
-							left: { xs: 10, sm: 16 },
+							left: "8px",
 							top: 16,
 							bottom: 16,
 							width: 2,
-							bgcolor: "divider",
-						},
-					}}
-				>
-					<Stack spacing={2.5}>
+							background: "var(--color-border, var(--hairline-rule))",
+						}}
+					/>
+
+					<div
+						style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+					>
 						{filteredMilestones.map((milestone) => {
 							const proj = PROJECT_CONFIG[milestone.project] || {};
 							const projectColor = proj.color || "#888";
-							const badgeColor = BADGE_COLOR_MAP[milestone.badge] || "default";
 
 							return (
-								<Box
+								<div
 									key={milestone.id}
-									sx={{ position: "relative" }}
+									style={{ position: "relative" }}
 									data-testid={`milestone-item-${milestone.id}`}
 								>
-									<Box
-										sx={{
+									<span
+										style={{
 											position: "absolute",
-											left: { xs: -24, sm: -30 },
+											left: "-26px",
 											top: 20,
 											width: 14,
 											height: 14,
 											borderRadius: "50%",
-											bgcolor: projectColor,
-											border: "2px solid",
-											borderColor: "background.paper",
+											backgroundColor: projectColor,
+											border:
+												"2px solid var(--color-background-surface, #fdffda)",
 											boxShadow: `0 0 0 2px ${projectColor}44`,
 											zIndex: 1,
+											display: "inline-block",
 										}}
 									/>
 
-									<Card
-										variant="outlined"
-										sx={{
-											borderColor: "divider",
-											bgcolor: isDark
+									<div
+										className="card"
+										style={{
+											border:
+												"1px solid var(--color-border, var(--hairline-rule))",
+											background: isDark
 												? "rgba(40, 42, 33, 0.45)"
 												: "rgba(255, 255, 255, 0.65)",
-											borderRadius: 1.5,
-											transition: "transform 0.2s ease, border-color 0.2s ease",
-											"&:hover": {
-												transform: "translateY(-2px)",
-												borderColor: projectColor,
-											},
+											padding: 0,
+											overflow: "hidden",
 										}}
 									>
-										<CardActionArea
+										<button
+											type="button"
 											onClick={() => handleOpenDrawer(milestone)}
 											aria-label={`View release details for ${milestone.title}`}
-											sx={{ p: 2 }}
+											style={{
+												width: "100%",
+												textAlign: "left",
+												background: "transparent",
+												border: "none",
+												cursor: "pointer",
+												padding: "1rem",
+												color: "inherit",
+											}}
 										>
-											<CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
-												<Box
-													sx={{
+											<div
+												style={{
+													display: "flex",
+													alignItems: "center",
+													justifyContent: "space-between",
+													flexWrap: "wrap",
+													gap: "0.5rem",
+													marginBottom: "0.5rem",
+												}}
+											>
+												<div
+													style={{
 														display: "flex",
 														alignItems: "center",
-														justifyContent: "space-between",
+														gap: "0.5rem",
 														flexWrap: "wrap",
-														gap: 1,
-														mb: 1,
 													}}
 												>
-													<Box
-														sx={{
-															display: "flex",
-															alignItems: "center",
-															gap: 1,
-															flexWrap: "wrap",
+													<span
+														className="chip chip-sm"
+														style={{
+															backgroundColor: `${projectColor}20`,
+															color: projectColor,
+															fontWeight: 600,
+															border: `1px solid ${projectColor}40`,
 														}}
 													>
-														<Chip
-															label={proj.shortName || milestone.project}
-															size="small"
-															sx={{
-																bgcolor: `${projectColor}20`,
-																color: projectColor,
-																fontWeight: 600,
-																fontSize: "0.75rem",
-																border: `1px solid ${projectColor}40`,
-															}}
-														/>
-														<Chip
-															label={milestone.version}
-															size="small"
-															variant="outlined"
-															sx={{
-																fontFamily: "monospace",
-																fontWeight: 600,
-																fontSize: "0.75rem",
-															}}
-														/>
-														<Chip
-															label={milestone.badge}
-															size="small"
-															color={badgeColor}
-															variant="filled"
-															sx={{ fontSize: "0.7rem", height: 20 }}
-														/>
-													</Box>
-
-													<Box
-														sx={{
-															display: "flex",
-															alignItems: "center",
-															gap: 0.5,
-															color: "text.secondary",
-														}}
-													>
-														<CalendarTodayIcon sx={{ fontSize: 13 }} />
-														<Typography
-															variant="caption"
-															sx={{ fontStyle: "italic" }}
-														>
-															{milestone.displayDate}
-														</Typography>
-													</Box>
-												</Box>
-
-												<Typography
-													variant="h6"
-													component="h4"
-													sx={{
-														fontFamily: '"Newsreader", serif',
-														fontWeight: 700,
-														lineHeight: 1.25,
-														mb: 0.75,
-													}}
-												>
-													{milestone.title}
-												</Typography>
-
-												<Typography
-													variant="body2"
-													color="text.secondary"
-													sx={{ mb: 1.5, lineHeight: 1.55 }}
-												>
-													{milestone.summary}
-												</Typography>
-
-												<Box
-													sx={{
-														display: "flex",
-														alignItems: "center",
-														justifyContent: "space-between",
-														flexWrap: "wrap",
-														gap: 1,
-														pt: 1,
-														borderTop: "1px dashed",
-														borderColor: "divider",
-													}}
-												>
-													<Box
-														sx={{
-															display: "flex",
-															alignItems: "center",
-															gap: 0.75,
-															flexWrap: "wrap",
-														}}
-													>
-														{(milestone.tags || []).slice(0, 4).map((tag) => (
-															<Chip
-																key={tag}
-																label={tag}
-																size="small"
-																variant="outlined"
-																sx={{
-																	fontSize: "0.68rem",
-																	height: 19,
-																	borderColor: "divider",
-																}}
-															/>
-														))}
-													</Box>
-
-													<Box
-														sx={{
-															display: "flex",
-															alignItems: "center",
-															gap: 0.5,
-															color: "text.secondary",
+														{proj.shortName || milestone.project}
+													</span>
+													<span
+														className="chip chip-sm"
+														style={{
 															fontFamily: "monospace",
-															fontSize: "0.75rem",
+															fontWeight: 600,
 														}}
 													>
-														<CommitIcon sx={{ fontSize: 15 }} />
-														<span>{milestone.commit}</span>
-													</Box>
-												</Box>
-											</CardContent>
-										</CardActionArea>
-									</Card>
-								</Box>
+														{milestone.version}
+													</span>
+													<span
+														className="chip chip-sm chip-primary"
+														style={{ fontSize: "0.68rem" }}
+													>
+														{milestone.badge}
+													</span>
+												</div>
+
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: "4px",
+														color: "var(--color-text-secondary, #7d5d53)",
+													}}
+												>
+													<CalendarTodayIcon size={13} />
+													<span
+														className="editorial-meta"
+														style={{ fontStyle: "italic" }}
+													>
+														{milestone.displayDate}
+													</span>
+												</div>
+											</div>
+
+											<h4
+												className="editorial-card-title"
+												style={{ margin: "0 0 0.5rem", fontSize: "1.2rem" }}
+											>
+												{milestone.title}
+											</h4>
+
+											<p
+												className="editorial-body"
+												style={{
+													fontSize: "0.875rem",
+													lineHeight: 1.5,
+													marginBottom: "0.75rem",
+													color: "var(--color-text-secondary, #7d5d53)",
+												}}
+											>
+												{milestone.summary}
+											</p>
+
+											<div
+												style={{
+													display: "flex",
+													alignItems: "center",
+													justifyContent: "space-between",
+													flexWrap: "wrap",
+													gap: "0.5rem",
+													paddingTop: "0.5rem",
+													borderTop:
+														"1px dashed var(--color-border, var(--hairline-rule))",
+												}}
+											>
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: "0.35rem",
+														flexWrap: "wrap",
+													}}
+												>
+													{(milestone.tags || []).slice(0, 4).map((tag) => (
+														<span
+															key={tag}
+															className="chip chip-sm"
+															style={{ fontSize: "0.68rem" }}
+														>
+															{tag}
+														</span>
+													))}
+												</div>
+
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: "4px",
+														color: "var(--color-text-secondary, #7d5d53)",
+														fontFamily: "monospace",
+														fontSize: "0.75rem",
+													}}
+												>
+													<CommitIcon size={14} />
+													<span>{milestone.commit}</span>
+												</div>
+											</div>
+										</button>
+									</div>
+								</div>
 							);
 						})}
-					</Stack>
-				</Box>
+					</div>
+				</div>
 			)}
 
-			<Drawer
-				anchor="right"
-				open={Boolean(activeMilestone)}
-				onClose={handleCloseDrawer}
-				data-testid="milestone-drawer"
-				slotProps={{
-					paper: {
-						sx: {
-							width: { xs: "100%", sm: 480, md: 540 },
-							p: { xs: 2.5, sm: 3.5 },
-							bgcolor: isDark ? "#282a21" : "#fdffda",
-							color: "text.primary",
+			{/* Slide-over Changelog Drawer */}
+			{activeMilestone && (
+				<div
+					role="presentation"
+					onClick={(e) => {
+						if (e.target === e.currentTarget) handleCloseDrawer();
+					}}
+					style={{
+						position: "fixed",
+						inset: 0,
+						background: "rgba(0, 0, 0, 0.4)",
+						backdropFilter: "blur(2px)",
+						zIndex: 9999,
+						display: "flex",
+						justifyContent: "flex-end",
+					}}
+				>
+					<aside
+						data-testid="milestone-drawer"
+						role="dialog"
+						aria-modal="true"
+						aria-labelledby="drawer-title"
+						tabIndex={-1}
+						onKeyDown={(e) => {
+							if (e.key === "Escape") handleCloseDrawer();
+						}}
+						style={{
+							width: "100%",
+							maxWidth: "540px",
+							height: "100%",
+							background: isDark ? "#282a21" : "#fdffda",
+							color: "var(--color-text-primary, #38392e)",
+							padding: "1.5rem",
 							boxShadow: isDark
 								? "-4px 0 24px rgba(0,0,0,0.7)"
 								: "-4px 0 24px rgba(56,57,46,0.15)",
-						},
-					},
-				}}
-			>
-				{activeMilestone && (
-					<Box
-						sx={{ display: "flex", flexDirection: "column", height: "100%" }}
+							display: "flex",
+							flexDirection: "column",
+							overflowY: "auto",
+						}}
 					>
-						<Box
-							sx={{
+						<div
+							style={{
 								display: "flex",
 								alignItems: "center",
 								justifyContent: "space-between",
-								pb: 2,
-								borderBottom: "1px solid",
-								borderColor: "divider",
+								paddingBottom: "1rem",
+								borderBottom:
+									"1px solid var(--color-border, var(--hairline-rule))",
 							}}
 						>
-							<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-								<Chip
-									label={
-										PROJECT_CONFIG[activeMilestone.project]?.shortName ||
-										activeMilestone.project
-									}
-									size="small"
-									sx={{
-										bgcolor: `${
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "0.5rem",
+								}}
+							>
+								<span
+									className="chip chip-sm"
+									style={{
+										backgroundColor: `${
 											PROJECT_CONFIG[activeMilestone.project]?.color || "#888"
 										}20`,
 										color:
 											PROJECT_CONFIG[activeMilestone.project]?.color || "#888",
 										fontWeight: 600,
 									}}
-								/>
-								<Chip
-									label={activeMilestone.version}
-									size="small"
-									variant="outlined"
-									sx={{ fontFamily: "monospace", fontWeight: 700 }}
-								/>
-								<Chip
-									label={activeMilestone.badge}
-									size="small"
-									color={BADGE_COLOR_MAP[activeMilestone.badge] || "default"}
-								/>
-							</Box>
+								>
+									{PROJECT_CONFIG[activeMilestone.project]?.shortName ||
+										activeMilestone.project}
+								</span>
+								<span
+									className="chip chip-sm"
+									style={{ fontFamily: "monospace", fontWeight: 700 }}
+								>
+									{activeMilestone.version}
+								</span>
+								<span className="chip chip-sm chip-primary">
+									{activeMilestone.badge}
+								</span>
+							</div>
 
-							<IconButton
+							<button
+								type="button"
 								onClick={handleCloseDrawer}
 								aria-label="Close changelog drawer"
 								data-testid="close-drawer"
-								size="small"
-								sx={{
-									border: "1px solid",
-									borderColor: "divider",
-									borderRadius: 1,
-								}}
+								className="icon-btn"
 							>
-								<CloseIcon fontSize="small" />
-							</IconButton>
-						</Box>
+								<CloseIcon size={16} />
+							</button>
+						</div>
 
-						<Box sx={{ flex: 1, overflowY: "auto", py: 3 }}>
-							<Typography
-								variant="overline"
-								color="text.secondary"
-								sx={{ letterSpacing: "0.08em" }}
-							>
+						<div style={{ flex: 1, padding: "1.5rem 0" }}>
+							<p className="editorial-meta">
 								Release Changelog &amp; Architecture
-							</Typography>
+							</p>
 
-							<Typography
-								variant="h4"
-								component="h3"
+							<h3
+								className="editorial-headline"
+								id="drawer-title"
 								data-testid="drawer-title"
-								sx={{
-									fontFamily: '"Newsreader", serif',
-									fontWeight: 800,
-									lineHeight: 1.15,
-									mt: 0.5,
-									mb: 1.5,
+								style={{
+									fontSize: "1.75rem",
+									lineHeight: 1.2,
+									marginTop: "0.25rem",
+									marginBottom: "1rem",
 								}}
 							>
 								{activeMilestone.title}
-							</Typography>
+							</h3>
 
-							<Box
-								sx={{
+							<div
+								style={{
 									display: "flex",
 									alignItems: "center",
-									gap: 2,
+									gap: "1rem",
 									flexWrap: "wrap",
-									color: "text.secondary",
-									mb: 2.5,
+									color: "var(--color-text-secondary, #7d5d53)",
+									marginBottom: "1.5rem",
 								}}
 							>
-								<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-									<CalendarTodayIcon sx={{ fontSize: 14 }} />
-									<Typography variant="body2">
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "4px",
+									}}
+								>
+									<CalendarTodayIcon size={14} />
+									<span className="editorial-meta">
 										{activeMilestone.displayDate}
-									</Typography>
-								</Box>
-								<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-									<GitHubIcon sx={{ fontSize: 14 }} />
-									<Typography variant="body2" sx={{ fontFamily: "monospace" }}>
+									</span>
+								</div>
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "4px",
+									}}
+								>
+									{GitHubIcon && <GitHubIcon size={14} />}
+									<span
+										className="editorial-meta"
+										style={{ fontFamily: "monospace" }}
+									>
 										{PROJECT_CONFIG[activeMilestone.project]?.repo ||
 											activeMilestone.project}
-									</Typography>
-								</Box>
-							</Box>
+									</span>
+								</div>
+							</div>
 
-							<Paper
-								variant="outlined"
-								sx={{
-									p: 1.5,
-									mb: 3,
-									bgcolor: isDark
+							<div
+								style={{
+									padding: "1rem",
+									marginBottom: "1.5rem",
+									border: "1px solid var(--color-border, var(--hairline-rule))",
+									background: isDark
 										? "rgba(40, 42, 33, 0.6)"
 										: "rgba(255, 255, 255, 0.8)",
 									display: "flex",
 									alignItems: "center",
 									justifyContent: "space-between",
-									gap: 1,
+									gap: "0.5rem",
 								}}
 							>
-								<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-									<CommitIcon sx={{ color: "text.secondary" }} />
-									<Box>
-										<Typography
-											variant="caption"
-											color="text.secondary"
-											sx={{ display: "block" }}
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "0.5rem",
+									}}
+								>
+									<CommitIcon
+										size={18}
+										style={{ color: "var(--color-text-secondary, #7d5d53)" }}
+									/>
+									<div>
+										<span
+											className="editorial-meta"
+											style={{ display: "block" }}
 										>
 											Verified Commit
-										</Typography>
-										<Typography
-											variant="body2"
-											sx={{ fontFamily: "monospace", fontWeight: 700 }}
+										</span>
+										<span
+											style={{
+												fontFamily: "monospace",
+												fontWeight: 700,
+												fontSize: "0.875rem",
+											}}
 										>
 											{activeMilestone.commit}
-										</Typography>
-									</Box>
-								</Box>
+										</span>
+									</div>
+								</div>
 
-								<Button
-									size="small"
-									variant="outlined"
+								<a
 									href={activeMilestone.commitUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									endIcon={<LaunchIcon sx={{ fontSize: 14 }} />}
 									data-testid="drawer-commit-link"
 									aria-label="View commit on GitHub"
-									sx={{ textTransform: "none", fontSize: "0.75rem" }}
+									className="btn btn-outlined btn-sm"
+									style={{
+										display: "inline-flex",
+										alignItems: "center",
+										gap: "4px",
+									}}
 								>
-									View on GitHub
-								</Button>
-							</Paper>
+									<span>View on GitHub</span>
+									<LaunchIcon size={13} />
+								</a>
+							</div>
 
-							<Typography
-								variant="subtitle1"
-								sx={{ fontWeight: 600, mb: 0.75 }}
+							<p
+								className="editorial-meta"
+								style={{ fontWeight: 600, marginBottom: "0.5rem" }}
 							>
 								Summary
-							</Typography>
-							<Typography
-								variant="body2"
-								color="text.secondary"
-								sx={{ mb: 3, lineHeight: 1.7 }}
+							</p>
+							<p
+								className="editorial-body"
+								style={{
+									marginBottom: "1.5rem",
+									lineHeight: 1.6,
+									color: "var(--color-text-secondary, #7d5d53)",
+								}}
 							>
 								{activeMilestone.summary}
-							</Typography>
+							</p>
 
-							<Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+							<p
+								className="editorial-meta"
+								style={{ fontWeight: 600, marginBottom: "0.5rem" }}
+							>
 								Key Deliverables &amp; Changes
-							</Typography>
-							<Stack spacing={1} sx={{ mb: 3 }}>
+							</p>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "0.5rem",
+									marginBottom: "1.5rem",
+								}}
+							>
 								{(activeMilestone.details || []).map((detail) => (
-									<Box
+									<div
 										key={detail}
-										sx={{
+										style={{
 											display: "flex",
 											alignItems: "flex-start",
-											gap: 1.25,
+											gap: "0.5rem",
 										}}
 									>
-										<Box
-											component="span"
-											sx={{
+										<span
+											style={{
 												width: 6,
 												height: 6,
 												borderRadius: "50%",
-												bgcolor:
+												backgroundColor:
 													PROJECT_CONFIG[activeMilestone.project]?.color ||
-													"secondary.main",
-												mt: 0.9,
+													"var(--color-accent, #7d5d53)",
+												marginTop: "7px",
 												flexShrink: 0,
+												display: "inline-block",
 											}}
 										/>
-										<Typography
-											variant="body2"
-											color="text.primary"
-											sx={{ lineHeight: 1.6 }}
+										<span
+											style={{
+												fontSize: "0.875rem",
+												lineHeight: 1.5,
+												fontFamily: "var(--font-family-body, serif)",
+											}}
 										>
 											{detail}
-										</Typography>
-									</Box>
+										</span>
+									</div>
 								))}
-							</Stack>
+							</div>
 
 							{activeMilestone.breakingChanges && (
-								<Paper
-									variant="outlined"
-									sx={{
-										p: 2,
-										mb: 3,
-										borderColor: "warning.main",
-										bgcolor: isDark
+								<div
+									style={{
+										padding: "1rem",
+										marginBottom: "1.5rem",
+										border: "1px solid #f59e0b",
+										background: isDark
 											? "rgba(245, 158, 11, 0.1)"
 											: "rgba(245, 158, 11, 0.08)",
 									}}
 								>
-									<Typography
-										variant="subtitle2"
-										color="warning.main"
-										sx={{ fontWeight: 700, mb: 0.5 }}
+									<span
+										style={{
+											fontWeight: 700,
+											color: "#d97706",
+											display: "block",
+											marginBottom: "0.25rem",
+											fontFamily:
+												"var(--font-family-code, 'Work Sans', sans-serif)",
+											fontSize: "0.75rem",
+											textTransform: "uppercase",
+										}}
 									>
 										Breaking Changes &amp; Schema Updates
-									</Typography>
-									<Typography variant="body2">
+									</span>
+									<span style={{ fontSize: "0.875rem" }}>
 										{activeMilestone.breakingChanges}
-									</Typography>
-								</Paper>
+									</span>
+								</div>
 							)}
 
-							<Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+							<p
+								className="editorial-meta"
+								style={{ fontWeight: 600, marginBottom: "0.5rem" }}
+							>
 								Tags &amp; Capabilities
-							</Typography>
-							<Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
+							</p>
+							<div
+								style={{
+									display: "flex",
+									flexWrap: "wrap",
+									gap: "0.35rem",
+								}}
+							>
 								{(activeMilestone.tags || []).map((tag) => (
-									<Chip
-										key={tag}
-										label={tag}
-										size="small"
-										variant="outlined"
-										sx={{ borderColor: "divider", fontSize: "0.75rem" }}
-									/>
+									<span key={tag} className="chip chip-sm">
+										{tag}
+									</span>
 								))}
-							</Box>
-						</Box>
+							</div>
+						</div>
 
-						<Box
-							sx={{
-								pt: 2,
-								borderTop: "1px solid",
-								borderColor: "divider",
+						<div
+							style={{
+								paddingTop: "1rem",
+								borderTop:
+									"1px solid var(--color-border, var(--hairline-rule))",
 								display: "flex",
 								justifyContent: "space-between",
 								alignItems: "center",
 							}}
 						>
-							<Button
-								variant="text"
-								color="inherit"
-								size="small"
+							<button
+								type="button"
 								onClick={handleCloseDrawer}
+								className="btn btn-outlined btn-sm"
 							>
 								Close
-							</Button>
-							<Button
-								variant="contained"
-								size="small"
+							</button>
+							<a
 								href={
 									PROJECT_CONFIG[activeMilestone.project]?.repoUrl ||
 									"https://github.com/moodynooby"
 								}
 								target="_blank"
 								rel="noopener noreferrer"
-								endIcon={<GitHubIcon sx={{ fontSize: 14 }} />}
-								sx={{ textTransform: "none" }}
+								className="btn btn-contained btn-sm"
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "6px",
+								}}
 							>
-								Open Repository
-							</Button>
-						</Box>
-					</Box>
-				)}
-			</Drawer>
-		</Paper>
+								<span>Open Repository</span>
+								{GitHubIcon && <GitHubIcon size={14} />}
+							</a>
+						</div>
+					</aside>
+				</div>
+			)}
+		</div>
 	);
 }

@@ -20,42 +20,14 @@ export default function ThemeToggle() {
 	}, [isOpen]);
 
 	return (
-		<div
-			style={{
-				display: "inline-flex",
-				alignItems: "center",
-				gap: "6px",
-				position: "relative",
-			}}
-		>
-			<div
-				role="group"
-				style={{
-					display: "inline-flex",
-					border: "1px solid var(--color-border)",
-				}}
-			>
+		<div className="theme-toggle">
+			<div role="group" className="theme-toggle-group">
 				<button
 					type="button"
 					aria-label="Use light theme"
 					aria-pressed={mode === "light"}
 					onClick={() => setMode("light")}
-					style={{
-						background:
-							mode === "light"
-								? "var(--color-overlay-pressed, rgba(56, 57, 46, 0.12))"
-								: "transparent",
-						border: "none",
-						borderRight: "1px solid var(--color-border)",
-						color:
-							mode === "light"
-								? "var(--color-text-primary)"
-								: "var(--color-text-secondary)",
-						padding: "5px 8px",
-						cursor: "pointer",
-						display: "flex",
-						alignItems: "center",
-					}}
+					className="theme-toggle-btn"
 				>
 					<Sun size={15} strokeWidth={1.5} />
 				</button>
@@ -64,22 +36,7 @@ export default function ThemeToggle() {
 					aria-label="Use system theme"
 					aria-pressed={mode === "system"}
 					onClick={() => setMode("system")}
-					style={{
-						background:
-							mode === "system"
-								? "var(--color-overlay-pressed, rgba(56, 57, 46, 0.12))"
-								: "transparent",
-						border: "none",
-						borderRight: "1px solid var(--color-border)",
-						color:
-							mode === "system"
-								? "var(--color-text-primary)"
-								: "var(--color-text-secondary)",
-						padding: "5px 8px",
-						cursor: "pointer",
-						display: "flex",
-						alignItems: "center",
-					}}
+					className="theme-toggle-btn"
 				>
 					<Monitor size={15} strokeWidth={1.5} />
 				</button>
@@ -88,21 +45,7 @@ export default function ThemeToggle() {
 					aria-label="Use dark theme"
 					aria-pressed={mode === "dark"}
 					onClick={() => setMode("dark")}
-					style={{
-						background:
-							mode === "dark"
-								? "var(--color-overlay-pressed, rgba(56, 57, 46, 0.12))"
-								: "transparent",
-						border: "none",
-						color:
-							mode === "dark"
-								? "var(--color-text-primary)"
-								: "var(--color-text-secondary)",
-						padding: "5px 8px",
-						cursor: "pointer",
-						display: "flex",
-						alignItems: "center",
-					}}
+					className="theme-toggle-btn"
 				>
 					<Moon size={15} strokeWidth={1.5} />
 				</button>
@@ -115,52 +58,17 @@ export default function ThemeToggle() {
 					aria-haspopup="true"
 					aria-expanded={isOpen}
 					onClick={() => setIsOpen(!isOpen)}
-					style={{
-						background: "transparent",
-						border: "1px solid var(--color-border)",
-						color: "var(--color-text-secondary)",
-						padding: "4px",
-						height: "27px",
-						width: "27px",
-						cursor: "pointer",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-					}}
+					className="theme-settings-btn"
 				>
 					<Contrast size={15} strokeWidth={1.5} />
 				</button>
 
 				{isOpen && (
-					<div
-						style={{
-							position: "absolute",
-							top: "calc(100% + 4px)",
-							right: 0,
-							background: "var(--color-background-surface, #fdffda)",
-							border: "1px solid var(--color-border)",
-							padding: "8px 12px",
-							minWidth: "160px",
-							zIndex: 1000,
-							boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-						}}
-					>
+					<div className="theme-settings-popover">
 						<button
 							type="button"
 							onClick={toggleHighContrast}
-							style={{
-								background: "none",
-								border: "none",
-								width: "100%",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "space-between",
-								cursor: "pointer",
-								padding: "4px 0",
-								color: "var(--color-text-primary)",
-								fontFamily: "var(--font-family-body, serif)",
-								fontSize: "0.875rem",
-							}}
+							className="theme-setting-item"
 						>
 							<span>High Contrast</span>
 							<input

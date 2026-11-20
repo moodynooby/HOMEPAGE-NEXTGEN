@@ -1,6 +1,5 @@
 import {
 	ArrowLeft as ArrowBack,
-	ArrowRight as ArrowForward,
 	Bookmark,
 	Share2 as Share,
 } from "lucide-react";
@@ -11,134 +10,18 @@ import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import remarkGfm from "remark-gfm";
 import ButtonAppBar from "@/components/Header";
 import TerminalDemo from "@/components/TerminalDemo";
-import {
-	alpha,
-	Box,
-	Button,
-	Container,
-	Divider,
-	IconButton,
-	Skeleton,
-	Snackbar,
-	Tooltip,
-	Typography,
-	useTheme,
-} from "@/components/ui";
 import projects from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import { readCacheEntry, writeCacheEntry } from "@/utils/cache";
 import { fetchAddonMetadata, fetchRepoMetadata } from "@/utils/githubUtils";
-
-const MONO_STACK =
-	'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace';
-
-const readmeStyles = (theme) => ({
-	"& h1, & h2, & h3, & h4, & h5, & h6": {
-		fontFamily: '"Newsreader", serif',
-		lineHeight: 1.25,
-		marginTop: "2em",
-		marginBottom: "0.6em",
-	},
-	"& h1": { fontSize: "1.9rem", fontWeight: 700 },
-	"& h2": { fontSize: "1.55rem", fontWeight: 700, letterSpacing: "-0.01em" },
-	"& h3": { fontSize: "1.3rem", fontWeight: 600 },
-	"& h4, & h5, & h6": { fontSize: "1.15rem", fontWeight: 600 },
-	"& p": {
-		lineHeight: 1.8,
-		maxWidth: "72ch",
-		marginBottom: "1.25em",
-		textWrap: "pretty",
-	},
-	"& ul, & ol": {
-		lineHeight: 1.8,
-		paddingLeft: "24px",
-		marginBottom: "1.25em",
-		maxWidth: "68ch",
-	},
-	"& li + li": { marginTop: "0.35em" },
-	"& a": {
-		color: "inherit",
-		textDecoration: "underline",
-		textDecorationThickness: "1px",
-		textUnderlineOffset: "4px",
-		textDecorationColor: alpha(theme.palette.secondary.main, 0.45),
-		transition: "text-decoration-color 0.2s ease",
-		"&:hover": {
-			textDecorationColor: theme.palette.secondary.main,
-		},
-	},
-	"& strong": { fontWeight: 700 },
-	"& hr": {
-		border: "none",
-		borderTop: `1px solid ${theme.palette.divider}`,
-		my: "2.5em",
-	},
-	"& :not(pre) > code": {
-		fontFamily: MONO_STACK,
-		fontSize: "0.86em",
-		padding: "2px 6px",
-		backgroundColor: alpha(theme.palette.text.primary, 0.06),
-	},
-	"& pre": {
-		backgroundColor: alpha(theme.palette.text.primary, 0.04),
-		border: `1px solid ${theme.palette.divider}`,
-		padding: "16px 20px",
-		overflowX: "auto",
-		marginBottom: "1.5em",
-		lineHeight: 1.7,
-		fontSize: "0.88em",
-	},
-	"& pre code": {
-		fontFamily: MONO_STACK,
-		backgroundColor: "transparent",
-		padding: 0,
-	},
-	"& blockquote": {
-		borderLeft: `2px solid ${theme.palette.divider}`,
-		paddingLeft: 24,
-		marginLeft: 0,
-		marginRight: 0,
-		marginBottom: "1.5em",
-		fontStyle: "italic",
-		color: theme.palette.text.secondary,
-		maxWidth: "66ch",
-	},
-	"& img": {
-		maxWidth: "100%",
-		height: "auto",
-		display: "block",
-		marginTop: "1.5em",
-		marginBottom: "1.5em",
-		border: `1px solid ${theme.palette.divider}`,
-	},
-	"& table": {
-		width: "100%",
-		borderCollapse: "collapse",
-		marginBottom: "1.5em",
-		fontSize: "0.95rem",
-		display: "block",
-		overflowX: "auto",
-	},
-	"& th, & td": {
-		border: `1px solid ${theme.palette.divider}`,
-		padding: "8px 14px",
-		textAlign: "left",
-	},
-	"& th": {
-		fontFamily: '"Work Sans Variable", sans-serif',
-		fontSize: "0.7rem",
-		fontWeight: 600,
-		textTransform: "uppercase",
-		letterSpacing: "0.1em",
-	},
-});
 
 export default function ProjectDetail() {
 	const { projectName } = useParams();
 	const navigate = useNavigate();
 	const abortControllerRef = useRef(null);
 	const shouldReduceMotion = useReducedMotion();
-	const theme = useTheme();
+	const { mode } = useThemeContext();
 
 	const projectIndex = projects.findIndex((p) => p.githubName === projectName);
 	const project = projectIndex === -1 ? null : projects[projectIndex];
@@ -207,8 +90,9 @@ export default function ProjectDetail() {
 	if (!project) return null;
 
 	const handleShare = () => {
-		navigator.clipboard.writeText(window.location.href);
+		navigator.clipboard?.writeText(window.location.href);
 		setSnackbarOpen(true);
+		setTimeout(() => setSnackbarOpen(false), 3000);
 	};
 
 	const prevProject = projectIndex > 0 ? projects[projectIndex - 1] : null;
@@ -217,8 +101,10 @@ export default function ProjectDetail() {
 			? projects[projectIndex + 1]
 			: null;
 
+	const bookmarked = isBookmarked(project.githubName);
+
 	return (
-		<Box sx={{ minHeight: "100vh" }}>
+		<div style={{ minHeight: "100vh" }}>
 			<ButtonAppBar />
 
 			<motion.div
@@ -226,206 +112,224 @@ export default function ProjectDetail() {
 				animate={{ opacity: 1 }}
 				transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.4 }}
 			>
-				<Container maxWidth="md" sx={{ pt: { xs: 5, md: 7 }, pb: 10 }}>
-					<Box
-						sx={{
+				<div
+					className="editorial-container"
+					style={{
+						maxWidth: "800px",
+						paddingTop: "3rem",
+						paddingBottom: "5rem",
+					}}
+				>
+					<div
+						style={{
 							display: "flex",
 							justifyContent: "space-between",
 							alignItems: "center",
-							mb: 5,
+							marginBottom: "2.5rem",
 						}}
 					>
-						<Button
-							component={RouterLink}
+						<RouterLink
 							to="/projects"
-							color="inherit"
-							startIcon={<ArrowBack fontSize="small" />}
+							className="btn btn-outlined btn-sm"
+							style={{
+								display: "inline-flex",
+								alignItems: "center",
+								gap: "6px",
+							}}
 						>
-							Project Ledger
-						</Button>
-						<Box sx={{ display: "flex", gap: 1 }}>
-							<Tooltip title="Share Project">
-								<IconButton
-									onClick={handleShare}
-									aria-label="Share Project"
-									size="small"
-								>
-									<Share fontSize="small" />
-								</IconButton>
-							</Tooltip>
-							<Tooltip
-								title={
-									isBookmarked(project.githubName)
-										? "Remove bookmark"
-										: "Bookmark project"
-								}
+							<ArrowBack size={14} />
+							<span>Project Ledger</span>
+						</RouterLink>
+						<div style={{ display: "flex", gap: "0.5rem" }}>
+							<button
+								type="button"
+								onClick={handleShare}
+								aria-label="Share Project"
+								className="icon-btn"
+								title="Share Project"
 							>
-								<IconButton
-									onClick={() => toggleBookmark(project.githubName)}
-									aria-label={
-										isBookmarked(project.githubName)
-											? "Remove bookmark"
-											: "Bookmark project"
-									}
-									size="small"
-								>
-									<Bookmark
-										size={18}
-										fill={
-											isBookmarked(project.githubName) ? "currentColor" : "none"
-										}
-									/>
-								</IconButton>
-							</Tooltip>
-						</Box>
-					</Box>
+								<Share size={18} />
+							</button>
+							<button
+								type="button"
+								onClick={() => toggleBookmark(project.githubName)}
+								aria-label={bookmarked ? "Remove bookmark" : "Bookmark project"}
+								className="icon-btn"
+								title={bookmarked ? "Remove bookmark" : "Bookmark project"}
+								style={{
+									color: bookmarked
+										? "var(--color-accent, #7d5d53)"
+										: "inherit",
+								}}
+							>
+								<Bookmark
+									size={18}
+									fill={bookmarked ? "currentColor" : "none"}
+								/>
+							</button>
+						</div>
+					</div>
 
-					<Typography variant="overline" color="secondary.main">
+					<p
+						className="editorial-meta"
+						style={{ color: "var(--color-accent, #7d5d53)" }}
+					>
 						{project.category}
-					</Typography>
-					<Typography
-						variant="h1"
-						component="h1"
-						sx={{ mt: 1, mb: 2, fontSize: { xs: "2.4rem", md: "3.4rem" } }}
+					</p>
+					<h1
+						className="editorial-headline"
+						style={{
+							marginTop: "0.5rem",
+							marginBottom: "1rem",
+							fontSize: "clamp(2.4rem, 4vw, 3.4rem)",
+						}}
 					>
 						{project.githubName}
-					</Typography>
-					<Typography
-						variant="body1"
-						color="text.secondary"
-						sx={{ fontStyle: "italic", maxWidth: "56ch", mb: 4 }}
+					</h1>
+					<p
+						className="editorial-body"
+						style={{
+							fontStyle: "italic",
+							maxWidth: "56ch",
+							marginBottom: "2rem",
+						}}
 					>
 						{project.tagline}
-					</Typography>
+					</p>
 
-					<Box
-						sx={{
+					<div
+						style={{
 							display: "flex",
 							flexWrap: "wrap",
 							alignItems: "center",
-							columnGap: 2.5,
-							rowGap: 1,
-							borderTop: "1px solid",
-							borderBottom: "1px solid",
-							borderColor: "divider",
-							py: 1.75,
-							mb: 4,
+							columnGap: "1.5rem",
+							rowGap: "0.5rem",
+							borderTop: "1px solid var(--color-border, var(--hairline-rule))",
+							borderBottom:
+								"1px solid var(--color-border, var(--hairline-rule))",
+							padding: "1rem 0",
+							marginBottom: "2rem",
 						}}
 					>
 						{repoStats?.year && (
-							<Typography variant="overline" color="text.secondary">
-								{repoStats.year}
-							</Typography>
+							<span className="editorial-meta">{repoStats.year}</span>
 						)}
 						{repoStats?.language && (
-							<Typography variant="overline" color="text.secondary">
-								{repoStats.language}
-							</Typography>
+							<span className="editorial-meta">{repoStats.language}</span>
 						)}
 						{repoStats?.stars > 0 && (
-							<Typography variant="overline" color="text.secondary">
+							<span className="editorial-meta">
 								{repoStats.stars.toLocaleString()} stars
-							</Typography>
+							</span>
 						)}
 						{addonStats?.averageDailyUsers > 0 && (
-							<Typography variant="overline" color="text.secondary">
+							<span className="editorial-meta">
 								{addonStats.averageDailyUsers.toLocaleString()} daily users
-							</Typography>
+							</span>
 						)}
 
-						<Box
-							sx={{
-								ml: { xs: 0, sm: "auto" },
+						<div
+							style={{
+								marginLeft: "auto",
 								display: "flex",
-								gap: 1.5,
+								gap: "0.75rem",
 								flexWrap: "wrap",
 							}}
 						>
-							<Button
-								component="a"
+							<a
 								href={`https://github.com/moodynooby/${project.githubName}`}
 								target="_blank"
 								rel="noopener noreferrer"
-								variant="outlined"
-								size="small"
+								className="btn btn-outlined btn-sm"
 							>
 								Source
-							</Button>
+							</a>
 							{project.addonId && (
-								<Button
-									component="a"
+								<a
 									href={`https://addons.mozilla.org/en-US/firefox/addon/${project.addonId}/`}
 									target="_blank"
 									rel="noopener noreferrer"
-									variant="outlined"
-									size="small"
+									className="btn btn-outlined btn-sm"
 								>
 									Add-on
-								</Button>
+								</a>
 							)}
-						</Box>
-					</Box>
+						</div>
+					</div>
 
 					{project.cliDemo && <TerminalDemo projectName={project.githubName} />}
 
 					{loading ? (
-						<Box
-							sx={{ py: 2 }}
+						<div
+							style={{ padding: "1rem 0" }}
 							role="status"
 							aria-label="Loading project documentation"
 						>
-							<Skeleton variant="text" sx={{ fontSize: "2.4rem", mb: 2 }} />
-							<Skeleton variant="rectangular" height={18} sx={{ mb: 1 }} />
-							<Skeleton variant="rectangular" height={18} sx={{ mb: 1 }} />
-							<Skeleton
-								variant="rectangular"
-								height={18}
-								width="70%"
-								sx={{ mb: 4 }}
+							<div
+								className="skeleton"
+								style={{ height: "40px", width: "50%", marginBottom: "1rem" }}
 							/>
-							<Skeleton variant="text" sx={{ fontSize: "1.8rem", mb: 2 }} />
-							<Skeleton variant="rectangular" height={18} sx={{ mb: 1 }} />
-							<Skeleton
-								variant="rectangular"
-								height={18}
-								width="85%"
-								sx={{ mb: 1 }}
+							<div
+								className="skeleton"
+								style={{ height: "18px", marginBottom: "0.5rem" }}
 							/>
-						</Box>
+							<div
+								className="skeleton"
+								style={{ height: "18px", marginBottom: "0.5rem" }}
+							/>
+							<div
+								className="skeleton"
+								style={{ height: "18px", width: "70%", marginBottom: "2rem" }}
+							/>
+							<div
+								className="skeleton"
+								style={{ height: "30px", width: "40%", marginBottom: "1rem" }}
+							/>
+							<div
+								className="skeleton"
+								style={{ height: "18px", marginBottom: "0.5rem" }}
+							/>
+							<div
+								className="skeleton"
+								style={{ height: "18px", width: "85%" }}
+							/>
+						</div>
 					) : (
-						<Box sx={readmeStyles(theme)}>
+						<div className="readme-content">
 							<ReactMarkdown remarkPlugins={[remarkGfm]}>
 								{markdown}
 							</ReactMarkdown>
-						</Box>
+						</div>
 					)}
 
 					{project.chromeStatsId && !loading && (
-						<Box
-							sx={{
-								mt: 7,
-								pt: 4,
-								borderTop: "1px solid",
-								borderColor: "divider",
+						<div
+							style={{
+								marginTop: "3.5rem",
+								paddingTop: "2rem",
+								borderTop:
+									"1px solid var(--color-border, var(--hairline-rule))",
 							}}
 						>
-							<Typography variant="h3" component="h2" gutterBottom>
+							<h2
+								className="editorial-subheading"
+								style={{ marginBottom: "1rem" }}
+							>
 								Usage Trends
-							</Typography>
-							<Box
-								sx={{
+							</h2>
+							<div
+								style={{
 									width: "100%",
-									maxWidth: 640,
-									border: "1px solid",
-									borderColor: "divider",
-									bgcolor: "background.paper",
+									maxWidth: "640px",
+									border: "1px solid var(--color-border, var(--hairline-rule))",
+									background: "var(--color-background-surface, #fdffda)",
 									position: "relative",
-									pb: "75%",
+									paddingBottom: "75%",
 									height: 0,
 								}}
 							>
 								<iframe
-									src={`https://chrome-stats.com/embed/${project.chromeStatsId}/trends?theme=${theme.palette.mode}`}
+									src={`https://chrome-stats.com/embed/${project.chromeStatsId}/trends?theme=${mode === "dark" ? "dark" : "light"}`}
 									title={`${project.githubName} usage trends`}
 									style={{
 										position: "absolute",
@@ -436,94 +340,94 @@ export default function ProjectDetail() {
 										border: "none",
 									}}
 								/>
-							</Box>
-							<Typography
-								variant="caption"
-								color="text.secondary"
-								sx={{ mt: 1.5, display: "block" }}
+							</div>
+							<p
+								className="editorial-meta"
+								style={{ marginTop: "0.75rem", display: "block" }}
 							>
 								Live usage and rating data provided by Chrome-Stats.
-							</Typography>
-						</Box>
+							</p>
+						</div>
 					)}
-				</Container>
+				</div>
 
-				<Divider />
+				<hr className="editorial-divider" />
 
-				<Container maxWidth="md">
-					<Box sx={{ display: "flex", flexWrap: "wrap" }}>
+				<div className="editorial-container" style={{ maxWidth: "800px" }}>
+					<div style={{ display: "flex", flexWrap: "wrap" }}>
 						{prevProject ? (
-							<Button
-								component={RouterLink}
+							<RouterLink
 								to={`/projects/${prevProject.githubName}`}
-								color="inherit"
-								startIcon={<ArrowBack fontSize="small" />}
-								sx={{
+								className="btn btn-outlined"
+								style={{
 									flex: "1 1 280px",
 									justifyContent: "flex-start",
-									borderRight: { md: "1px solid" },
-									borderColor: "divider",
-									py: 3.5,
+									textAlign: "left",
+									padding: "1.75rem 1rem",
+									borderRight:
+										"1px solid var(--color-border, var(--hairline-rule))",
 								}}
 							>
-								<Box sx={{ textAlign: "left" }}>
-									<Typography
-										variant="overline"
-										color="text.secondary"
-										component="span"
-										display="block"
-									>
+								<div>
+									<span className="editorial-meta" style={{ display: "block" }}>
 										Previous entry
-									</Typography>
+									</span>
 									{prevProject.githubName}
-								</Box>
-							</Button>
+								</div>
+							</RouterLink>
 						) : (
-							<Box
-								sx={{
+							<div
+								style={{
 									flex: "1 1 280px",
-									borderRight: { md: "1px solid" },
-									borderColor: "divider",
+									borderRight:
+										"1px solid var(--color-border, var(--hairline-rule))",
 								}}
 							/>
 						)}
 						{nextProject ? (
-							<Button
-								component={RouterLink}
+							<RouterLink
 								to={`/projects/${nextProject.githubName}`}
-								color="inherit"
-								endIcon={<ArrowForward fontSize="small" />}
-								sx={{
+								className="btn btn-outlined"
+								style={{
 									flex: "1 1 280px",
 									justifyContent: "flex-end",
 									textAlign: "right",
-									py: 3.5,
+									padding: "1.75rem 1rem",
 								}}
 							>
-								<Box>
-									<Typography
-										variant="overline"
-										color="text.secondary"
-										component="span"
-										display="block"
-									>
+								<div>
+									<span className="editorial-meta" style={{ display: "block" }}>
 										Next entry
-									</Typography>
+									</span>
 									{nextProject.githubName}
-								</Box>
-							</Button>
+								</div>
+							</RouterLink>
 						) : (
-							<Box sx={{ flex: "1 1 280px" }} />
+							<div style={{ flex: "1 1 280px" }} />
 						)}
-					</Box>
-				</Container>
+					</div>
+				</div>
 			</motion.div>
-			<Snackbar
-				open={snackbarOpen}
-				autoHideDuration={3000}
-				onClose={() => setSnackbarOpen(false)}
-				message="Project link copied to clipboard!"
-			/>
-		</Box>
+
+			{snackbarOpen && (
+				<div
+					style={{
+						position: "fixed",
+						bottom: "24px",
+						right: "24px",
+						background: "var(--color-primary, #38392e)",
+						color: "var(--color-background-body, #fdffda)",
+						padding: "10px 16px",
+						fontSize: "0.85rem",
+						fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
+						letterSpacing: "0.05em",
+						zIndex: 9999,
+						boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+					}}
+				>
+					Project link copied to clipboard!
+				</div>
+			)}
+		</div>
 	);
 }

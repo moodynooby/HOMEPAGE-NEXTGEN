@@ -43,12 +43,12 @@ Run `pnpm biome check` on changed files and `pnpm build` to verify any non-trivi
 src/
 ├── components/     CommandPalette, Gallery, Header, LandingPage,
 │                   LinkTree, ProjectDetail, Projects, RouteLoader
-├── content/        projects.json, gallery.json, socialLinks.json  ← edit content here
+├── content/        projects.json, gallery.json, socialLinks.json,
+│                   architectureNodes.json, timelineMilestones.json  ← edit content here
 ├── contexts/       ThemeContext (light / dark / system)
-├── theme/          theme.js — single source of truth for MUI tokens
-├── utils/          githubUtils.js — GitHub API metadata + caching
-├── index.css       Global link styles + CSS custom properties
-└── main.jsx        Entry: fonts, ThemeProvider, router, kbar
+├── utils/          githubUtils.js, socialIcons.js, authUtils.js, cache.js
+├── index.css       Global editorial design tokens & styles
+└── main.jsx        Entry: fonts, Theme, router, kbar
 ```
 
 ### Data flow
@@ -85,9 +85,9 @@ Array of `{ "link", "alt" }` rendered in the header/footer and `/links`.
 
 Full documentation: [DESIGN.md](./DESIGN.md). Quick reference:
 
-- **Colors** are exposed as MUI palette tokens (`primary`, `secondary`, `background`, `text`, `divider`) — use tokens, never hard-coded hex, so light/dark theming stays consistent.
+- **Colors** are exposed as Astryx design tokens and CSS custom properties (`--color-text-primary`, `--color-text-secondary`, `--color-background-body`, `--color-background-surface`, `--color-border`) — use tokens and semantic classes, never hard-coded hex, so light/dark theming stays consistent.
 - **Typography**: Newsreader (headlines, 600–800), Noto Serif (body), Work Sans Variable (labels/buttons/meta, uppercase with letter-spacing).
-- **Borders**: hairline rules only, via the `divider` token. No heavy borders, no rounded corners, no shadows.
+- **Borders**: hairline rules only, via the `--color-border` token. No heavy borders, 0px rounded corners, no heavy drop shadows.
 
 ## Code Conventions
 

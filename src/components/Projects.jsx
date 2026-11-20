@@ -5,24 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ButtonAppBar from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
-import {
-	Alert,
-	Badge,
-	Box,
-	Button,
-	Chip,
-	Container,
-	FormControl,
-	InputAdornment,
-	InputLabel,
-	MenuItem,
-	Select,
-	Skeleton,
-	TextField,
-	Typography,
-	useMediaQuery,
-	useTheme,
-} from "@/components/ui";
 import projectsData from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import {
@@ -31,8 +13,6 @@ import {
 	groupProjectsByYear,
 } from "@/utils/githubUtils";
 import { orderCategories } from "@/utils/projectCategories";
-
-const MotionBox = motion.create(Box);
 
 const queryParamFromLocation = ({ search }) =>
 	new URLSearchParams(search).get("q");
@@ -44,8 +24,7 @@ const byRecencyDesc = (a, b) => {
 };
 
 export default function Projects({ showAppBar = true }) {
-	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+	const [isMobile, setIsMobile] = useState(false);
 	const [projects, setProjects] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [loadError, setLoadError] = useState("");
@@ -58,6 +37,14 @@ export default function Projects({ showAppBar = true }) {
 	const [selectedLanguages, setSelectedLanguages] = useState([]);
 	const shouldReduceMotion = useReducedMotion();
 	const { bookmarks, isBookmarked } = useBookmarksContext();
+
+	useEffect(() => {
+		const mql = window.matchMedia("(max-width: 899px)");
+		setIsMobile(mql.matches);
+		const handler = (e) => setIsMobile(e.matches);
+		mql.addEventListener?.("change", handler);
+		return () => mql.removeEventListener?.("change", handler);
+	}, []);
 
 	const allLanguages = useMemo(() => {
 		const langs = new Set();
@@ -125,47 +112,67 @@ export default function Projects({ showAppBar = true }) {
 
 	if (loading) {
 		return (
-			<Box
-				sx={{ minHeight: "60vh", py: 8 }}
+			<div
+				style={{ minHeight: "60vh", padding: "4rem 0" }}
 				role="status"
 				aria-label="Loading projects"
 			>
-				<Container maxWidth="lg">
-					<Skeleton variant="text" width="40%" height={64} sx={{ mb: 8 }} />
+				<div className="editorial-container">
+					<div
+						className="skeleton"
+						style={{ width: "40%", height: "64px", marginBottom: "4rem" }}
+					/>
 					{[1, 2, 3].map((item) => (
-						<Box
+						<div
 							key={item}
-							sx={{
+							style={{
 								display: "flex",
-								gap: 3,
-								py: 3,
-								borderTop: "1px solid",
-								borderColor: "divider",
+								gap: "1.5rem",
+								padding: "1.5rem 0",
+								borderTop:
+									"1px solid var(--color-border, var(--hairline-rule))",
 							}}
 						>
-							<Skeleton
-								variant="rectangular"
-								width={88}
-								height={88}
-								sx={{ flexShrink: 0 }}
+							<div
+								className="skeleton"
+								style={{ width: "88px", height: "88px", flexShrink: 0 }}
 							/>
-							<Box sx={{ flex: 1 }}>
-								<Skeleton variant="text" width="30%" />
-								<Skeleton variant="text" width="70%" />
-								<Skeleton variant="text" width="22%" />
-							</Box>
-						</Box>
+							<div
+								style={{
+									flex: 1,
+									display: "flex",
+									flexDirection: "column",
+									gap: "0.5rem",
+								}}
+							>
+								<div
+									className="skeleton"
+									style={{ width: "30%", height: "1.25rem" }}
+								/>
+								<div
+									className="skeleton"
+									style={{ width: "70%", height: "1rem" }}
+								/>
+								<div
+									className="skeleton"
+									style={{ width: "22%", height: "0.875rem" }}
+								/>
+							</div>
+						</div>
 					))}
-				</Container>
-			</Box>
+				</div>
+			</div>
 		);
 	}
 
 	if (loadError) {
 		return (
-			<Box sx={{ minHeight: "60vh", py: 8 }}>
-				<Alert severity="error">{loadError}</Alert>
-			</Box>
+			<div
+				className="editorial-container"
+				style={{ minHeight: "60vh", padding: "4rem 0" }}
+			>
+				<div className="alert alert-error">{loadError}</div>
+			</div>
 		);
 	}
 
@@ -257,15 +264,15 @@ export default function Projects({ showAppBar = true }) {
 	return (
 		<>
 			{showAppBar && <ButtonAppBar />}
-			<Box
-				sx={{
-					pt: showAppBar ? { xs: 7, md: 10 } : 0,
-					pb: 10,
+			<div
+				style={{
+					paddingTop: showAppBar ? "3rem" : 0,
+					paddingBottom: "5rem",
 					position: "relative",
 					minHeight: "100vh",
 				}}
 			>
-				<Container maxWidth="lg">
+				<div className="editorial-container">
 					<motion.div
 						initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -273,110 +280,169 @@ export default function Projects({ showAppBar = true }) {
 							shouldReduceMotion ? { duration: 0 } : { duration: 0.7 }
 						}
 					>
-						<Box
-							sx={{
+						<div
+							style={{
 								display: "flex",
 								alignItems: "baseline",
 								justifyContent: "space-between",
 								flexWrap: "wrap",
-								gap: 1,
-								borderBottom: "1px solid",
-								borderColor: "divider",
-								pb: 3,
-								mb: 4,
+								gap: "0.5rem",
+								borderBottom:
+									"1px solid var(--color-border, var(--hairline-rule))",
+								paddingBottom: "1.5rem",
+								marginBottom: "2rem",
 							}}
 						>
-							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-								<Typography variant="h2" component="h1">
+							<div
+								style={{ display: "flex", alignItems: "center", gap: "1rem" }}
+							>
+								<h1 className="editorial-headline" style={{ margin: 0 }}>
 									The Project Ledger
-								</Typography>
+								</h1>
 								{activeFiltersCount > 0 && (
-									<Badge
-										badgeContent={activeFiltersCount}
-										color="primary"
-										sx={{ ml: 1 }}
+									<span
+										className="badge"
+										style={{
+											background: "var(--color-primary, #38392e)",
+											color: "var(--color-background-body, #fdffda)",
+											padding: "2px 8px",
+											fontSize: "0.72rem",
+											fontWeight: 600,
+											fontFamily:
+												"var(--font-family-code, 'Work Sans', sans-serif)",
+										}}
 									>
-										<Box sx={{ width: 8, height: 8 }} />
-									</Badge>
+										{activeFiltersCount}
+									</span>
 								)}
-							</Box>
-							<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+							</div>
+							<div
+								style={{ display: "flex", alignItems: "center", gap: "1rem" }}
+							>
 								{activeFiltersCount > 0 && (
-									<Button
-										size="small"
-										startIcon={<RestartAlt />}
+									<button
+										type="button"
 										onClick={handleResetFilters}
-										sx={{ textTransform: "none" }}
+										className="btn btn-outlined btn-sm"
+										style={{
+											display: "inline-flex",
+											alignItems: "center",
+											gap: "4px",
+										}}
 									>
-										Reset All Filters
-									</Button>
+										<RestartAlt size={14} />
+										<span>Reset All Filters</span>
+									</button>
 								)}
-								<Typography variant="overline" color="text.secondary">
+								<p className="editorial-meta" style={{ margin: 0 }}>
 									A running index of shipped work
-								</Typography>
-							</Box>
-						</Box>
+								</p>
+							</div>
+						</div>
 
-						<Box
-							sx={{
+						<div
+							style={{
 								display: "flex",
 								flexWrap: "wrap",
-								gap: 2,
-								mb: 4,
+								gap: "1rem",
+								marginBottom: "2rem",
 								alignItems: "flex-end",
 							}}
 						>
-							<TextField
-								fullWidth
-								variant="standard"
-								value={searchQuery}
-								onChange={(event) => setSearchQuery(event.target.value)}
-								placeholder="Filter by name, tagline, or technology"
-								aria-label="Search projects"
-								sx={{ maxWidth: 560, flex: "1 1 300px" }}
-								slotProps={{
-									input: {
-										startAdornment: (
-											<InputAdornment position="start">
-												<Search size={16} />
-											</InputAdornment>
-										),
-										sx: { fontFamily: '"Work Sans Variable", sans-serif' },
-									},
+							<div
+								style={{
+									position: "relative",
+									maxWidth: "560px",
+									flex: "1 1 300px",
 								}}
-							/>
-
-							<FormControl
-								variant="standard"
-								sx={{ minWidth: 200, flexShrink: 0 }}
 							>
-								<InputLabel id="sort-select-label">Sort By</InputLabel>
-								<Select
-									labelId="sort-select-label"
+								<Search
+									size={16}
+									style={{
+										position: "absolute",
+										left: "12px",
+										top: "50%",
+										transform: "translateY(-50%)",
+										color: "var(--color-text-secondary, #7d5d53)",
+										pointerEvents: "none",
+									}}
+								/>
+								<input
+									type="search"
+									value={searchQuery}
+									onChange={(event) => setSearchQuery(event.target.value)}
+									placeholder="Filter by name, tagline, or technology"
+									aria-label="Search projects"
+									className="input"
+									style={{ paddingLeft: "36px", width: "100%" }}
+								/>
+							</div>
+
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									minWidth: "200px",
+								}}
+							>
+								<label
+									id="sort-select-label"
+									htmlFor="sort-select"
+									style={{
+										fontFamily:
+											"var(--font-family-code, 'Work Sans', sans-serif)",
+										fontSize: "0.72rem",
+										letterSpacing: "0.1em",
+										textTransform: "uppercase",
+										color: "var(--color-text-secondary, #7d5d53)",
+									}}
+								>
+									Sort By
+								</label>
+								<select
+									id="sort-select"
+									aria-labelledby="sort-select-label"
+									aria-label="Sort By"
 									value={sortBy}
 									onChange={(e) => setSortBy(e.target.value)}
-									label="Sort By"
-									sx={{ fontFamily: '"Work Sans Variable", sans-serif' }}
+									className="select"
+									style={{ width: "100%" }}
 								>
-									<MenuItem value="Recently Updated">Recently Updated</MenuItem>
-									<MenuItem value="Most Stars">Most Stars</MenuItem>
-									<MenuItem value="Name (A-Z)">Name (A-Z)</MenuItem>
-									<MenuItem value="Name (Z-A)">Name (Z-A)</MenuItem>
-									<MenuItem value="Year (Newest)">Year (Newest)</MenuItem>
-									<MenuItem value="Year (Oldest)">Year (Oldest)</MenuItem>
-								</Select>
-							</FormControl>
-						</Box>
+									{[
+										"Recently Updated",
+										"Most Stars",
+										"Name (A-Z)",
+										"Name (Z-A)",
+										"Year (Newest)",
+										"Year (Oldest)",
+									].map((opt) => (
+										<option
+											key={opt}
+											value={opt}
+											onClick={() => setSortBy(opt)}
+										>
+											{opt}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
 
-						<Box sx={{ mb: 2 }}>
-							<Typography
-								variant="overline"
-								color="text.secondary"
-								sx={{ display: "block", mb: 1 }}
+						<div style={{ marginBottom: "1rem" }}>
+							<p
+								className="editorial-meta"
+								style={{ display: "block", marginBottom: "0.5rem" }}
 							>
 								Categories
-							</Typography>
-							<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+							</p>
+							<div
+								style={{
+									display: "flex",
+									flexWrap: "wrap",
+									gap: "0.5rem",
+								}}
+							>
 								{categories.map((category) => {
 									let count = 0;
 									if (category === "All") {
@@ -390,74 +456,78 @@ export default function Projects({ showAppBar = true }) {
 										category === "Bookmarked"
 											? `Saved (${count})`
 											: `${category} · ${count}`;
+									const isActive = activeCategory === category;
 									return (
-										<Chip
+										<button
+											type="button"
 											key={category}
-											label={label}
 											onClick={() => setActiveCategory(category)}
-											variant={
-												activeCategory === category ? "filled" : "outlined"
-											}
-											color={
-												activeCategory === category ? "primary" : "default"
-											}
-										/>
+											className={`chip ${isActive ? "chip-primary" : ""}`}
+										>
+											{label}
+										</button>
 									);
 								})}
-							</Box>
-						</Box>
+							</div>
+						</div>
 
 						{allLanguages.length > 0 && (
-							<Box sx={{ mb: 6 }}>
-								<Typography
-									variant="overline"
-									color="text.secondary"
-									sx={{ display: "block", mb: 1 }}
+							<div style={{ marginBottom: "3rem" }}>
+								<p
+									className="editorial-meta"
+									style={{ display: "block", marginBottom: "0.5rem" }}
 								>
 									Technologies / Languages
-								</Typography>
-								<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-									{allLanguages.map((lang) => (
-										<Chip
-											key={lang}
-											label={lang}
-											onClick={() => toggleLanguage(lang)}
-											variant={
-												selectedLanguages.includes(lang) ? "filled" : "outlined"
-											}
-											color={
-												selectedLanguages.includes(lang)
-													? "secondary"
-													: "default"
-											}
-											size="small"
-										/>
-									))}
-								</Box>
-							</Box>
+								</p>
+								<div
+									style={{
+										display: "flex",
+										flexWrap: "wrap",
+										gap: "0.5rem",
+									}}
+								>
+									{allLanguages.map((lang) => {
+										const isSelected = selectedLanguages.includes(lang);
+										return (
+											<button
+												type="button"
+												key={lang}
+												onClick={() => toggleLanguage(lang)}
+												className={`chip chip-sm ${isSelected ? "chip-primary" : ""}`}
+											>
+												{lang}
+											</button>
+										);
+									})}
+								</div>
+							</div>
 						)}
 					</motion.div>
 
 					{filteredProjects.length === 0 ? (
-						<Typography
-							variant="body1"
-							sx={{ textAlign: "center", py: 10, color: "text.secondary" }}
+						<p
+							className="editorial-body"
+							style={{
+								textAlign: "center",
+								padding: "5rem 0",
+								color: "var(--color-text-secondary, #7d5d53)",
+							}}
 						>
 							{activeCategory === "Bookmarked"
 								? "No bookmarked projects yet. Click the bookmark icon on any project to save it here."
 								: "Nothing filed under this heading yet."}
-						</Typography>
+						</p>
 					) : (
-						<Box key={activeCategory} sx={{ position: "relative" }}>
+						<div key={activeCategory} style={{ position: "relative" }}>
 							{!isMobile && isGroupedByYear && (
-								<Box
-									sx={{
+								<div
+									style={{
 										position: "absolute",
 										left: "50%",
 										top: 0,
 										bottom: 0,
 										width: "1px",
-										bgcolor: "divider",
+										background: "var(--color-border, var(--hairline-rule))",
 										transform: "translateX(-50%)",
 									}}
 								/>
@@ -465,17 +535,17 @@ export default function Projects({ showAppBar = true }) {
 
 							{isGroupedByYear ? (
 								years.map((year) => (
-									<Box
+									<div
 										key={year}
-										sx={{
-											mb: { xs: 7, md: 12 },
+										style={{
+											marginBottom: "4rem",
 											display: "flex",
 											flexDirection: "column",
 											alignItems: "center",
 											position: "relative",
 										}}
 									>
-										<MotionBox
+										<motion.div
 											initial={
 												shouldReduceMotion ? false : { scale: 0.9, opacity: 0 }
 											}
@@ -485,29 +555,34 @@ export default function Projects({ showAppBar = true }) {
 													: { scale: 1, opacity: 1 }
 											}
 											viewport={{ once: true }}
-											sx={{
-												bgcolor: "background.default",
-												border: "1px solid",
-												borderColor: "divider",
+											style={{
+												background: "var(--color-background-body, #fdffda)",
+												border:
+													"1px solid var(--color-border, var(--hairline-rule))",
 												display: "flex",
 												alignItems: "center",
 												justifyContent: "center",
 												width: 128,
 												height: 128,
 												borderRadius: "50%",
-												mb: 7,
+												marginBottom: "3.5rem",
 												zIndex: 2,
 											}}
 										>
-											<Typography
-												variant="h3"
-												component="p"
-												sx={{ fontStyle: "italic", fontWeight: 400 }}
+											<p
+												style={{
+													fontFamily:
+														"var(--font-family-heading, 'Newsreader', serif)",
+													fontSize: "1.75rem",
+													fontStyle: "italic",
+													fontWeight: 400,
+													margin: 0,
+												}}
 											>
 												{year}
-											</Typography>
-										</MotionBox>
-										<Box sx={{ width: "100%" }}>
+											</p>
+										</motion.div>
+										<div style={{ width: "100%" }}>
 											{groupedProjects[year].map((project) => (
 												<ProjectCard
 													key={project.githubName}
@@ -518,11 +593,11 @@ export default function Projects({ showAppBar = true }) {
 													year={year}
 												/>
 											))}
-										</Box>
-									</Box>
+										</div>
+									</div>
 								))
 							) : (
-								<Box sx={{ width: "100%" }}>
+								<div style={{ width: "100%" }}>
 									{sortedFilteredProjects.map((project) => (
 										<ProjectCard
 											key={project.githubName}
@@ -533,12 +608,12 @@ export default function Projects({ showAppBar = true }) {
 											year={project.year || "Unknown"}
 										/>
 									))}
-								</Box>
+								</div>
 							)}
-						</Box>
+						</div>
 					)}
-				</Container>
-			</Box>
+				</div>
+			</div>
 		</>
 	);
 }

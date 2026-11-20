@@ -42,6 +42,7 @@ export default function ProjectCard({
 			30 * 24 * 60 * 60 * 1000;
 	const statusColor = isRecent ? "#4caf50" : "#ff9800";
 	const statusLabel = isRecent ? "Active" : "Maintenance";
+	const bookmarked = isBookmarked(project.githubName);
 
 	return (
 		<motion.div
@@ -49,81 +50,24 @@ export default function ProjectCard({
 			whileInView={shouldReduceMotion ? undefined : { y: 0, opacity: 1 }}
 			viewport={{ once: true }}
 			transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.45 }}
-			style={{ background: "var(--color-background-body, #fdffda)" }}
 		>
 			<RouterLink
 				to={`/projects/${project.githubName}`}
 				aria-label={`Open project ${project.githubName}`}
-				style={{
-					display: "flex",
-					alignItems: "center",
-					gap: isMobile ? "1rem" : "1.5rem",
-					padding: isMobile ? "1rem 0.5rem" : "1.5rem 0.75rem",
-					textDecoration: "none",
-					color: "var(--color-text-primary, #38392e)",
-					borderTop: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-					transition: "background-color 0.2s ease",
-				}}
 				className="ledger-row"
 			>
 				{!isMobile && (
-					<span
-						style={{
-							width: "48px",
-							flexShrink: 0,
-							color: "var(--color-text-secondary, #7d5d53)",
-							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-							fontSize: "0.72rem",
-							letterSpacing: "0.1em",
-							textTransform: "uppercase",
-						}}
-					>
+					<span className="ledger-no">
 						No. {String(entryNumber).padStart(2, "0")}
 					</span>
 				)}
 
-				<div
-					className="ledger-thumb"
-					style={{
-						width: isMobile ? "56px" : "80px",
-						height: isMobile ? "56px" : "80px",
-						flexShrink: 0,
-						background: "var(--color-background-surface, #fdffda)",
-						border: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						padding: "6px",
-						overflow: "hidden",
-					}}
-				>
-					<img
-						src={project.githubImg}
-						alt=""
-						loading="lazy"
-						style={{
-							maxWidth: "100%",
-							maxHeight: "100%",
-							objectFit: "contain",
-							filter: "grayscale(100%) contrast(115%)",
-							transition: "filter 0.3s ease",
-						}}
-					/>
+				<div className="ledger-thumb">
+					<img src={project.githubImg} alt="" loading="lazy" />
 				</div>
 
-				<div style={{ flex: 1, minWidth: 0 }}>
-					<h5
-						style={{
-							margin: "0 0 0.25rem",
-							fontFamily:
-								"var(--font-family-heading, 'Newsreader', Georgia, serif)",
-							fontSize: "1.25rem",
-							fontWeight: 700,
-							display: "flex",
-							alignItems: "center",
-							gap: "8px",
-						}}
-					>
+				<div className="ledger-info">
+					<h5 className="ledger-title">
 						{project.githubName}
 						{health && (
 							<span
@@ -143,37 +87,9 @@ export default function ProjectCard({
 						)}
 					</h5>
 
-					<p
-						style={{
-							margin: 0,
-							fontFamily:
-								"var(--font-family-body, 'Noto Serif', Georgia, serif)",
-							color: "var(--color-text-secondary, #7d5d53)",
-							fontSize: "0.875rem",
-							display: "-webkit-box",
-							WebkitLineClamp: 2,
-							WebkitBoxOrient: "vertical",
-							overflow: "hidden",
-							lineHeight: 1.5,
-						}}
-					>
-						{project.tagline}
-					</p>
+					<p className="ledger-desc">{project.tagline}</p>
 
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							columnGap: "1rem",
-							rowGap: "0.25rem",
-							marginTop: "0.5rem",
-							flexWrap: "wrap",
-							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-							fontSize: "0.7rem",
-							letterSpacing: "0.1em",
-							textTransform: "uppercase",
-						}}
-					>
+					<div className="ledger-meta">
 						<span style={{ color: "var(--color-accent, #7d5d53)" }}>
 							{project.category}
 						</span>
@@ -182,27 +98,13 @@ export default function ProjectCard({
 							{project.language ? ` · ${project.language}` : ""}
 						</span>
 						{project.stars > 0 && (
-							<span
-								style={{
-									display: "inline-flex",
-									alignItems: "center",
-									gap: "3px",
-									color: "var(--color-text-secondary)",
-								}}
-							>
+							<span className="ledger-meta-item">
 								<Star size={12} strokeWidth={1.5} color="var(--color-accent)" />
 								<span>{project.stars}</span>
 							</span>
 						)}
 						{project.addonMetadata && (
-							<span
-								style={{
-									display: "inline-flex",
-									alignItems: "center",
-									gap: "3px",
-									color: "var(--color-text-secondary)",
-								}}
-							>
+							<span className="ledger-meta-item">
 								<Download
 									size={12}
 									strokeWidth={1.5}
@@ -215,27 +117,13 @@ export default function ProjectCard({
 							</span>
 						)}
 						{health?.latestRelease && (
-							<span
-								style={{
-									display: "inline-flex",
-									alignItems: "center",
-									gap: "3px",
-									color: "var(--color-text-secondary)",
-								}}
-							>
+							<span className="ledger-meta-item">
 								<Tag size={12} strokeWidth={1.5} />
 								<span>{health.latestRelease}</span>
 							</span>
 						)}
 						{health?.openIssues !== undefined && (
-							<span
-								style={{
-									display: "inline-flex",
-									alignItems: "center",
-									gap: "3px",
-									color: "var(--color-text-secondary)",
-								}}
-							>
+							<span className="ledger-meta-item">
 								<Bug size={12} strokeWidth={1.5} />
 								<span>
 									{health.openIssues} issue{health.openIssues !== 1 ? "s" : ""}
@@ -243,14 +131,7 @@ export default function ProjectCard({
 							</span>
 						)}
 						{health?.size > 0 && (
-							<span
-								style={{
-									display: "inline-flex",
-									alignItems: "center",
-									gap: "3px",
-									color: "var(--color-text-secondary)",
-								}}
-							>
+							<span className="ledger-meta-item">
 								<HardDrive size={12} strokeWidth={1.5} />
 								<span>{(health.size / 1024).toFixed(1)} MB</span>
 							</span>
@@ -264,41 +145,17 @@ export default function ProjectCard({
 						e.preventDefault();
 						toggleBookmark(project.githubName);
 					}}
-					aria-label={
-						isBookmarked(project.githubName)
-							? "Remove bookmark"
-							: "Bookmark project"
-					}
-					style={{
-						background: "transparent",
-						border: "none",
-						cursor: "pointer",
-						padding: "6px",
-						color: isBookmarked(project.githubName)
-							? "var(--color-accent, #7d5d53)"
-							: "var(--color-text-secondary, #7d5d53)",
-						display: "flex",
-						alignItems: "center",
-					}}
+					aria-label={bookmarked ? "Remove bookmark" : "Bookmark project"}
+					className={`ledger-bookmark-btn ${bookmarked ? "active" : ""}`}
 				>
 					<Bookmark
 						size={18}
 						strokeWidth={1.5}
-						fill={isBookmarked(project.githubName) ? "currentColor" : "none"}
+						fill={bookmarked ? "currentColor" : "none"}
 					/>
 				</button>
 
-				<div
-					className="ledger-arrow"
-					style={{
-						flexShrink: 0,
-						color: "var(--color-accent, #7d5d53)",
-						display: "flex",
-						alignItems: "center",
-						opacity: 0.35,
-						transition: "transform 0.2s ease, opacity 0.2s ease",
-					}}
-				>
+				<div className="ledger-arrow">
 					<ArrowRight size={18} strokeWidth={1.5} />
 				</div>
 			</RouterLink>

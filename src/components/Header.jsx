@@ -9,7 +9,7 @@ import { socialIcons } from "@/utils/socialIcons";
 
 function SocialLinks() {
 	return (
-		<div style={{ display: "flex", gap: "6px" }}>
+		<div className="social-links">
 			{socialLinks.map((social) => {
 				const IconComponent = socialIcons[social.alt];
 				if (!IconComponent) return null;
@@ -20,16 +20,7 @@ function SocialLinks() {
 						target="_blank"
 						rel="noopener noreferrer"
 						aria-label={`Open ${social.alt} in a new tab`}
-						style={{
-							color: "var(--color-text-secondary, #7d5d53)",
-							border: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-							padding: "4px",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							textDecoration: "none",
-							transition: "color 0.2s ease, border-color 0.2s ease",
-						}}
+						className="social-link-btn"
 					>
 						<IconComponent size={16} strokeWidth={1.5} />
 					</a>
@@ -63,52 +54,13 @@ export default function ButtonAppBar() {
 		.toUpperCase();
 
 	return (
-		<header>
-			<div
-				style={{
-					paddingTop: isMobile ? "2.5rem" : "3.5rem",
-					paddingBottom: "1.25rem",
-					paddingLeft: "1rem",
-					paddingRight: "1rem",
-					textAlign: "center",
-				}}
-			>
-				<Link
-					to="/"
-					style={{
-						display: "block",
-						fontFamily:
-							"var(--font-family-heading, 'Newsreader', Georgia, serif)",
-						fontSize: isMobile ? "2.6rem" : "4.25rem",
-						color: "var(--color-text-primary, #38392e)",
-						textDecoration: "none",
-						marginBottom: "1rem",
-						fontWeight: 800,
-						lineHeight: 1,
-						transition: "opacity 0.2s ease",
-					}}
-				>
+		<header className="site-header">
+			<div className="masthead">
+				<Link to="/" className="masthead-title">
 					MANAS DOSHI TIMES
 				</Link>
 
-				<div
-					style={{
-						borderTop: "2px solid var(--color-text-primary, #38392e)",
-						borderBottom:
-							"1px solid var(--color-border, rgba(56, 57, 46, 0.25))",
-						padding: "0.5rem 0",
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-						maxWidth: "1200px",
-						margin: "0 auto",
-						fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-						fontSize: "0.72rem",
-						letterSpacing: "0.12em",
-						textTransform: "uppercase",
-						color: "var(--color-text-secondary, #7d5d53)",
-					}}
-				>
+				<div className="masthead-sub">
 					<span>Manas Doshi</span>
 					<span style={{ display: isMobile ? "none" : "inline" }}>
 						{currentDate}
@@ -120,45 +72,11 @@ export default function ButtonAppBar() {
 				</div>
 			</div>
 
-			<nav
-				style={{
-					position: "sticky",
-					top: 0,
-					zIndex: 100,
-					background: "var(--color-background-body, #fdffda)",
-					borderBottom: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-					backdropFilter: "blur(12px)",
-				}}
-			>
-				<div
-					style={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						gap: isMobile ? "0.75rem" : "1.25rem",
-						minHeight: "52px",
-						maxWidth: "1200px",
-						margin: "0 auto",
-						padding: "0 1rem",
-					}}
-				>
+			<nav className="site-nav">
+				<div className="nav-inner">
 					{!isMobile &&
 						NAV_ITEMS.map((item) => (
-							<Link
-								key={item.to}
-								to={item.to}
-								style={{
-									fontFamily:
-										"var(--font-family-code, 'Work Sans', sans-serif)",
-									fontSize: "0.8rem",
-									letterSpacing: "0.1em",
-									textTransform: "uppercase",
-									color: "var(--color-text-primary, #38392e)",
-									textDecoration: "none",
-									padding: "0.5rem 0.75rem",
-									fontWeight: 600,
-								}}
-							>
+							<Link key={item.to} to={item.to} className="nav-link">
 								{item.label}
 							</Link>
 						))}
@@ -168,15 +86,8 @@ export default function ButtonAppBar() {
 							type="button"
 							onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 							aria-label="Open navigation menu"
-							style={{
-								background: "transparent",
-								border: "none",
-								color: "var(--color-text-primary)",
-								cursor: "pointer",
-								padding: "6px",
-								display: "flex",
-								alignItems: "center",
-							}}
+							className="nav-btn"
+							style={{ padding: "6px" }}
 						>
 							{isMobileMenuOpen ? (
 								<X size={20} strokeWidth={1.5} />
@@ -186,95 +97,47 @@ export default function ButtonAppBar() {
 						</button>
 					)}
 
-					<div
-						style={{
-							width: "1px",
-							height: "20px",
-							background: "var(--color-border, rgba(56, 57, 46, 0.10))",
-						}}
-					/>
+					<div className="nav-divider" />
 
 					<button
 						type="button"
 						onClick={query.toggle}
 						aria-label="Open command palette"
-						style={{
-							background: "transparent",
-							border: "none",
-							color: "var(--color-text-primary, #38392e)",
-							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-							fontSize: "0.8rem",
-							letterSpacing: "0.1em",
-							textTransform: "uppercase",
-							cursor: "pointer",
-							display: "flex",
-							alignItems: "center",
-							gap: "6px",
-							padding: "0.5rem 0.75rem",
-							fontWeight: 600,
-						}}
+						className="nav-btn"
 					>
 						<Search size={14} strokeWidth={1.5} />
 						<span>Search</span>
 					</button>
 
-					<div
-						style={{
-							width: "1px",
-							height: "20px",
-							background: "var(--color-border, rgba(56, 57, 46, 0.10))",
-						}}
-					/>
+					<div className="nav-divider" />
 
 					<ThemeToggle />
 
 					{!isMobile && (
 						<>
-							<div
-								style={{
-									width: "1px",
-									height: "20px",
-									background: "var(--color-border, rgba(56, 57, 46, 0.10))",
-								}}
-							/>
+							<div className="nav-divider" />
 							<SocialLinks />
 						</>
 					)}
 				</div>
 
 				{isMobile && isMobileMenuOpen && (
-					<div
-						style={{
-							borderTop: "1px solid var(--color-border)",
-							background: "var(--color-background-surface, #fdffda)",
-							padding: "1rem",
-							display: "flex",
-							flexDirection: "column",
-							gap: "0.75rem",
-						}}
-					>
+					<div className="mobile-menu-drawer">
 						{NAV_ITEMS.map((item) => (
 							<Link
 								key={item.to}
 								to={item.to}
 								onClick={() => setIsMobileMenuOpen(false)}
-								style={{
-									fontFamily:
-										"var(--font-family-code, 'Work Sans', sans-serif)",
-									fontSize: "0.875rem",
-									letterSpacing: "0.1em",
-									textTransform: "uppercase",
-									color: "var(--color-text-primary)",
-									textDecoration: "none",
-									padding: "0.5rem 0",
-								}}
+								className="nav-link"
+								style={{ padding: "0.5rem 0" }}
 							>
 								{item.label}
 							</Link>
 						))}
 						<div
 							style={{
-								borderTop: "1px solid var(--color-border)",
+								borderTop:
+									"1px solid var(--color-border, var(--hairline-rule))",
 								paddingTop: "0.75rem",
 							}}
 						>
