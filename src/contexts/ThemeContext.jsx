@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { createContext, useContext, useEffect, useState } from "react";
+import { META_THEME_COLORS } from "@/theme/palette";
 
 const ThemeContext = createContext();
 
@@ -60,7 +61,9 @@ export const ThemeContextProvider = ({ children }) => {
 		if (metaThemeColor) {
 			metaThemeColor.setAttribute(
 				"content",
-				effectiveMode === "dark" ? "#282a21" : "#fdffda",
+				effectiveMode === "dark"
+					? META_THEME_COLORS.dark
+					: META_THEME_COLORS.light,
 			);
 		}
 	}, [effectiveMode]);

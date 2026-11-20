@@ -20,11 +20,15 @@ export default function ProjectCard({
 	isMobile,
 	shouldReduceMotion,
 	year,
+	initialHealth = null,
 }) {
 	const { isBookmarked, toggleBookmark } = useBookmarksContext();
-	const [health, setHealth] = useState(null);
+	const [health, setHealth] = useState(
+		() => initialHealth || project.health || null,
+	);
 
 	useEffect(() => {
+		if (initialHealth || project.health) return;
 		let isMounted = true;
 		async function getHealth() {
 			const data = await fetchProjectHealth(project.githubName);
@@ -34,7 +38,7 @@ export default function ProjectCard({
 		return () => {
 			isMounted = false;
 		};
-	}, [project.githubName]);
+	}, [project.githubName, project.health, initialHealth]);
 
 	const isRecent =
 		health?.pushed_at &&
@@ -156,6 +160,7 @@ export default function ProjectCard({
 ProjectCard.propTypes = {
 	project: PropTypes.object.isRequired,
 	entryNumber: PropTypes.number,
+	initialHealth: PropTypes.object,
 	isMobile: PropTypes.bool,
 	shouldReduceMotion: PropTypes.bool,
 	year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

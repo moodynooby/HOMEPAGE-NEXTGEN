@@ -1,5 +1,6 @@
 import { defineTheme } from "@astryxdesign/core/theme";
 import { defaultThemeSlug, themes } from "@/astryx-themes";
+import { DARK_PALETTE, LIGHT_PALETTE } from "./palette";
 
 export const editorialTheme = defineTheme({
 	name: "editorial-monograph",
@@ -14,31 +15,43 @@ export const editorialTheme = defineTheme({
 		"--font-family-heading": "Newsreader, Georgia, serif",
 		"--font-family-body": "Noto Serif, Georgia, serif",
 		"--font-family-code": "Work Sans, monospace",
-		"--color-text-primary": ["#38392e", "#fdffda"],
-		"--color-text-secondary": ["#7d5d53", "#a6827a"],
-		"--color-accent": ["#7d5d53", "#a6827a"],
-		"--color-background-body": ["#fdffda", "#282a21"],
-		"--color-background-surface": ["#fdffda", "#282a21"],
-		"--color-border": ["rgba(56, 57, 46, 0.10)", "rgba(253, 255, 218, 0.15)"],
+		"--color-text-primary": [
+			LIGHT_PALETTE.textPrimary,
+			DARK_PALETTE.textPrimary,
+		],
+		"--color-text-secondary": [
+			LIGHT_PALETTE.textSecondary,
+			DARK_PALETTE.textSecondary,
+		],
+		"--color-accent": [LIGHT_PALETTE.accent, DARK_PALETTE.accent],
+		"--color-background-body": [
+			LIGHT_PALETTE.backgroundBody,
+			DARK_PALETTE.backgroundBody,
+		],
+		"--color-background-surface": [
+			LIGHT_PALETTE.backgroundSurface,
+			DARK_PALETTE.backgroundSurface,
+		],
+		"--color-border": [LIGHT_PALETTE.border, DARK_PALETTE.border],
 		"--color-overlay-hover": [
-			"rgba(56, 57, 46, 0.05)",
-			"rgba(253, 255, 218, 0.06)",
+			LIGHT_PALETTE.overlayHover,
+			DARK_PALETTE.overlayHover,
 		],
 		"--color-overlay-pressed": [
-			"rgba(56, 57, 46, 0.10)",
-			"rgba(253, 255, 218, 0.10)",
+			LIGHT_PALETTE.overlayPressed,
+			DARK_PALETTE.overlayPressed,
 		],
 	},
 	onDark: {
 		tokens: {
-			"--color-text-primary": "#fdffda",
-			"--color-text-secondary": "#a6827a",
-			"--color-accent": "#a6827a",
-			"--color-background-body": "#282a21",
-			"--color-background-surface": "#282a21",
-			"--color-border": "rgba(253, 255, 218, 0.15)",
-			"--color-overlay-hover": "rgba(253, 255, 218, 0.06)",
-			"--color-overlay-pressed": "rgba(253, 255, 218, 0.10)",
+			"--color-text-primary": DARK_PALETTE.textPrimary,
+			"--color-text-secondary": DARK_PALETTE.textSecondary,
+			"--color-accent": DARK_PALETTE.accent,
+			"--color-background-body": DARK_PALETTE.backgroundBody,
+			"--color-background-surface": DARK_PALETTE.backgroundSurface,
+			"--color-border": DARK_PALETTE.border,
+			"--color-overlay-hover": DARK_PALETTE.overlayHover,
+			"--color-overlay-pressed": DARK_PALETTE.overlayPressed,
 		},
 	},
 });

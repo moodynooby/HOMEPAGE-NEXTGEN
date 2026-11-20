@@ -128,6 +128,8 @@ export async function fetchAddonMetadata(addonId) {
 	}
 }
 
+const healthInFlight = new Map();
+
 export async function fetchProjectHealth(repoName) {
 	const key = `github_health_v1_${repoName}`;
 	const ttl = 24 * 60 * 60 * 1000;
@@ -135,42 +137,55 @@ export async function fetchProjectHealth(repoName) {
 	const cached = readCacheEntry(key, ttl);
 	if (cached) return cached;
 
-	try {
-		const [repoResponse, releasesResponse] = await Promise.all([
-			fetch(`${GITHUB_API_BASE}/repos/${SITE_OWNER}/${repoName}`),
-			fetch(
-				`${GITHUB_API_BASE}/repos/${SITE_OWNER}/${repoName}/releases/latest`,
-			),
-		]);
-
-		let repoData = {};
-		if (repoResponse.ok) {
-			repoData = await repoResponse.json();
-		} else if (repoResponse.status !== 404 && repoResponse.status !== 403) {
-			console.warn(`GitHub API repo error: ${repoResponse.statusText}`);
-		}
-
-		let latestRelease = "";
-		if (releasesResponse.ok) {
-			const releaseData = await releasesResponse.json();
-			latestRelease = releaseData.tag_name || "";
-		} else if (
-			releasesResponse.status !== 404 &&
-			releasesResponse.status !== 403
-		) {
-			console.warn(`GitHub API releases error: ${releasesResponse.statusText}`);
-		}
-
-		const healthData = {
-			latestRelease,
-			openIssues: repoData.open_issues_count || 0,
-			size: repoData.size || 0,
-			pushed_at: repoData.pushed_at || null,
-		};
-
-		writeCacheEntry(key, healthData);
-		return healthData;
-	} catch (_error) {
-		return readCacheEntry(key) || null;
+	if (healthInFlight.has(repoName)) {
+		return healthInFlight.get(repoName);
 	}
+
+	const fetchPromise = (async () => {
+		try {
+			const [repoResponse, releasesResponse] = await Promise.all([
+				fetch(`${GITHUB_API_BASE}/repos/${SITE_OWNER}/${repoName}`),
+				fetch(
+					`${GITHUB_API_BASE}/repos/${SITE_OWNER}/${repoName}/releases/latest`,
+				),
+			]);
+
+			let repoData = {};
+			if (repoResponse.ok) {
+				repoData = await repoResponse.json();
+			} else if (repoResponse.status !== 404 && repoResponse.status !== 403) {
+				console.warn(`GitHub API repo error: ${repoResponse.statusText}`);
+			}
+
+			let latestRelease = "";
+			if (releasesResponse.ok) {
+				const releaseData = await releasesResponse.json();
+				latestRelease = releaseData.tag_name || "";
+			} else if (
+				releasesResponse.status !== 404 &&
+				releasesResponse.status !== 403
+			) {
+				console.warn(
+					`GitHub API releases error: ${releasesResponse.statusText}`,
+				);
+			}
+
+			const healthData = {
+				latestRelease,
+				openIssues: repoData.open_issues_count || 0,
+				size: repoData.size || 0,
+				pushed_at: repoData.pushed_at || null,
+			};
+
+			writeCacheEntry(key, healthData);
+			return healthData;
+		} catch (_error) {
+			return readCacheEntry(key) || null;
+		} finally {
+			healthInFlight.delete(repoName);
+		}
+	})();
+
+	healthInFlight.set(repoName, fetchPromise);
+	return fetchPromise;
 }
