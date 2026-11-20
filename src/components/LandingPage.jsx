@@ -1,11 +1,9 @@
 import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import ArchitectureTopology from "@/components/ArchitectureTopology";
 import Guestbook from "@/components/Guestbook";
 import ButtonAppBar from "@/components/Header";
 import ProjectTimeline from "@/components/ProjectTimeline";
-import TechRadar from "@/components/TechRadar";
 import {
 	Box,
 	Button,
@@ -21,7 +19,11 @@ import {
 	fetchUserStats,
 } from "@/utils/githubUtils";
 
+const ArchitectureTopology = lazy(
+	() => import("@/components/ArchitectureTopology"),
+);
 const Gallery = lazy(() => import("@/components/Gallery"));
+const TechRadar = lazy(() => import("@/components/TechRadar"));
 
 const addonIds = projectsData
 	.filter((project) => project.addonId)
@@ -414,11 +416,19 @@ export default function LandingPage() {
 					An interactive overview of technologies I adopt, trial, assess, or
 					hold.
 				</Typography>
-				<TechRadar
-					onActiveBlipChange={(blip) =>
-						setActiveRadarProjects(blip ? blip.projects : [])
+				<Suspense
+					fallback={
+						<Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+							<CircularProgress size={32} />
+						</Box>
 					}
-				/>
+				>
+					<TechRadar
+						onActiveBlipChange={(blip) =>
+							setActiveRadarProjects(blip ? blip.projects : [])
+						}
+					/>
+				</Suspense>
 			</Container>
 
 			<Container
@@ -450,7 +460,15 @@ export default function LandingPage() {
 					Cross-application topology connecting the 5 desktop workstation
 					applications.
 				</Typography>
-				<ArchitectureTopology />
+				<Suspense
+					fallback={
+						<Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+							<CircularProgress size={32} />
+						</Box>
+					}
+				>
+					<ArchitectureTopology />
+				</Suspense>
 			</Container>
 
 			<Container

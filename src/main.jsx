@@ -17,7 +17,7 @@ import CommandPalette from "@/components/CommandPalette";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import RouteLoader from "@/components/RouteLoader";
 import { BookmarksContextProvider } from "@/contexts/BookmarksContext";
-import { ThemeContextProvider } from "@/contexts/ThemeContext";
+import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
 import { APP_ROUTES } from "@/routes";
 import { editorialTheme } from "@/theme/astryxTheme";
 
@@ -43,16 +43,23 @@ const AppContent = () => (
 	</BrowserRouter>
 );
 
+const AppWithTheme = () => {
+	const { mode } = useThemeContext();
+	return (
+		<Theme theme={editorialTheme} mode={mode}>
+			<AppContent />
+		</Theme>
+	);
+};
+
 const root = createRoot(document.getElementById("root"));
 
 root.render(
 	<StrictMode>
-		<Theme theme={editorialTheme}>
-			<ThemeContextProvider>
-				<BookmarksContextProvider>
-					<AppContent />
-				</BookmarksContextProvider>
-			</ThemeContextProvider>
-		</Theme>
+		<ThemeContextProvider>
+			<BookmarksContextProvider>
+				<AppWithTheme />
+			</BookmarksContextProvider>
+		</ThemeContextProvider>
 	</StrictMode>,
 );
