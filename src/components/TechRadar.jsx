@@ -1,27 +1,101 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import radarData from "@/content/techRadar.json";
 
-export const RINGS = radarData.rings;
-export const QUADRANTS = radarData.quadrants;
-export const BLIPS = radarData.blips;
+export const RINGS = [
+	{ name: "Adopt", radius: 110, color: "#93c47d" },
+	{ name: "Trial", radius: 190, color: "#93d2c6" },
+	{ name: "Assess", radius: 270, color: "#fbcd73" },
+	{ name: "Hold", radius: 350, color: "#e06666" },
+];
+
+export const QUADRANTS = [
+	{
+		name: "Languages",
+		angle: -Math.PI / 4,
+		startAngle: -Math.PI / 2,
+		endAngle: 0,
+	},
+	{
+		name: "Frontend/UI",
+		angle: Math.PI / 4,
+		startAngle: 0,
+		endAngle: Math.PI / 2,
+	},
+	{
+		name: "Backend/Data",
+		angle: (3 * Math.PI) / 4,
+		startAngle: Math.PI / 2,
+		endAngle: Math.PI,
+	},
+	{
+		name: "DevOps/Cloud",
+		angle: -(3 * Math.PI) / 4,
+		startAngle: -Math.PI,
+		endAngle: -Math.PI / 2,
+	},
+];
 
 const RADAR_SIZE = 800;
 const CENTER = RADAR_SIZE / 2;
 
-export default function TechRadar({ onBlipSelect }) {
+export default function TechRadar({ onActiveBlipChange }) {
 	const [activeBlip, setActiveBlip] = useState(null);
+
+	const blips = useMemo(() => {
+		// Group blips by quadrant + ring to distribute automatically without manual trigonometry
+		const groups = {};
+		for (const blip of radarData.blips) {
+			const key = `${blip.quadrant}-${blip.ring}`;
+			if (!groups[key]) groups[key] = [];
+			groups[key].push(blip);
+		}
+
+		return radarData.blips.map((blip) => {
+			const qIndex = QUADRANTS.findIndex((q) => q.name === blip.quadrant);
+			const rIndex = RINGS.findIndex((r) => r.name === blip.ring);
+			const quad = QUADRANTS[qIndex !== -1 ? qIndex : 0];
+			const innerR = rIndex === 0 ? 30 : RINGS[rIndex - 1].radius + 15;
+			const outerR = RINGS[rIndex].radius - 15;
+
+			const key = `${blip.quadrant}-${blip.ring}`;
+			const blipIndexInGroup = groups[key].findIndex((b) => b.id === blip.id);
+			const totalInGroup = groups[key].length;
+
+			// Distribute angularly within quadrant arc
+			const span = quad.endAngle - quad.startAngle;
+			const pad = span * 0.15;
+			const effectiveSpan = span - 2 * pad;
+			const angleStep =
+				totalInGroup > 1 ? effectiveSpan / (totalInGroup - 1) : 0;
+			const angle =
+				totalInGroup > 1
+					? quad.startAngle + pad + blipIndexInGroup * angleStep
+					: quad.startAngle + span / 2;
+
+			// Alternating radius within ring band to avoid overlap
+			const radius =
+				innerR + (blipIndexInGroup % 2 === 0 ? 0.6 : 0.3) * (outerR - innerR);
+
+			const cx = CENTER + radius * Math.cos(angle);
+			const cy = CENTER + radius * Math.sin(angle);
+
+			return {
+				...blip,
+				cx,
+				cy,
+				qIndex,
+				rIndex,
+			};
+		});
+	}, []);
 
 	const handleBlipHover = (blip) => {
 		setActiveBlip(blip);
-		if (onBlipSelect) {
-			onBlipSelect(blip ? blip.projects : []);
+		if (onActiveBlipChange) {
+			onActiveBlipChange(blip);
 		}
-	};
-
-	const handleBlipLeave = () => {
-		// Keep active blip selected or let it stay until another is hovered
 	};
 
 	return (
@@ -106,9 +180,7 @@ export default function TechRadar({ onBlipSelect }) {
 					))}
 
 					{/* Blips */}
-					{BLIPS.map((blip) => {
-						const cx = CENTER + blip.r * Math.cos(blip.theta);
-						const cy = CENTER + blip.r * Math.sin(blip.theta);
+					{blips.map((blip) => {
 						const isActive = activeBlip && activeBlip.id === blip.id;
 
 						return (
@@ -117,9 +189,8 @@ export default function TechRadar({ onBlipSelect }) {
 								role="button"
 								tabIndex={0}
 								aria-label={`Tech Radar Blip for ${blip.name}`}
-								transform={`translate(${cx}, ${cy})`}
+								transform={`translate(${blip.cx}, ${blip.cy})`}
 								onMouseEnter={() => handleBlipHover(blip)}
-								onMouseLeave={handleBlipLeave}
 								onClick={() => handleBlipHover(blip)}
 								onKeyDown={(e) => {
 									if (e.key === "Enter" || e.key === " ") {
@@ -131,7 +202,7 @@ export default function TechRadar({ onBlipSelect }) {
 							>
 								<circle
 									r={isActive ? 12 : 8}
-									fill={RINGS[blip.ring].color}
+									fill={RINGS[blip.rIndex]?.color || "#93c47d"}
 									stroke="#fff"
 									strokeWidth={2}
 								/>
@@ -160,8 +231,7 @@ export default function TechRadar({ onBlipSelect }) {
 					<div>
 						<h3 className="mb-1">{activeBlip.name}</h3>
 						<p className="caption text-secondary mb-3">
-							Quadrant: {QUADRANTS[activeBlip.quadrant].name} | Ring:{" "}
-							{RINGS[activeBlip.ring].name}
+							Quadrant: {activeBlip.quadrant} | Ring: {activeBlip.ring}
 						</p>
 						<p className="font-body mb-4">
 							<strong>Years of Experience:</strong> {activeBlip.yoe}
@@ -217,5 +287,5 @@ export default function TechRadar({ onBlipSelect }) {
 }
 
 TechRadar.propTypes = {
-	onBlipSelect: PropTypes.func,
+	onActiveBlipChange: PropTypes.func,
 };

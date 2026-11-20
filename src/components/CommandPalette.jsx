@@ -15,7 +15,6 @@ import {
 	Info,
 	Keyboard,
 	Link,
-	Lock,
 	Mail,
 	Monitor,
 	Moon,
@@ -125,13 +124,6 @@ export default function CommandPalette({ children }) {
 			keywords: "shortcuts cheatsheet help",
 			perform: () => setShortcutsOpen(true),
 			icon: <Keyboard size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "admin",
-			name: "Admin Dashboard",
-			keywords: "admin dashboard manage edit projects login",
-			perform: () => navigate("/admin"),
-			icon: <Lock size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "filter-react",

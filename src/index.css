@@ -1,6 +1,24 @@
 :root {
-	--sepia: #7d5d53;
-	--hairline-rule: rgba(56, 57, 46, 0.18);
+	color-scheme: light dark;
+	--sepia: light-dark(#7d5d53, #a6827a);
+	--hairline-rule: light-dark(
+		rgba(56, 57, 46, 0.18),
+		rgba(253, 255, 218, 0.18)
+	);
+	--color-background-body: light-dark(#fdffda, #282a21);
+	--color-background-surface: light-dark(#fdffda, #282a21);
+	--color-text-primary: light-dark(#38392e, #fdffda);
+	--color-text-secondary: light-dark(#7d5d53, #a6827a);
+	--color-accent: light-dark(#7d5d53, #a6827a);
+	--color-border: light-dark(rgba(56, 57, 46, 0.1), rgba(253, 255, 218, 0.15));
+	--color-overlay-hover: light-dark(
+		rgba(56, 57, 46, 0.05),
+		rgba(253, 255, 218, 0.06)
+	);
+	--color-overlay-pressed: light-dark(
+		rgba(56, 57, 46, 0.1),
+		rgba(253, 255, 218, 0.1)
+	);
 	font-family:
 		"Work Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
 		sans-serif;
@@ -9,12 +27,44 @@
 	-webkit-font-smoothing: antialiased;
 }
 
-html[data-high-contrast="true"] {
-	--hairline-rule: #000000;
+html[data-theme="light"] {
+	color-scheme: light;
+	--sepia: #7d5d53;
+	--hairline-rule: rgba(56, 57, 46, 0.18);
+	--color-background-body: #fdffda;
+	--color-background-surface: #fdffda;
+	--color-text-primary: #38392e;
+	--color-text-secondary: #7d5d53;
+	--color-accent: #7d5d53;
+	--color-border: rgba(56, 57, 46, 0.1);
+	--color-overlay-hover: rgba(56, 57, 46, 0.05);
+	--color-overlay-pressed: rgba(56, 57, 46, 0.1);
 }
 
-html[data-theme="dark"][data-high-contrast="true"] {
+html[data-theme="dark"] {
+	color-scheme: dark;
+	--sepia: #a6827a;
+	--hairline-rule: rgba(253, 255, 218, 0.18);
+	--color-background-body: #282a21;
+	--color-background-surface: #282a21;
+	--color-text-primary: #fdffda;
+	--color-text-secondary: #a6827a;
+	--color-accent: #a6827a;
+	--color-border: rgba(253, 255, 218, 0.15);
+	--color-overlay-hover: rgba(253, 255, 218, 0.06);
+	--color-overlay-pressed: rgba(253, 255, 218, 0.1);
+}
+
+html[data-high-contrast="true"],
+html[data-high-contrast] {
+	--hairline-rule: #000000;
+	--color-border: #000000;
+}
+
+html[data-theme="dark"][data-high-contrast="true"],
+html[data-theme="dark"][data-high-contrast] {
 	--hairline-rule: #ffffff;
+	--color-border: #ffffff;
 }
 
 * {
@@ -1389,12 +1439,6 @@ textarea {
 
 .italic {
 	font-style: italic;
-}
-
-.terminal-canvas {
-	height: 320px;
-	width: 100%;
-	overflow: hidden;
 }
 
 .p-4 {

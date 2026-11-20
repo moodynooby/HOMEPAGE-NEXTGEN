@@ -8,6 +8,7 @@ import {
 	Search,
 	X,
 } from "lucide-react";
+import PropTypes from "prop-types";
 import { useMemo, useState } from "react";
 import timelineData from "@/content/timelineMilestones.json";
 import { useThemeContext } from "@/contexts/ThemeContext";
@@ -18,7 +19,7 @@ const GitHubIcon = socialIcons.GitHub;
 export const PROJECT_CONFIG = timelineData.projectConfig;
 export const TIMELINE_MILESTONES = timelineData.milestones;
 
-export default function ProjectTimeline() {
+export default function ProjectTimeline({ limit = null }) {
 	const { mode } = useThemeContext();
 	const isDark = mode === "dark";
 
@@ -26,6 +27,7 @@ export default function ProjectTimeline() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortDesc, setSortDesc] = useState(true);
 	const [activeMilestone, setActiveMilestone] = useState(null);
+	const [visibleCount, setVisibleCount] = useState(limit || Infinity);
 
 	const projectFilterOptions = useMemo(() => {
 		const projects = Object.keys(PROJECT_CONFIG);
@@ -337,7 +339,7 @@ export default function ProjectTimeline() {
 					<div
 						style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
 					>
-						{filteredMilestones.map((milestone) => {
+						{filteredMilestones.slice(0, visibleCount).map((milestone) => {
 							const proj = PROJECT_CONFIG[milestone.project] || {};
 							const projectColor = proj.color || "#888";
 
@@ -524,6 +526,30 @@ export default function ProjectTimeline() {
 							);
 						})}
 					</div>
+
+					{limit && filteredMilestones.length > visibleCount && (
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								marginTop: "2rem",
+							}}
+						>
+							<button
+								type="button"
+								onClick={() => setVisibleCount((prev) => prev + (limit || 6))}
+								className="btn btn-outlined btn-sm"
+								style={{
+									fontFamily: "var(--font-family-code, monospace)",
+									letterSpacing: "0.08em",
+									textTransform: "uppercase",
+								}}
+							>
+								Load More Milestones ({filteredMilestones.length - visibleCount}{" "}
+								remaining)
+							</button>
+						</div>
+					)}
 				</div>
 			)}
 
@@ -901,3 +927,7 @@ export default function ProjectTimeline() {
 		</div>
 	);
 }
+
+ProjectTimeline.propTypes = {
+	limit: PropTypes.number,
+};

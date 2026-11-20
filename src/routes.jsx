@@ -1,4 +1,3 @@
-import { Lock } from "lucide-react";
 import { lazy } from "react";
 
 import LandingPage from "@/components/LandingPage";
@@ -8,11 +7,7 @@ const Projects = lazy(() => import("@/components/Projects"));
 const ProjectDetail = lazy(() => import("@/components/ProjectDetail"));
 const LinkTree = lazy(() => import("@/components/LinkTree"));
 const Gallery = lazy(() => import("@/components/Gallery"));
-const AdminDashboard = lazy(() => import("@/components/admin/AdminDashboard"));
 const TechRadar = lazy(() => import("@/components/TechRadar"));
-const ArchitectureTopology = lazy(
-	() => import("@/components/ArchitectureTopology"),
-);
 
 const NAV_ELEMENTS = {
 	"/": <LandingPage />,
@@ -34,20 +29,8 @@ export const APP_ROUTES = [
 		element: <ProjectDetail />,
 	},
 	{
-		path: "/admin",
-		label: "Admin Dashboard",
-		icon: Lock,
-		keywords: "admin dashboard manage edit projects login",
-		element: <AdminDashboard />,
-	},
-	{
 		path: "/radar",
 		label: "Tech Stack Radar",
 		element: <TechRadar />,
-	},
-	{
-		path: "/architecture",
-		label: "Ecosystem Architecture",
-		element: <ArchitectureTopology />,
 	},
 ];

@@ -10,9 +10,6 @@ import {
 	fetchUserStats,
 } from "@/utils/githubUtils";
 
-const ArchitectureTopology = lazy(
-	() => import("@/components/ArchitectureTopology"),
-);
 const Gallery = lazy(() => import("@/components/Gallery"));
 const TechRadar = lazy(() => import("@/components/TechRadar"));
 
@@ -355,46 +352,6 @@ export default function LandingPage() {
 
 			<section
 				className="editorial-container"
-				id="architecture-section"
-				style={{ marginTop: "4.5rem" }}
-			>
-				<h2
-					className="editorial-section-title"
-					style={{ textAlign: "center", marginBottom: "0.5rem" }}
-				>
-					Ecosystem Architecture
-				</h2>
-				<p
-					className="editorial-body"
-					style={{
-						textAlign: "center",
-						fontStyle: "italic",
-						color: "var(--color-text-secondary, #7d5d53)",
-						marginBottom: "2.5rem",
-					}}
-				>
-					Cross-application topology connecting the 5 desktop workstation
-					applications.
-				</p>
-				<Suspense
-					fallback={
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "center",
-								padding: "2rem",
-							}}
-						>
-							<div className="spinner" />
-						</div>
-					}
-				>
-					<ArchitectureTopology />
-				</Suspense>
-			</section>
-
-			<section
-				className="editorial-container"
 				id="timeline-section"
 				style={{ marginTop: "4.5rem" }}
 			>
@@ -416,7 +373,7 @@ export default function LandingPage() {
 					Chronological evolution and release milestone changelogs across the
 					ecosystem.
 				</p>
-				<ProjectTimeline />
+				<ProjectTimeline limit={5} />
 			</section>
 
 			<section
@@ -479,15 +436,7 @@ export default function LandingPage() {
 					<p className="editorial-meta">
 						© {new Date().getFullYear()} Manas Doshi
 					</p>
-					<p className="editorial-meta">
-						Set in Newsreader &amp; Noto Serif ·{" "}
-						<Link
-							to="/admin"
-							style={{ color: "inherit", textDecoration: "none" }}
-						>
-							Admin
-						</Link>
-					</p>
+					<p className="editorial-meta">Set in Newsreader &amp; Noto Serif</p>
 				</div>
 			</footer>
 		</div>

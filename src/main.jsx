@@ -44,9 +44,9 @@ const AppContent = () => (
 );
 
 const AppWithTheme = () => {
-	const { mode } = useThemeContext();
+	const { effectiveMode } = useThemeContext();
 	return (
-		<Theme theme={editorialTheme} mode={mode}>
+		<Theme theme={editorialTheme} mode={effectiveMode}>
 			<AppContent />
 		</Theme>
 	);

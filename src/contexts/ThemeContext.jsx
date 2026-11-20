@@ -15,6 +15,7 @@ export const useThemeContext = () => {
 			toggleColorMode: () => {},
 			highContrast: false,
 			toggleHighContrast: () => {},
+			effectiveMode: "light",
 		};
 	}
 	return context;
@@ -36,10 +37,11 @@ export const ThemeContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		localStorage.setItem("highContrast", highContrast);
-		document.documentElement.toggleAttribute(
-			"data-high-contrast",
-			highContrast,
-		);
+		if (highContrast) {
+			document.documentElement.setAttribute("data-high-contrast", "true");
+		} else {
+			document.documentElement.removeAttribute("data-high-contrast");
+		}
 	}, [highContrast]);
 
 	useEffect(() => {
@@ -54,6 +56,13 @@ export const ThemeContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		document.documentElement.setAttribute("data-theme", effectiveMode);
+		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+		if (metaThemeColor) {
+			metaThemeColor.setAttribute(
+				"content",
+				effectiveMode === "dark" ? "#282a21" : "#fdffda",
+			);
+		}
 	}, [effectiveMode]);
 
 	const toggleColorMode = () => {

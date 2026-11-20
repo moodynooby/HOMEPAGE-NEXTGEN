@@ -1,24 +1,12 @@
 {
-	"rings": [
-		{ "name": "Adopt", "radius": 130, "color": "#93c47d" },
-		{ "name": "Trial", "radius": 220, "color": "#93d2c6" },
-		{ "name": "Assess", "radius": 310, "color": "#fbcd73" },
-		{ "name": "Hold", "radius": 400, "color": "#e06666" }
-	],
-	"quadrants": [
-		{ "name": "Languages", "angle": -0.7853981633974483 },
-		{ "name": "Frontend/UI", "angle": 0.7853981633974483 },
-		{ "name": "Backend/Data", "angle": 2.356194490192345 },
-		{ "name": "DevOps/Cloud", "angle": -2.356194490192345 }
-	],
+	"rings": ["Adopt", "Trial", "Assess", "Hold"],
+	"quadrants": ["Languages", "Frontend/UI", "Backend/Data", "DevOps/Cloud"],
 	"blips": [
 		{
 			"id": 1,
 			"name": "JavaScript",
-			"quadrant": 0,
-			"ring": 0,
-			"theta": -0.39269908169872414,
-			"r": 80,
+			"quadrant": "Languages",
+			"ring": "Adopt",
 			"yoe": 5,
 			"keyRepos": ["Todo.Txt", "TaskTimer"],
 			"projects": ["Todo.Txt", "TaskTimer"]
@@ -26,10 +14,8 @@
 		{
 			"id": 2,
 			"name": "TypeScript",
-			"quadrant": 0,
-			"ring": 0,
-			"theta": -1.1780972450961724,
-			"r": 110,
+			"quadrant": "Languages",
+			"ring": "Adopt",
 			"yoe": 3,
 			"keyRepos": ["Modern-TWP"],
 			"projects": ["Modern-TWP"]
@@ -37,10 +23,8 @@
 		{
 			"id": 3,
 			"name": "Python",
-			"quadrant": 0,
-			"ring": 1,
-			"theta": -0.5235987755982988,
-			"r": 180,
+			"quadrant": "Languages",
+			"ring": "Trial",
 			"yoe": 2,
 			"keyRepos": ["scripts-repo"],
 			"projects": []
@@ -48,10 +32,8 @@
 		{
 			"id": 4,
 			"name": "React",
-			"quadrant": 1,
-			"ring": 0,
-			"theta": 0.39269908169872414,
-			"r": 90,
+			"quadrant": "Frontend/UI",
+			"ring": "Adopt",
 			"yoe": 4,
 			"keyRepos": ["modern-portfolio"],
 			"projects": ["modern-portfolio"]
@@ -59,10 +41,8 @@
 		{
 			"id": 5,
 			"name": "Vue",
-			"quadrant": 1,
-			"ring": 2,
-			"theta": 0.5235987755982988,
-			"r": 270,
+			"quadrant": "Frontend/UI",
+			"ring": "Assess",
 			"yoe": 1,
 			"keyRepos": [],
 			"projects": []
@@ -70,10 +50,8 @@
 		{
 			"id": 6,
 			"name": "Node.js",
-			"quadrant": 2,
-			"ring": 0,
-			"theta": 2.748893571891069,
-			"r": 100,
+			"quadrant": "Backend/Data",
+			"ring": "Adopt",
 			"yoe": 4,
 			"keyRepos": ["backend-api"],
 			"projects": []
@@ -81,10 +59,8 @@
 		{
 			"id": 7,
 			"name": "PostgreSQL",
-			"quadrant": 2,
-			"ring": 0,
-			"theta": 1.9634954084936207,
-			"r": 120,
+			"quadrant": "Backend/Data",
+			"ring": "Adopt",
 			"yoe": 3,
 			"keyRepos": [],
 			"projects": []
@@ -92,10 +68,8 @@
 		{
 			"id": 8,
 			"name": "Docker",
-			"quadrant": 3,
-			"ring": 1,
-			"theta": -1.9634954084936207,
-			"r": 180,
+			"quadrant": "DevOps/Cloud",
+			"ring": "Trial",
 			"yoe": 2,
 			"keyRepos": [],
 			"projects": []
@@ -103,10 +77,8 @@
 		{
 			"id": 9,
 			"name": "AWS",
-			"quadrant": 3,
-			"ring": 2,
-			"theta": -2.748893571891069,
-			"r": 260,
+			"quadrant": "DevOps/Cloud",
+			"ring": "Assess",
 			"yoe": 2,
 			"keyRepos": [],
 			"projects": []

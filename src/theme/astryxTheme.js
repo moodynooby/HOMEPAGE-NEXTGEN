@@ -14,12 +14,20 @@ export const editorialTheme = defineTheme({
 		"--font-family-heading": "Newsreader, Georgia, serif",
 		"--font-family-body": "Noto Serif, Georgia, serif",
 		"--font-family-code": "Work Sans, monospace",
-		"--color-text-primary": "#38392e",
-		"--color-text-secondary": "#7d5d53",
-		"--color-accent": "#7d5d53",
-		"--color-background-body": "#fdffda",
-		"--color-background-surface": "#fdffda",
-		"--color-border": "rgba(56, 57, 46, 0.10)",
+		"--color-text-primary": ["#38392e", "#fdffda"],
+		"--color-text-secondary": ["#7d5d53", "#a6827a"],
+		"--color-accent": ["#7d5d53", "#a6827a"],
+		"--color-background-body": ["#fdffda", "#282a21"],
+		"--color-background-surface": ["#fdffda", "#282a21"],
+		"--color-border": ["rgba(56, 57, 46, 0.10)", "rgba(253, 255, 218, 0.15)"],
+		"--color-overlay-hover": [
+			"rgba(56, 57, 46, 0.05)",
+			"rgba(253, 255, 218, 0.06)",
+		],
+		"--color-overlay-pressed": [
+			"rgba(56, 57, 46, 0.10)",
+			"rgba(253, 255, 218, 0.10)",
+		],
 	},
 	onDark: {
 		tokens: {
@@ -29,6 +37,8 @@ export const editorialTheme = defineTheme({
 			"--color-background-body": "#282a21",
 			"--color-background-surface": "#282a21",
 			"--color-border": "rgba(253, 255, 218, 0.15)",
+			"--color-overlay-hover": "rgba(253, 255, 218, 0.06)",
+			"--color-overlay-pressed": "rgba(253, 255, 218, 0.10)",
 		},
 	},
 });

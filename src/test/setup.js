@@ -1,5 +1,18 @@
 import "@testing-library/jest-dom/vitest";
 
+// Ignore unhandled animation cancellations from happy-dom / motion in tests
+if (typeof process !== "undefined") {
+	process.on("unhandledRejection", (reason) => {
+		if (
+			reason?.name === "AbortError" &&
+			reason?.message?.includes("animation")
+		) {
+			return;
+		}
+		console.error("Unhandled Rejection:", reason);
+	});
+}
+
 const createStorage = () => {
 	const store = new Map();
 	return {
