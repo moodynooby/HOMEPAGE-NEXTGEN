@@ -1,13 +1,12 @@
 import {
-	Calendar as CalendarTodayIcon,
-	X as ClearIcon,
-	X as CloseIcon,
-	GitCommit as CommitIcon,
-	Filter as FilterAltIcon,
-	ExternalLink as LaunchIcon,
-	RotateCcw as RestartAltIcon,
-	Search as SearchIcon,
-	ArrowUpDown as SwapVertIcon,
+	ArrowUpDown,
+	Calendar,
+	ExternalLink,
+	Filter,
+	GitCommit,
+	RotateCcw,
+	Search,
+	X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import timelineData from "@/content/timelineMilestones.json";
@@ -144,7 +143,7 @@ export default function ProjectTimeline() {
 							}}
 							aria-label={sortDesc ? "Sort oldest first" : "Sort newest first"}
 						>
-							<SwapVertIcon size={14} />
+							<ArrowUpDown size={14} />
 							<span>{sortDesc ? "Newest first" : "Oldest first"}</span>
 						</button>
 
@@ -160,7 +159,7 @@ export default function ProjectTimeline() {
 								}}
 								aria-label="Reset filters"
 							>
-								<RestartAltIcon size={14} />
+								<RotateCcw size={14} />
 								<span>Reset Filters</span>
 							</button>
 						)}
@@ -168,7 +167,7 @@ export default function ProjectTimeline() {
 				</div>
 
 				<div style={{ position: "relative", marginBottom: "1rem" }}>
-					<SearchIcon
+					<Search
 						size={16}
 						style={{
 							position: "absolute",
@@ -207,7 +206,7 @@ export default function ProjectTimeline() {
 								padding: "4px",
 							}}
 						>
-							<ClearIcon size={16} />
+							<X size={16} />
 						</button>
 					)}
 				</div>
@@ -229,7 +228,7 @@ export default function ProjectTimeline() {
 							marginRight: "0.25rem",
 						}}
 					>
-						<FilterAltIcon size={14} /> Repos:
+						<Filter size={14} /> Repos:
 					</span>
 
 					{projectFilterOptions.map((opt) => {
@@ -313,7 +312,7 @@ export default function ProjectTimeline() {
 						className="btn btn-outlined btn-sm"
 						style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
 					>
-						<RestartAltIcon size={14} />
+						<RotateCcw size={14} />
 						<span>Clear Filters</span>
 					</button>
 				</div>
@@ -445,7 +444,7 @@ export default function ProjectTimeline() {
 														color: "var(--color-text-secondary, #7d5d53)",
 													}}
 												>
-													<CalendarTodayIcon size={13} />
+													<Calendar size={13} />
 													<span
 														className="editorial-meta"
 														style={{ fontStyle: "italic" }}
@@ -515,7 +514,7 @@ export default function ProjectTimeline() {
 														fontSize: "0.75rem",
 													}}
 												>
-													<CommitIcon size={14} />
+													<GitCommit size={14} />
 													<span>{milestone.commit}</span>
 												</div>
 											</div>
@@ -618,7 +617,7 @@ export default function ProjectTimeline() {
 								data-testid="close-drawer"
 								className="icon-btn"
 							>
-								<CloseIcon size={16} />
+								<X size={16} />
 							</button>
 						</div>
 
@@ -658,7 +657,7 @@ export default function ProjectTimeline() {
 										gap: "4px",
 									}}
 								>
-									<CalendarTodayIcon size={14} />
+									<Calendar size={14} />
 									<span className="editorial-meta">
 										{activeMilestone.displayDate}
 									</span>
@@ -702,7 +701,7 @@ export default function ProjectTimeline() {
 										gap: "0.5rem",
 									}}
 								>
-									<CommitIcon
+									<GitCommit
 										size={18}
 										style={{ color: "var(--color-text-secondary, #7d5d53)" }}
 									/>
@@ -739,7 +738,7 @@ export default function ProjectTimeline() {
 									}}
 								>
 									<span>View on GitHub</span>
-									<LaunchIcon size={13} />
+									<ExternalLink size={13} />
 								</a>
 							</div>
 

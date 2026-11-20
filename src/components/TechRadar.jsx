@@ -1,124 +1,14 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import radarData from "@/content/techRadar.json";
+
+export const RINGS = radarData.rings;
+export const QUADRANTS = radarData.quadrants;
+export const BLIPS = radarData.blips;
 
 const RADAR_SIZE = 800;
 const CENTER = RADAR_SIZE / 2;
-const RINGS = [
-	{ name: "Adopt", radius: 130, color: "#93c47d" },
-	{ name: "Trial", radius: 220, color: "#93d2c6" },
-	{ name: "Assess", radius: 310, color: "#fbcd73" },
-	{ name: "Hold", radius: 400, color: "#e06666" },
-];
-
-const QUADRANTS = [
-	{ name: "Languages", angle: -Math.PI / 4 }, // Top-Right
-	{ name: "Frontend/UI", angle: Math.PI / 4 }, // Bottom-Right
-	{ name: "Backend/Data", angle: (3 * Math.PI) / 4 }, // Bottom-Left
-	{ name: "DevOps/Cloud", angle: (-3 * Math.PI) / 4 }, // Top-Left
-];
-
-const BLIPS = [
-	{
-		id: 1,
-		name: "JavaScript",
-		quadrant: 0,
-		ring: 0,
-		theta: -Math.PI / 8,
-		r: 80,
-		yoe: 5,
-		keyRepos: ["Todo.Txt", "TaskTimer"],
-		projects: ["Todo.Txt", "TaskTimer"],
-	},
-	{
-		id: 2,
-		name: "TypeScript",
-		quadrant: 0,
-		ring: 0,
-		theta: (-3 * Math.PI) / 8,
-		r: 110,
-		yoe: 3,
-		keyRepos: ["Modern-TWP"],
-		projects: ["Modern-TWP"],
-	},
-	{
-		id: 3,
-		name: "Python",
-		quadrant: 0,
-		ring: 1,
-		theta: -Math.PI / 6,
-		r: 180,
-		yoe: 2,
-		keyRepos: ["scripts-repo"],
-		projects: [],
-	},
-	{
-		id: 4,
-		name: "React",
-		quadrant: 1,
-		ring: 0,
-		theta: Math.PI / 8,
-		r: 90,
-		yoe: 4,
-		keyRepos: ["modern-portfolio"],
-		projects: ["modern-portfolio"],
-	},
-	{
-		id: 5,
-		name: "Vue",
-		quadrant: 1,
-		ring: 2,
-		theta: Math.PI / 6,
-		r: 270,
-		yoe: 1,
-		keyRepos: [],
-		projects: [],
-	},
-	{
-		id: 6,
-		name: "Node.js",
-		quadrant: 2,
-		ring: 0,
-		theta: (7 * Math.PI) / 8,
-		r: 100,
-		yoe: 4,
-		keyRepos: ["backend-api"],
-		projects: [],
-	},
-	{
-		id: 7,
-		name: "PostgreSQL",
-		quadrant: 2,
-		ring: 0,
-		theta: (5 * Math.PI) / 8,
-		r: 120,
-		yoe: 3,
-		keyRepos: [],
-		projects: [],
-	},
-	{
-		id: 8,
-		name: "Docker",
-		quadrant: 3,
-		ring: 1,
-		theta: (-5 * Math.PI) / 8,
-		r: 180,
-		yoe: 2,
-		keyRepos: [],
-		projects: [],
-	},
-	{
-		id: 9,
-		name: "AWS",
-		quadrant: 3,
-		ring: 2,
-		theta: (-7 * Math.PI) / 8,
-		r: 260,
-		yoe: 2,
-		keyRepos: [],
-		projects: [],
-	},
-];
 
 export default function TechRadar({ onBlipSelect }) {
 	const [activeBlip, setActiveBlip] = useState(null);

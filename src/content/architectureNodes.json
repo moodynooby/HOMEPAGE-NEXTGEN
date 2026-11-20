@@ -63,7 +63,7 @@
 			"y": 260,
 			"tagline": "Central Ecosystem Gateway & Developer Portfolio",
 			"description": "Unified developer portal displaying project health telemetry, interactive tech radar, architecture topology, and terminal demos.",
-			"techStack": ["React 19", "Vite", "MUI", "Emotion", "Motion", "Vitest"],
+			"techStack": ["React 19", "Vite", "Astryx", "Motion", "Vitest"],
 			"repo": "moodynooby/HOMEPAGE-NEXTGEN",
 			"keyCapabilities": [
 				"Interactive SVG Tech Stack Radar with Quadrant Filtering",

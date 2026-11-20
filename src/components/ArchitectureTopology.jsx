@@ -1,4 +1,4 @@
-import { X as CloseIcon, RotateCcw as RestartAltIcon } from "lucide-react";
+import { RotateCcw, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import topologyData from "@/content/architectureNodes.json";
 import { useThemeContext } from "@/contexts/ThemeContext";
@@ -121,7 +121,7 @@ export default function ArchitectureTopology() {
 								gap: "4px",
 							}}
 						>
-							<RestartAltIcon size={14} />
+							<RotateCcw size={14} />
 							<span>Reset View</span>
 						</button>
 					)}
@@ -464,7 +464,7 @@ export default function ArchitectureTopology() {
 										onClick={() => setSelectedNodeId(null)}
 										className="icon-btn"
 									>
-										<CloseIcon size={16} />
+										<X size={16} />
 									</button>
 								)}
 							</div>
