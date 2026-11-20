@@ -1,3 +1,9 @@
+import {
+	ArrowLeft as ArrowBack,
+	ArrowRight as ArrowForward,
+	Bookmark,
+	Share2 as Share,
+} from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -18,13 +24,6 @@ import {
 	Typography,
 	useTheme,
 } from "@/components/ui";
-import {
-	ArrowBack,
-	ArrowForward,
-	Bookmark,
-	BookmarkBorder,
-	Share,
-} from "@/components/ui/icons";
 import projects from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import { readCacheEntry, writeCacheEntry } from "@/utils/cache";
@@ -270,11 +269,12 @@ export default function ProjectDetail() {
 									}
 									size="small"
 								>
-									{isBookmarked(project.githubName) ? (
-										<Bookmark color="primary" fontSize="small" />
-									) : (
-										<BookmarkBorder fontSize="small" />
-									)}
+									<Bookmark
+										size={18}
+										fill={
+											isBookmarked(project.githubName) ? "currentColor" : "none"
+										}
+									/>
 								</IconButton>
 							</Tooltip>
 						</Box>

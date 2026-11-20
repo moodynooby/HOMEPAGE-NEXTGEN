@@ -1,7 +1,7 @@
 import { Star, Wand2, X } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { fetchGitHubRepoDetails } from "@/utils/githubPublisher";
+import { fetchGitHubRepoDetails } from "@/utils/githubUtils";
 import { PROJECT_CATEGORIES } from "@/utils/projectCategories";
 
 const CATEGORIES = [...PROJECT_CATEGORIES, "Other"];

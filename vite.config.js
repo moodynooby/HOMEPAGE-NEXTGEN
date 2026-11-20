@@ -24,16 +24,8 @@ export default defineConfig({
 		alias: [
 			{ find: "@", replacement: path.resolve(__dirname, "./src") },
 			{
-				find: "@mui/material/styles",
-				replacement: path.resolve(__dirname, "./src/components/ui/styles.js"),
-			},
-			{
 				find: "@mui/material",
 				replacement: path.resolve(__dirname, "./src/components/ui/index.jsx"),
-			},
-			{
-				find: /^@mui\/icons-material(\/.*)?$/,
-				replacement: path.resolve(__dirname, "./src/components/ui/icons.jsx"),
 			},
 		],
 	},

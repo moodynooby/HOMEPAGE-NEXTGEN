@@ -1,3 +1,4 @@
+import { RotateCcw as RestartAlt, Search } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
@@ -22,7 +23,6 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@/components/ui";
-import { RestartAlt, Search } from "@/components/ui/icons";
 import projectsData from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import {
@@ -338,7 +338,7 @@ export default function Projects({ showAppBar = true }) {
 									input: {
 										startAdornment: (
 											<InputAdornment position="start">
-												<Search fontSize="small" />
+												<Search size={16} />
 											</InputAdornment>
 										),
 										sx: { fontFamily: '"Work Sans Variable", sans-serif' },

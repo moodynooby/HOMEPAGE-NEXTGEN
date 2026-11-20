@@ -188,3 +188,114 @@ export async function fetchProjectHealth(repoName) {
 		return readCacheEntry(key) || null;
 	}
 }
+
+const REPO_OWNER = "moodynooby";
+const REPO_NAME = "HOMEPAGE-NEXTGEN";
+const PROJECTS_FILE_PATH = "src/content/projects.json";
+
+export async function fetchGitHubRepoDetails(repoName, token = "") {
+	const cleanName = repoName.replace(/^moodynooby\//i, "").trim();
+	const headers = { Accept: "application/vnd.github.v3+json" };
+	if (token) headers.Authorization = `token ${token}`;
+
+	const response = await fetch(
+		`${GITHUB_BASE}/repos/${REPO_OWNER}/${cleanName}`,
+		{ headers },
+	);
+	if (!response.ok) {
+		if (response.status === 404)
+			throw new Error(`Repository "${REPO_OWNER}/${cleanName}" not found.`);
+		if (response.status === 403)
+			throw new Error(
+				"GitHub API rate limit exceeded. Add a GitHub Token in settings.",
+			);
+		throw new Error(`GitHub error: ${response.statusText}`);
+	}
+
+	const data = await response.json();
+	return {
+		name: data.name,
+		description: data.description || "",
+		language: data.language || "",
+		defaultBranch: data.default_branch || "main",
+		defaultReadmeUrl: `https://raw.githubusercontent.com/${REPO_OWNER}/${data.name}/${data.default_branch || "main"}/README.md`,
+		topics: data.topics || [],
+		homepage: data.homepage || "",
+		stars: data.stargazers_count || 0,
+	};
+}
+
+export async function commitProjectsToGitHub({
+	token,
+	projects,
+	commitMessage = "chore(content): update projects ledger via Admin Dashboard",
+}) {
+	if (!token)
+		throw new Error(
+			"A valid GitHub Personal Access Token is required to publish.",
+		);
+
+	const headers = {
+		Accept: "application/vnd.github.v3+json",
+		Authorization: `token ${token.trim()}`,
+		"Content-Type": "application/json",
+	};
+
+	const getUrl = `${GITHUB_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PROJECT_FILE_PATH || PROJECTS_FILE_PATH}`;
+	const fileResponse = await fetch(getUrl, { headers });
+
+	let sha = "";
+	if (fileResponse.ok) {
+		const fileData = await fileResponse.json();
+		sha = fileData.sha;
+	} else if (fileResponse.status !== 404) {
+		throw new Error(
+			`Failed to fetch file metadata from GitHub: ${fileResponse.statusText}`,
+		);
+	}
+
+	const jsonString = `${JSON.stringify(projects, null, "\t")}\n`;
+	const encodedContent = btoa(
+		encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+			String.fromCharCode(parseInt(p1, 16)),
+		),
+	);
+
+	const payload = {
+		message: commitMessage,
+		content: encodedContent,
+		branch: "main",
+	};
+	if (sha) payload.sha = sha;
+
+	const putResponse = await fetch(getUrl, {
+		method: "PUT",
+		headers,
+		body: JSON.stringify(payload),
+	});
+	if (!putResponse.ok) {
+		const errData = await putResponse.json().catch(() => ({}));
+		throw new Error(
+			errData.message || `Failed to commit changes: ${putResponse.statusText}`,
+		);
+	}
+
+	const result = await putResponse.json();
+	return {
+		commitSha: result.commit?.sha || "",
+		commitUrl: result.commit?.html_url || "",
+	};
+}
+
+export function exportProjectsJson(projects, filename = "projects.json") {
+	const jsonString = `${JSON.stringify(projects, null, "\t")}\n`;
+	const blob = new Blob([jsonString], { type: "application/json" });
+	const url = URL.createObjectURL(blob);
+	const anchor = document.createElement("a");
+	anchor.href = url;
+	anchor.download = filename;
+	document.body.appendChild(anchor);
+	anchor.click();
+	document.body.removeChild(anchor);
+	URL.revokeObjectURL(url);
+}

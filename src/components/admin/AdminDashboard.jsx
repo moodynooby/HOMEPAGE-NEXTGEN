@@ -1,3 +1,19 @@
+import {
+	Plus as Add,
+	ArrowDown as ArrowDownward,
+	ArrowRight as ArrowForward,
+	ArrowUp as ArrowUpward,
+	CloudUpload,
+	Trash2 as Delete,
+	Download,
+	Edit,
+	Key,
+	LogOut as Logout,
+	RefreshCw as Refresh,
+	Search,
+	Star,
+	Star as StarBorder,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import AdminLogin from "@/components/admin/AdminLogin";
@@ -32,30 +48,16 @@ import {
 	Tooltip,
 	Typography,
 } from "@/components/ui";
-import {
-	Add,
-	ArrowDownward,
-	ArrowForward,
-	ArrowUpward,
-	CloudUpload,
-	Delete,
-	Download,
-	Edit,
-	GitHub,
-	Key,
-	Logout,
-	Refresh,
-	Search,
-	Star,
-	StarBorder,
-} from "@/components/ui/icons";
 import defaultProjects from "@/content/projects.json";
 import { getGitHubToken, isAuthenticated, logout } from "@/utils/authUtils";
 import {
 	commitProjectsToGitHub,
 	exportProjectsJson,
-} from "@/utils/githubPublisher";
+} from "@/utils/githubUtils";
 import { orderCategories } from "@/utils/projectCategories";
+import { socialIcons } from "@/utils/socialIcons";
+
+const GitHub = socialIcons.GitHub;
 
 const DRAFT_STORAGE_KEY = "editorial_admin_draft_projects";
 
