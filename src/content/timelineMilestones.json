@@ -48,7 +48,7 @@
 			"badge": "Feature",
 			"commit": "6a81bf2",
 			"commitUrl": "https://github.com/moodynooby/HOMEPAGE-NEXTGEN/commit/6a81bf2",
-			"tags": ["React 19", "MUI 9", "Drawer", "Vitest", "Changelog"],
+			"tags": ["React 19", "Astryx", "Drawer", "Vitest", "Changelog"],
 			"details": [
 				"Unified multi-repository milestone ledger tracking NotebookForge, diet-logs, whatsapp-web-incognito, notion-lite, and homepage-nextgen.",
 				"Real-time search across titles, summaries, versions, and tags.",
@@ -319,7 +319,7 @@
 			"badge": "Initial Release",
 			"commit": "90b1c83",
 			"commitUrl": "https://github.com/moodynooby/HOMEPAGE-NEXTGEN/commit/90b1c83",
-			"tags": ["React 19", "Newsreader", "MUI 9", "Emotion"],
+			"tags": ["React 19", "Newsreader", "Astryx"],
 			"details": [
 				"Distinctive newspaper-inspired aesthetic using Newsreader and Noto Serif typography.",
 				"Real-time telemetry fetching stars, forks, and Firefox extension active user counts.",

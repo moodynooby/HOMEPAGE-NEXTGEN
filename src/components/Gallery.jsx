@@ -63,10 +63,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 
 	if (loading) {
 		return (
-			<div
-				className="flex justify-center items-center"
-				style={{ minHeight: "40vh" }}
-			>
+			<div className="flex justify-center items-center py-8">
 				<span className="spinner" />
 			</div>
 		);
@@ -76,12 +73,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 		<>
 			{showAppBar && <Header />}
 			<div
-				style={{
-					paddingTop: showAppBar ? "5rem" : "1.5rem",
-					paddingBottom: "3rem",
-					position: "relative",
-					minHeight: showAppBar ? "100vh" : "auto",
-				}}
+				className={showAppBar ? "gallery-section" : "gallery-section-embedded"}
 			>
 				<div className="container">
 					{showAppBar && (
@@ -89,13 +81,10 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.7 }}
-							style={{ textAlign: "center", marginBottom: "3rem" }}
+							className="text-center mb-8"
 						>
 							<h1 className="mb-2">The Visual Archive</h1>
-							<p
-								className="caption text-secondary"
-								style={{ fontStyle: "italic" }}
-							>
+							<p className="caption text-secondary italic">
 								Captured moments and kinetic studies, preserved for the record.
 							</p>
 						</motion.div>
@@ -134,16 +123,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 									className={`gallery-item ${isLarge ? "large" : isTall ? "tall" : ""}`}
 								>
 									{item.resource_type === "image" ? (
-										<AdvancedImage
-											cldImg={cldMedia}
-											style={{
-												width: "100%",
-												height: "100%",
-												objectFit: "cover",
-												filter: "grayscale(100%) contrast(110%)",
-												transition: "filter 0.6s ease, transform 0.6s ease",
-											}}
-										/>
+										<AdvancedImage cldImg={cldMedia} />
 									) : (
 										<AdvancedVideo
 											cldVid={cld.video(item.public_id)}
@@ -151,13 +131,6 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 											loop
 											muted
 											playsInline
-											style={{
-												width: "100%",
-												height: "100%",
-												objectFit: "cover",
-												filter: "grayscale(100%) contrast(110%)",
-												transition: "filter 0.6s ease, transform 0.6s ease",
-											}}
 										/>
 									)}
 
@@ -170,19 +143,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 									</div>
 
 									{item.resource_type === "video" && (
-										<span
-											className="badge"
-											style={{
-												position: "absolute",
-												top: 12,
-												right: 12,
-												backgroundColor:
-													"var(--color-background-surface, #fdffda)",
-												padding: "2px 6px",
-											}}
-										>
-											▶
-										</span>
+										<span className="badge gallery-video-badge">▶</span>
 									)}
 								</motion.div>
 							);

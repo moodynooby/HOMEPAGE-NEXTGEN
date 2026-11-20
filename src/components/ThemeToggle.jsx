@@ -51,7 +51,7 @@ export default function ThemeToggle() {
 				</button>
 			</div>
 
-			<div ref={menuRef} style={{ position: "relative" }}>
+			<div ref={menuRef} className="relative">
 				<button
 					type="button"
 					aria-label="Theme settings"
@@ -76,10 +76,7 @@ export default function ThemeToggle() {
 								checked={highContrast}
 								readOnly
 								aria-label="Toggle high contrast mode"
-								style={{
-									cursor: "pointer",
-									accentColor: "var(--color-accent)",
-								}}
+								className="theme-checkbox"
 							/>
 						</button>
 					</div>

@@ -151,7 +151,7 @@ export default function ProjectEditModal({
 				if (e.key === "Escape") onClose();
 			}}
 		>
-			<div className="dialog-panel" style={{ maxWidth: 720 }}>
+			<div className="dialog-panel max-w-3xl">
 				<div className="dialog-header">
 					<div>
 						<span className="overline">Ledger Monograph Entry</span>
@@ -173,41 +173,25 @@ export default function ProjectEditModal({
 
 				<form onSubmit={handleSubmit} noValidate>
 					<div className="flex flex-col gap-4">
-						{error && (
-							<div
-								className="surface-card text-error"
-								style={{
-									padding: "0.75rem 1rem",
-									borderLeft: "4px solid #b71c1c",
-								}}
-							>
-								{error}
-							</div>
-						)}
+						{error && <div className="error-callout">{error}</div>}
 
 						{fetchMessage && (
 							<div
-								className="surface-card"
-								style={{
-									padding: "0.75rem 1rem",
-									borderLeft: `4px solid ${fetchMessage.type === "success" ? "#2e7d32" : "#b71c1c"}`,
-								}}
+								className={
+									fetchMessage.type === "success"
+										? "success-callout"
+										: "error-callout"
+								}
 							>
 								<p className="caption">{fetchMessage.text}</p>
 							</div>
 						)}
 
 						{/* GitHub Sync Banner */}
-						<div
-							className="surface-card"
-							style={{
-								padding: "1rem",
-								backgroundColor: "var(--color-background-body, #fdffda)",
-							}}
-						>
+						<div className="surface-card p-4">
 							<span className="overline mb-2">GitHub Repository Sync</span>
 							<div className="flex gap-2 items-center flex-wrap">
-								<div className="flex-1" style={{ minWidth: 240 }}>
+								<div className="flex-1 min-w-60">
 									<input
 										id="github-repo-name"
 										value={formData.githubName}
@@ -223,10 +207,7 @@ export default function ProjectEditModal({
 									className="btn btn-outline btn-sm"
 								>
 									{fetchingGithub ? (
-										<span
-											className="spinner"
-											style={{ width: 14, height: 14 }}
-										/>
+										<span className="spinner" />
 									) : (
 										<Wand2 size={14} />
 									)}
@@ -239,7 +220,7 @@ export default function ProjectEditModal({
 
 						{/* Category & Featured */}
 						<div className="flex gap-4 items-center flex-wrap">
-							<div className="form-group flex-1" style={{ minWidth: 200 }}>
+							<div className="form-group flex-1 min-w-50">
 								<label htmlFor="project-category" className="form-label">
 									Category
 								</label>
@@ -256,10 +237,7 @@ export default function ProjectEditModal({
 								</select>
 							</div>
 
-							<div
-								className="flex items-center gap-2"
-								style={{ marginTop: "1.2rem" }}
-							>
+							<div className="flex items-center gap-2 mt-5">
 								<button
 									type="button"
 									onClick={() => handleChange("featured", !formData.featured)}
@@ -291,7 +269,7 @@ export default function ProjectEditModal({
 
 						{/* Images & Paths */}
 						<div className="flex gap-4 flex-wrap">
-							<div className="form-group flex-1" style={{ minWidth: 240 }}>
+							<div className="form-group flex-1 min-w-60">
 								<label htmlFor="project-img" className="form-label">
 									Logo / Thumbnail URL
 								</label>
@@ -304,7 +282,7 @@ export default function ProjectEditModal({
 								/>
 							</div>
 
-							<div className="form-group flex-1" style={{ minWidth: 240 }}>
+							<div className="form-group flex-1 min-w-60">
 								<label htmlFor="project-readme" className="form-label">
 									Pinned README URL
 								</label>
@@ -322,7 +300,7 @@ export default function ProjectEditModal({
 
 						{/* Optional Extension IDs */}
 						<div className="flex gap-4 flex-wrap">
-							<div className="form-group flex-1" style={{ minWidth: 240 }}>
+							<div className="form-group flex-1 min-w-60">
 								<label htmlFor="project-addon-id" className="form-label">
 									Firefox Add-on Slug (Optional)
 								</label>
@@ -334,7 +312,7 @@ export default function ProjectEditModal({
 								/>
 							</div>
 
-							<div className="form-group flex-1" style={{ minWidth: 240 }}>
+							<div className="form-group flex-1 min-w-60">
 								<label htmlFor="project-chromestats-id" className="form-label">
 									ChromeStats ID (Optional)
 								</label>

@@ -54,12 +54,7 @@ export default function Header() {
 
 				<div className="masthead-sub">
 					<span>Manas Doshi</span>
-					<span style={{ display: isMobile ? "none" : "inline" }}>
-						{currentDate}
-					</span>
-					<span style={{ display: isMobile ? "inline" : "none" }}>
-						Personal Archive
-					</span>
+					<span>{isMobile ? "Personal Archive" : currentDate}</span>
 					<span>Est. MMXXIV</span>
 				</div>
 			</div>
@@ -78,8 +73,7 @@ export default function Header() {
 							type="button"
 							onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 							aria-label="Open navigation menu"
-							className="nav-btn"
-							style={{ padding: "6px" }}
+							className="nav-btn p-1"
 						>
 							{isMobileMenuOpen ? (
 								<X size={20} strokeWidth={1.5} />
@@ -121,18 +115,11 @@ export default function Header() {
 								to={item.to}
 								onClick={() => setIsMobileMenuOpen(false)}
 								className="nav-link"
-								style={{ padding: "0.5rem 0" }}
 							>
 								{item.label}
 							</Link>
 						))}
-						<div
-							style={{
-								borderTop:
-									"1px solid var(--color-border, var(--hairline-rule))",
-								paddingTop: "0.75rem",
-							}}
-						>
+						<div className="mobile-menu-socials">
 							<SocialLinks />
 						</div>
 					</div>

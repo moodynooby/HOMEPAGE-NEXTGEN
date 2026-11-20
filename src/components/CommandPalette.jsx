@@ -14,7 +14,7 @@ import {
 	Image,
 	Info,
 	Keyboard,
-	Link as LinkIcon,
+	Link,
 	Lock,
 	Mail,
 	Monitor,
@@ -173,7 +173,7 @@ export default function CommandPalette({ children }) {
 			name: "Copy Portfolio Link",
 			keywords: "copy link url share",
 			perform: () => copyToClipboard(window.location.origin),
-			icon: <LinkIcon size={16} strokeWidth={1.5} />,
+			icon: <Link size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "copy-email",
@@ -232,46 +232,11 @@ export default function CommandPalette({ children }) {
 	return (
 		<KBarProvider actions={actions}>
 			<KBarPortal>
-				<KBarPositioner
-					style={{
-						zIndex: 9999,
-						backdropFilter: "blur(4px)",
-						background: "rgba(0, 0, 0, 0.4)",
-					}}
-				>
-					<KBarAnimator
-						style={{
-							maxWidth: "560px",
-							width: "100%",
-							background: "var(--color-background-surface, #fdffda)",
-							color: "var(--color-text-primary, #38392e)",
-							borderRadius: "0px",
-							border: "1px solid var(--color-text-primary, #38392e)",
-							overflow: "hidden",
-							boxShadow: "none",
-						}}
-					>
-						<div
-							style={{
-								padding: "1rem",
-								borderBottom:
-									"1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-							}}
-						>
+				<KBarPositioner className="kbar-backdrop">
+					<KBarAnimator className="kbar-animator">
+						<div className="kbar-search-box">
 							<KBarSearch
-								style={{
-									padding: "10px 12px",
-									fontSize: "15px",
-									width: "100%",
-									boxSizing: "border-box",
-									outline: "none",
-									border: "none",
-									background: "transparent",
-									color: "var(--color-text-primary, #38392e)",
-									fontFamily:
-										"var(--font-family-code, 'Work Sans', sans-serif)",
-									letterSpacing: "0.02em",
-								}}
+								className="kbar-search-input"
 								placeholder="Type a command…"
 							/>
 						</div>
@@ -290,72 +255,26 @@ export default function CommandPalette({ children }) {
 					onKeyDown={(e) => {
 						if (e.key === "Escape") setShortcutsOpen(false);
 					}}
-					style={{
-						position: "fixed",
-						inset: 0,
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						zIndex: 10000,
-						backdropFilter: "blur(4px)",
-						background: "rgba(0, 0, 0, 0.4)",
-					}}
+					className="modal-backdrop"
 					onClick={(e) => {
 						if (e.target === e.currentTarget) setShortcutsOpen(false);
 					}}
 				>
-					<div
-						style={{
-							background: "var(--color-background-surface, #fdffda)",
-							border: "1px solid var(--color-text-primary, #38392e)",
-							padding: "2rem",
-							maxWidth: "500px",
-							width: "90%",
-							borderRadius: 0,
-							outline: "none",
-						}}
-					>
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								marginBottom: "1.5rem",
-							}}
-						>
-							<h2
-								id="shortcuts-modal-title"
-								style={{
-									margin: 0,
-									fontFamily:
-										"var(--font-family-heading, 'Newsreader', Georgia, serif)",
-									fontSize: "1.5rem",
-									fontWeight: 700,
-									color: "var(--color-text-primary, #38392e)",
-								}}
-							>
-								Keyboard Shortcuts
-							</h2>
+					<div className="shortcuts-dialog">
+						<div className="flex justify-between items-center mb-6">
+							<h3 id="shortcuts-modal-title">Keyboard Shortcuts</h3>
 							<button
 								type="button"
 								onClick={() => setShortcutsOpen(false)}
 								aria-label="Close shortcuts modal"
-								style={{
-									background: "none",
-									border: "none",
-									cursor: "pointer",
-									color: "var(--color-text-primary)",
-									padding: "4px",
-									display: "flex",
-									alignItems: "center",
-								}}
+								className="btn-ghost p-1 flex items-center"
 							>
 								<X size={18} strokeWidth={1.5} />
 							</button>
 						</div>
 						<div
 							id="shortcuts-modal-description"
-							style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+							className="flex flex-col gap-4"
 						>
 							{[
 								{ key: "Cmd/Ctrl + K", desc: "Open Command Palette" },
@@ -368,43 +287,11 @@ export default function CommandPalette({ children }) {
 								{ key: "T S", desc: "Theme: System" },
 								{ key: "?", desc: "Toggle this cheatsheet" },
 							].map((sc) => (
-								<div
-									key={sc.desc}
-									style={{
-										display: "flex",
-										justifyContent: "space-between",
-										alignItems: "center",
-										borderBottom:
-											"1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-										paddingBottom: "0.5rem",
-									}}
-								>
-									<span
-										style={{
-											fontFamily:
-												"var(--font-family-body, 'Noto Serif', serif)",
-											fontSize: "0.875rem",
-											color: "var(--color-text-primary)",
-										}}
-									>
-										{sc.desc}
-									</span>
-									<div style={{ display: "flex", gap: "4px" }}>
+								<div key={sc.desc} className="shortcuts-row">
+									<span className="font-body text-primary">{sc.desc}</span>
+									<div className="flex gap-1">
 										{sc.key.split(" ").map((k) => (
-											<span
-												key={`${sc.desc}-${k}`}
-												style={{
-													padding: "2px 6px",
-													background:
-														"var(--color-overlay-pressed, rgba(56, 57, 46, 0.08))",
-													fontSize: "0.75rem",
-													fontWeight: 600,
-													textTransform: "uppercase",
-													border: "1px solid var(--color-border)",
-													fontFamily:
-														"var(--font-family-code, 'Work Sans', sans-serif)",
-												}}
-											>
+											<span key={`${sc.desc}-${k}`} className="kbd-badge">
 												{k}
 											</span>
 										))}
@@ -427,68 +314,17 @@ function RenderResults() {
 			items={results}
 			onRender={({ item, active }) =>
 				typeof item === "string" ? (
-					<div
-						style={{
-							padding: "1rem 1.5rem 0.5rem",
-							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-							fontSize: "0.7rem",
-							letterSpacing: "0.15em",
-							textTransform: "uppercase",
-							color: "var(--color-text-secondary, #7d5d53)",
-						}}
-					>
-						{item}
-					</div>
+					<div className="kbar-section-header">{item}</div>
 				) : (
-					<div
-						style={{
-							padding: "0.75rem 1.5rem",
-							background: active
-								? "var(--color-overlay-hover, rgba(56, 57, 46, 0.06))"
-								: "transparent",
-							borderLeft: `2px solid ${active ? "var(--color-accent, #7d5d53)" : "transparent"}`,
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "space-between",
-							cursor: "pointer",
-							transition: "background 0.15s ease",
-						}}
-					>
-						<div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-							{item.icon && (
-								<span style={{ display: "flex", opacity: 0.7 }}>
-									{item.icon}
-								</span>
-							)}
-							<span
-								style={{
-									fontFamily:
-										"var(--font-family-body, 'Noto Serif', Georgia, serif)",
-									fontSize: "0.875rem",
-									color: "var(--color-text-primary, #38392e)",
-								}}
-							>
-								{item.name}
-							</span>
+					<div className={`kbar-result-item ${active ? "active" : ""}`}>
+						<div className="flex items-center gap-4">
+							{item.icon && <span className="kbar-icon">{item.icon}</span>}
+							<span className="font-body text-primary">{item.name}</span>
 						</div>
 						{item.shortcut?.length > 0 && (
-							<div style={{ display: "flex", gap: "4px" }}>
+							<div className="flex gap-1">
 								{item.shortcut.map((sc) => (
-									<span
-										key={sc}
-										style={{
-											padding: "2px 6px",
-											background:
-												"var(--color-overlay-pressed, rgba(56, 57, 46, 0.08))",
-											fontSize: "0.65rem",
-											fontWeight: 600,
-											fontFamily:
-												"var(--font-family-code, 'Work Sans', sans-serif)",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-											border: "1px solid var(--color-border)",
-										}}
-									>
+									<span key={sc} className="kbd-sm">
 										{sc}
 									</span>
 								))}

@@ -17,24 +17,10 @@ function LinkRow({ link, alt }) {
 			aria-label={`Open ${alt} in a new tab`}
 			className="link-tree-row"
 		>
-			<span
-				style={{
-					display: "flex",
-					color: "var(--color-text-secondary, #7d5d53)",
-				}}
-			>
+			<span className="flex text-secondary">
 				{IconComponent && <IconComponent size={20} strokeWidth={1.5} />}
 			</span>
-			<span
-				style={{
-					flex: 1,
-					fontFamily: "var(--font-family-heading, 'Newsreader', serif)",
-					fontSize: "1.25rem",
-					fontWeight: 600,
-				}}
-			>
-				{alt}
-			</span>
+			<span className="link-tree-label">{alt}</span>
 			<ArrowUpRight size={18} strokeWidth={1.5} className="directory-arrow" />
 		</a>
 	);
@@ -49,7 +35,7 @@ export default function LinkTree() {
 	const shouldReduceMotion = useReducedMotion();
 
 	return (
-		<div style={{ minHeight: "100vh" }}>
+		<div>
 			<Header />
 
 			<motion.div
@@ -57,32 +43,10 @@ export default function LinkTree() {
 				animate={{ opacity: 1, y: 0 }}
 				transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6 }}
 			>
-				<main
-					style={{
-						maxWidth: "680px",
-						margin: "0 auto",
-						padding: "4rem 1.5rem 6rem",
-					}}
-				>
-					<p className="editorial-meta" style={{ marginBottom: "0.5rem" }}>
-						Index · Directory
-					</p>
-					<h1
-						className="editorial-headline"
-						style={{
-							fontSize: "clamp(2.5rem, 5vw, 3.5rem)",
-							marginBottom: "1rem",
-						}}
-					>
-						Connected Profiles
-					</h1>
-					<p
-						className="editorial-body"
-						style={{
-							marginBottom: "2.5rem",
-							maxWidth: "46ch",
-						}}
-					>
+				<main className="directory-container">
+					<p className="editorial-meta mb-2">Index · Directory</p>
+					<h1 className="editorial-headline mb-4">Connected Profiles</h1>
+					<p className="editorial-body directory-intro mb-8">
 						A simple directory of places where my work, writing, and ongoing
 						projects can be found.
 					</p>
@@ -102,12 +66,7 @@ export default function LinkTree() {
 								<LinkRow link={social.link} alt={social.alt} />
 							</motion.div>
 						))}
-						<div
-							style={{
-								borderTop:
-									"1px solid var(--color-border, var(--hairline-rule))",
-							}}
-						/>
+						<hr className="editorial-divider" />
 					</div>
 				</main>
 			</motion.div>

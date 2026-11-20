@@ -147,45 +147,14 @@ export default function TerminalDemo({ projectName }) {
 	}, [projectName, mode]);
 
 	return (
-		<section
-			style={{
-				marginTop: "3rem",
-				marginBottom: "2rem",
-				border: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-				padding: "1.5rem",
-				backgroundColor: "var(--color-background-surface, #fdffda)",
-			}}
-		>
-			<h2
-				style={{
-					fontFamily:
-						"var(--font-family-heading, 'Newsreader', Georgia, serif)",
-					fontSize: "1.3rem",
-					margin: "0 0 0.5rem",
-					fontWeight: 700,
-					color: "var(--color-text-primary, #38392e)",
-				}}
-			>
-				Interactive Sandbox
-			</h2>
-			<p
-				style={{
-					fontFamily: "var(--font-family-body, 'Noto Serif', Georgia, serif)",
-					color: "var(--color-text-secondary, #7d5d53)",
-					fontStyle: "italic",
-					fontSize: "0.875rem",
-					margin: "0 0 1.5rem",
-				}}
-			>
+		<section className="surface-card mt-8 mb-6 p-6">
+			<h3 className="mb-2">Interactive Sandbox</h3>
+			<p className="caption text-secondary italic mb-4">
 				Simulated terminal environment. Try typing commands like "help".
 			</p>
 			<div
 				ref={terminalRef}
-				style={{
-					height: 320,
-					width: "100%",
-					overflow: "hidden",
-				}}
+				className="terminal-canvas"
 				data-testid="terminal-container"
 			/>
 		</section>

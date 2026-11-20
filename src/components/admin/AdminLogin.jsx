@@ -36,59 +36,32 @@ export default function AdminLogin({ onAuthenticated }) {
 	return (
 		<div className="container-sm py-8">
 			<div className="surface-card">
-				<div style={{ textAlign: "center", marginBottom: "2rem" }}>
+				<div className="text-center mb-8">
 					<span className="overline mb-1">Curator Desk • Security Check</span>
 					<h2 className="mb-2">Ledger Access</h2>
-					<p
-						className="caption text-secondary"
-						style={{ maxWidth: 440, margin: "0 auto", lineHeight: 1.6 }}
-					>
+					<p className="caption text-secondary mx-auto max-w-md">
 						{hasMasterPassword
 							? "Enter the editorial passkey to manage projects, edit metadata, and publish changes to the live portfolio."
 							: "No passkey is configured. Set VITE_ADMIN_PASSWORD_HASH in your .env file, then restart the dev server."}
 					</p>
 				</div>
 
-				{error && (
-					<div
-						className="surface-card mb-4 text-error"
-						style={{
-							padding: "0.75rem 1rem",
-							borderLeft: "4px solid #b71c1c",
-						}}
-					>
-						{error}
-					</div>
-				)}
+				{error && <div className="error-callout mb-4">{error}</div>}
 
 				<form onSubmit={handleLogin} className="flex flex-col gap-4">
 					<div className="form-group">
 						<label htmlFor="admin-passkey" className="form-label">
 							Master Passkey
 						</label>
-						<div
-							style={{
-								position: "relative",
-								display: "flex",
-								alignItems: "center",
-							}}
-						>
-							<Lock
-								size={16}
-								style={{
-									position: "absolute",
-									left: 12,
-									color: "var(--color-text-secondary, #7d5d53)",
-									pointerEvents: "none",
-								}}
-							/>
+						<div className="relative flex items-center">
+							<Lock size={16} className="input-leading-icon" />
 							<input
 								id="admin-passkey"
 								type="password"
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								placeholder="Enter passkey..."
-								style={{ paddingLeft: "2.4rem" }}
+								className="input-with-leading-icon"
 							/>
 						</div>
 					</div>

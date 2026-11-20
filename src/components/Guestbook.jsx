@@ -145,7 +145,7 @@ export default function Guestbook() {
 							required
 						/>
 					</div>
-					<div className="form-group" style={{ width: 120 }}>
+					<div className="form-group w-30">
 						<label htmlFor="guestbook-emoji" className="form-label">
 							Avatar / Emoji
 						</label>
@@ -182,7 +182,7 @@ export default function Guestbook() {
 					/>
 				</div>
 
-				<div style={{ display: "none" }}>
+				<div className="hidden">
 					<label htmlFor="guestbook-honeypot">Do not fill this out</label>
 					<input
 						id="guestbook-honeypot"
@@ -198,8 +198,7 @@ export default function Guestbook() {
 				<button
 					type="submit"
 					disabled={isSubmitting}
-					className="btn btn-primary"
-					style={{ alignSelf: "flex-start" }}
+					className="btn btn-primary self-start"
 				>
 					{isSubmitting ? <span className="spinner" /> : "Sign Guestbook"}
 				</button>
@@ -211,16 +210,12 @@ export default function Guestbook() {
 				{entries.map((entry) => (
 					<li
 						key={entry.id}
-						className="flex gap-3 items-start py-2"
-						style={{
-							borderBottom:
-								"1px solid var(--color-border, var(--hairline-rule))",
-						}}
+						className="flex gap-3 items-start py-2 guestbook-entry"
 					>
 						<span className="avatar">{entry.emoji || "👤"}</span>
 						<div className="flex-1">
 							<div className="flex items-baseline gap-2">
-								<span style={{ fontWeight: 700 }}>{entry.name}</span>
+								<span className="font-bold">{entry.name}</span>
 								{entry.social && (
 									<span className="caption text-secondary">
 										{entry.social.startsWith("@")
@@ -228,10 +223,7 @@ export default function Guestbook() {
 											: `@${entry.social}`}
 									</span>
 								)}
-								<span
-									className="caption text-secondary"
-									style={{ marginLeft: "auto" }}
-								>
+								<span className="caption text-secondary ml-auto">
 									{new Date(entry.date).toLocaleDateString()}
 								</span>
 							</div>

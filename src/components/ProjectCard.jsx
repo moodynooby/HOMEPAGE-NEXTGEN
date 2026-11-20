@@ -70,18 +70,10 @@ export default function ProjectCard({
 					<h5 className="ledger-title">
 						{project.githubName}
 						{health && (
-							<span
-								title={statusLabel}
-								style={{ display: "inline-flex", alignItems: "center" }}
-							>
+							<span title={statusLabel} className="inline-flex items-center">
 								<span
-									style={{
-										width: "8px",
-										height: "8px",
-										borderRadius: "50%",
-										backgroundColor: statusColor,
-										display: "inline-block",
-									}}
+									className="status-dot"
+									style={{ backgroundColor: statusColor }}
 								/>
 							</span>
 						)}
@@ -90,10 +82,8 @@ export default function ProjectCard({
 					<p className="ledger-desc">{project.tagline}</p>
 
 					<div className="ledger-meta">
-						<span style={{ color: "var(--color-accent, #7d5d53)" }}>
-							{project.category}
-						</span>
-						<span style={{ color: "var(--color-text-secondary, #7d5d53)" }}>
+						<span className="text-accent">{project.category}</span>
+						<span className="text-secondary">
 							{year}
 							{project.language ? ` · ${project.language}` : ""}
 						</span>

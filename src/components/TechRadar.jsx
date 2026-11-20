@@ -27,13 +27,10 @@ export default function TechRadar({ onBlipSelect }) {
 	return (
 		<div className="flex flex-col md:flex-row gap-6 items-center w-full">
 			{/* SVG Radar */}
-			<div
-				className="flex-1"
-				style={{ maxWidth: 650, width: "100%", aspectRatio: "1/1" }}
-			>
+			<div className="flex-1 radar-wrapper">
 				<svg
 					viewBox={`0 0 ${RADAR_SIZE} ${RADAR_SIZE}`}
-					style={{ width: "100%", height: "100%", display: "block" }}
+					className="radar-svg"
 					aria-label="Interactive Technology Radar"
 				>
 					{/* Rings */}
@@ -84,7 +81,7 @@ export default function TechRadar({ onBlipSelect }) {
 								fontSize="14"
 								fontWeight="600"
 								letterSpacing="0.08em"
-								style={{ textTransform: "uppercase" }}
+								className="radar-label"
 							>
 								{quad.name}
 							</text>
@@ -102,7 +99,7 @@ export default function TechRadar({ onBlipSelect }) {
 							fontWeight="600"
 							letterSpacing="0.1em"
 							opacity="0.8"
-							style={{ textTransform: "uppercase" }}
+							className="radar-label"
 						>
 							{ring.name}
 						</text>
@@ -130,14 +127,13 @@ export default function TechRadar({ onBlipSelect }) {
 										handleBlipHover(blip);
 									}
 								}}
-								style={{ cursor: "pointer" }}
+								className="radar-blip"
 							>
 								<circle
 									r={isActive ? 12 : 8}
 									fill={RINGS[blip.ring].color}
 									stroke="#fff"
 									strokeWidth={2}
-									style={{ transition: "all 0.2s" }}
 								/>
 								<text
 									y={20}
@@ -159,10 +155,7 @@ export default function TechRadar({ onBlipSelect }) {
 			</div>
 
 			{/* Details Panel */}
-			<div
-				className="surface-card flex-1"
-				style={{ maxWidth: 440, width: "100%", minHeight: 320 }}
-			>
+			<div className="surface-card flex-1 radar-details">
 				{activeBlip ? (
 					<div>
 						<h3 className="mb-1">{activeBlip.name}</h3>
@@ -201,11 +194,7 @@ export default function TechRadar({ onBlipSelect }) {
 										<li key={proj}>
 											<Link
 												to={`/projects/${proj}`}
-												className="caption"
-												style={{
-													textDecoration: "underline",
-													textUnderlineOffset: 3,
-												}}
+												className="caption underline"
 											>
 												{proj}
 											</Link>
@@ -216,14 +205,8 @@ export default function TechRadar({ onBlipSelect }) {
 						)}
 					</div>
 				) : (
-					<div
-						className="flex items-center justify-center"
-						style={{ height: "100%", minHeight: 250 }}
-					>
-						<p
-							className="caption text-secondary"
-							style={{ fontStyle: "italic" }}
-						>
+					<div className="flex items-center justify-center radar-placeholder">
+						<p className="caption text-secondary italic">
 							Hover or click a blip to see details
 						</p>
 					</div>
