@@ -10,7 +10,7 @@ import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Video from "yet-another-react-lightbox/plugins/video";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
-import ButtonAppBar from "@/components/Header";
+import Header from "@/components/Header";
 import { cld, fetchAllMediaByTag } from "@/utils/cloudinary";
 
 export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
@@ -74,7 +74,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 
 	return (
 		<>
-			{showAppBar && <ButtonAppBar />}
+			{showAppBar && <Header />}
 			<div
 				style={{
 					paddingTop: showAppBar ? "5rem" : "1.5rem",

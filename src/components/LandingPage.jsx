@@ -2,7 +2,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Guestbook from "@/components/Guestbook";
-import ButtonAppBar from "@/components/Header";
+import Header from "@/components/Header";
 import ProjectTimeline from "@/components/ProjectTimeline";
 import projectsData from "@/content/projects.json";
 import {
@@ -117,7 +117,7 @@ export default function LandingPage() {
 
 	return (
 		<div style={{ minHeight: "100vh", paddingBottom: "2rem" }}>
-			<ButtonAppBar />
+			<Header />
 
 			<div
 				className="editorial-container"

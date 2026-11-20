@@ -3,10 +3,11 @@ import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import ButtonAppBar from "@/components/Header";
+import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
 import projectsData from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
+import useIsMobile from "@/hooks/useIsMobile";
 import {
 	fetchAddonMetadata,
 	fetchRepoMetadata,
@@ -24,7 +25,7 @@ const byRecencyDesc = (a, b) => {
 };
 
 export default function Projects({ showAppBar = true }) {
-	const [isMobile, setIsMobile] = useState(false);
+	const isMobile = useIsMobile();
 	const [projects, setProjects] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [loadError, setLoadError] = useState("");
@@ -37,14 +38,6 @@ export default function Projects({ showAppBar = true }) {
 	const [selectedLanguages, setSelectedLanguages] = useState([]);
 	const shouldReduceMotion = useReducedMotion();
 	const { bookmarks, isBookmarked } = useBookmarksContext();
-
-	useEffect(() => {
-		const mql = window.matchMedia("(max-width: 899px)");
-		setIsMobile(mql.matches);
-		const handler = (e) => setIsMobile(e.matches);
-		mql.addEventListener?.("change", handler);
-		return () => mql.removeEventListener?.("change", handler);
-	}, []);
 
 	const allLanguages = useMemo(() => {
 		const langs = new Set();
@@ -263,7 +256,7 @@ export default function Projects({ showAppBar = true }) {
 
 	return (
 		<>
-			{showAppBar && <ButtonAppBar />}
+			{showAppBar && <Header />}
 			<div
 				style={{
 					paddingTop: showAppBar ? "3rem" : 0,

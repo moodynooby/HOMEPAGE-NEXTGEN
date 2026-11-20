@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 
-import ButtonAppBar from "@/components/Header";
+import Header from "@/components/Header";
 import socialLinks from "@/content/socialLinks.json";
 import { socialIcons } from "@/utils/socialIcons";
 
@@ -50,7 +50,7 @@ export default function LinkTree() {
 
 	return (
 		<div style={{ minHeight: "100vh" }}>
-			<ButtonAppBar />
+			<Header />
 
 			<motion.div
 				initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}

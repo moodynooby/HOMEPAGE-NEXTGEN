@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import remarkGfm from "remark-gfm";
-import ButtonAppBar from "@/components/Header";
+import Header from "@/components/Header";
 import TerminalDemo from "@/components/TerminalDemo";
 import projects from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
@@ -105,7 +105,7 @@ export default function ProjectDetail() {
 
 	return (
 		<div style={{ minHeight: "100vh" }}>
-			<ButtonAppBar />
+			<Header />
 
 			<motion.div
 				initial={shouldReduceMotion ? false : { opacity: 0 }}

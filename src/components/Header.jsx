@@ -1,9 +1,10 @@
 import { useKBar } from "kbar";
 import { Menu, Search, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import socialLinks from "@/content/socialLinks.json";
+import useIsMobile from "@/hooks/useIsMobile";
 import { NAV_ITEMS } from "@/nav";
 import { socialIcons } from "@/utils/socialIcons";
 
@@ -30,19 +31,10 @@ function SocialLinks() {
 	);
 }
 
-export default function ButtonAppBar() {
+export default function Header() {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-	const [isMobile, setIsMobile] = useState(false);
+	const isMobile = useIsMobile();
 	const { query } = useKBar();
-
-	useEffect(() => {
-		const checkMobile = () => {
-			setIsMobile(window.innerWidth < 900);
-		};
-		checkMobile();
-		window.addEventListener("resize", checkMobile);
-		return () => window.removeEventListener("resize", checkMobile);
-	}, []);
 
 	const currentDate = new Date()
 		.toLocaleDateString("en-US", {
