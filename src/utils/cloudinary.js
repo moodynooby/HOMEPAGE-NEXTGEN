@@ -45,7 +45,6 @@ export async function fetchAllMediaByTag(tag) {
 		fetchResourcesByTag(tag, "video"),
 	]);
 
-	// Merge and sort by creation date (or just return combined)
 	return [...images, ...videos].sort(
 		(a, b) => new Date(b.created_at) - new Date(a.created_at),
 	);

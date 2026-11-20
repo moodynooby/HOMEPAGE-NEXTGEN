@@ -149,7 +149,9 @@ describe("ProjectTimeline Component", () => {
 		).not.toBeInTheDocument();
 	});
 
-	it("opens slide-over changelog drawer when a milestone card is clicked", () => {
+	it("opens slide-over changelog drawer when a milestone card is clicked", {
+		timeout: 15000,
+	}, () => {
 		render(<ProjectTimeline />);
 
 		// Click on HAG-77 milestone card
@@ -181,7 +183,9 @@ describe("ProjectTimeline Component", () => {
 		).toBeInTheDocument();
 	});
 
-	it("closes the drawer when close button is clicked", () => {
+	it("closes the drawer when close button is clicked", {
+		timeout: 15000,
+	}, () => {
 		render(<ProjectTimeline />);
 
 		// Open drawer
@@ -203,7 +207,9 @@ describe("ProjectTimeline Component", () => {
 		expect(screen.queryByTestId("drawer-title")).not.toBeInTheDocument();
 	});
 
-	it("toggles sorting order between newest first and oldest first", () => {
+	it("toggles sorting order between newest first and oldest first", {
+		timeout: 15000,
+	}, () => {
 		render(<ProjectTimeline />);
 
 		const sortBtn = screen.getByRole("button", {

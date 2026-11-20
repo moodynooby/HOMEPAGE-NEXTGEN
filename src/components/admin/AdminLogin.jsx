@@ -33,11 +33,6 @@ export default function AdminLogin({ onAuthenticated }) {
 		setSubmitting(true);
 		try {
 			if (!hasMasterPassword) {
-				if (password.length < 4) {
-					setError("Password must be at least 4 characters.");
-					setSubmitting(false);
-					return;
-				}
 				if (password !== confirmPassword) {
 					setError("Passwords do not match.");
 					setSubmitting(false);

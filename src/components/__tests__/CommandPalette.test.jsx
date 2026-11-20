@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { userEvent } from "@testing-library/user-event";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import CommandPalette from "@/components/CommandPalette";
@@ -21,8 +20,6 @@ describe("CommandPalette", () => {
 	});
 
 	it("opens shortcuts modal on pressing '?'", async () => {
-		const user = userEvent.setup();
-
 		render(
 			<MemoryRouter>
 				<ThemeContextProvider>
@@ -33,17 +30,13 @@ describe("CommandPalette", () => {
 			</MemoryRouter>,
 		);
 
-		// The modal shouldn't be open initially
-		expect(screen.queryByRole("presentation")).not.toBeInTheDocument();
+		expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
 
-		// Trigger '?' keydown on document body
-		await user.keyboard("?");
+		fireEvent.keyDown(window, { key: "?" });
 
 		await waitFor(() => {
-			expect(screen.getByRole("presentation")).toBeInTheDocument();
+			expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
 		});
-
-		expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
 		expect(screen.getByText("Go to Projects")).toBeInTheDocument();
 	});
 });

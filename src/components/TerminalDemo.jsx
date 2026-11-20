@@ -47,24 +47,21 @@ export default function TerminalDemo({ projectName }) {
 		term.write("\r\n$ ");
 
 		let currentInput = "";
-		let cursorOffset = 0; // Offset from the end of the input
+		let cursorOffset = 0;
 
 		term.onData((data) => {
 			const code = data.charCodeAt(0);
 			if (code === 13) {
-				// Enter
 				term.write("\r\n");
 				processCommand(currentInput.trim());
 				currentInput = "";
 				cursorOffset = 0;
 				term.write("$ ");
 			} else if (code === 127 || data === "\x08") {
-				// Backspace
 				if (currentInput.length > 0 && cursorOffset < currentInput.length) {
 					currentInput =
 						currentInput.slice(0, currentInput.length - cursorOffset - 1) +
 						currentInput.slice(currentInput.length - cursorOffset);
-					// Move cursor back, erase, and rewrite the rest
 					term.write("\b \b");
 					if (cursorOffset > 0) {
 						term.write(
@@ -74,7 +71,6 @@ export default function TerminalDemo({ projectName }) {
 					}
 				}
 			} else if (code === 9) {
-				// Tab completion
 				const matches = Object.keys(COMMANDS).filter((cmd) =>
 					cmd.startsWith(currentInput),
 				);
@@ -86,21 +82,17 @@ export default function TerminalDemo({ projectName }) {
 					term.write(`\r\n${matches.join("  ")}\r\n$ ${currentInput}`);
 				}
 			} else if (data === "\x1b[C") {
-				// Right arrow
 				if (cursorOffset > 0) {
 					cursorOffset--;
 					term.write(data);
 				}
 			} else if (data === "\x1b[D") {
-				// Left arrow
 				if (cursorOffset < currentInput.length) {
 					cursorOffset++;
 					term.write(data);
 				}
 			} else if (code < 32 && code !== 27) {
-				// Other control characters ignored (except escape sequences)
 			} else if (code !== 27) {
-				// Printable character
 				if (cursorOffset === 0) {
 					currentInput += data;
 					term.write(data);

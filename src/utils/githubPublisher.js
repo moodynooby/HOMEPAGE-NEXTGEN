@@ -76,7 +76,6 @@ export async function commitProjectsToGitHub({
 		"Content-Type": "application/json",
 	};
 
-	// 1. Fetch current file SHA from GitHub
 	const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
 	const fileResponse = await fetch(getUrl, { headers });
 
@@ -90,17 +89,14 @@ export async function commitProjectsToGitHub({
 		);
 	}
 
-	// 2. Format JSON with tabs matching repo convention
 	const jsonString = `${JSON.stringify(projects, null, "\t")}\n`;
 
-	// Base64 encode UTF-8 string safely
 	const encodedContent = btoa(
 		encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, (_, p1) =>
 			String.fromCharCode(parseInt(p1, 16)),
 		),
 	);
 
-	// 3. PUT file update to GitHub Contents API
 	const payload = {
 		message: commitMessage,
 		content: encodedContent,

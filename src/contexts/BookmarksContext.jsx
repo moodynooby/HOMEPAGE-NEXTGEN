@@ -7,15 +7,14 @@ import {
 	useState,
 } from "react";
 
-const BookmarksContext = createContext(null);
+const BookmarksContext = createContext();
 
 export const BookmarksContextProvider = ({ children }) => {
 	const [bookmarks, setBookmarks] = useState(() => {
 		try {
 			const saved = localStorage.getItem("bookmarked_projects");
 			return saved ? JSON.parse(saved) : [];
-		} catch (error) {
-			console.error("Failed to parse bookmarks from localStorage", error);
+		} catch (_error) {
 			return [];
 		}
 	});
@@ -23,36 +22,26 @@ export const BookmarksContextProvider = ({ children }) => {
 	useEffect(() => {
 		try {
 			localStorage.setItem("bookmarked_projects", JSON.stringify(bookmarks));
-		} catch (error) {
-			console.error("Failed to save bookmarks to localStorage", error);
+		} catch (_error) {
+			// Storage may be unavailable.
 		}
 	}, [bookmarks]);
 
 	const toggleBookmark = useCallback((slug) => {
-		setBookmarks((prev) => {
-			if (prev.includes(slug)) {
-				return prev.filter((s) => s !== slug);
-			}
-			return [...prev, slug];
-		});
+		setBookmarks((prev) =>
+			prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
+		);
 	}, []);
 
 	const isBookmarked = useCallback(
-		(slug) => {
-			return bookmarks.includes(slug);
-		},
+		(slug) => bookmarks.includes(slug),
 		[bookmarks],
 	);
-
-	const clearBookmarks = useCallback(() => {
-		setBookmarks([]);
-	}, []);
 
 	const value = {
 		bookmarks,
 		isBookmarked,
 		toggleBookmark,
-		clearBookmarks,
 	};
 
 	return (
@@ -63,18 +52,15 @@ export const BookmarksContextProvider = ({ children }) => {
 };
 
 BookmarksContextProvider.propTypes = {
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
 };
 
 export const useBookmarksContext = () => {
 	const context = useContext(BookmarksContext);
 	if (!context) {
-		return {
-			bookmarks: [],
-			isBookmarked: () => false,
-			toggleBookmark: () => {},
-			clearBookmarks: () => {},
-		};
+		throw new Error(
+			"useBookmarksContext must be used within a BookmarksContextProvider",
+		);
 	}
 	return context;
 };

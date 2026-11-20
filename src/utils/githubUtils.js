@@ -1,47 +1,30 @@
-/**
- * Fetches repository metadata from GitHub API.
- * Caches results in localStorage for 7 days to avoid rate limits.
- *
- * @param {string} repoName - The name of the repository (moodynooby/{repoName}).
- * @returns {Promise<{created_at: string, pushed_at: string, year: number, language: string, stars: number, forks: number, watchers: number} | null>}
- */
+import { readCacheEntry, writeCacheEntry } from "@/utils/cache";
+
+const GITHUB_BASE = "https://api.github.com";
+const AMO_BASE = "https://addons.mozilla.org";
+
+const emptyRepoMetadata = () => ({
+	created_at: null,
+	pushed_at: null,
+	year: new Date().getFullYear(),
+	language: null,
+	stars: 0,
+	forks: 0,
+	watchers: 0,
+});
+
 export async function fetchRepoMetadata(repoName) {
-	const cacheKey = `github_meta_v3_${repoName}`;
-	const cacheTimeKey = `github_meta_time_v3_${repoName}`;
-	const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+	const key = `github_meta_v3_${repoName}`;
+	const ttl = 7 * 24 * 60 * 60 * 1000;
+
+	const cached = readCacheEntry(key, ttl);
+	if (cached) return cached;
 
 	try {
-		const cachedData = localStorage.getItem(cacheKey);
-		const cachedTime = localStorage.getItem(cacheTimeKey);
-
-		if (cachedData && cachedTime) {
-			const age = Date.now() - parseInt(cachedTime, 10);
-			if (age < CACHE_DURATION) {
-				return JSON.parse(cachedData);
-			}
-		}
-
-		const response = await fetch(
-			`https://api.github.com/repos/moodynooby/${repoName}`,
-		);
-
+		const response = await fetch(`${GITHUB_BASE}/repos/moodynooby/${repoName}`);
 		if (!response.ok) {
 			if (response.status === 403) {
-				console.warn(
-					`GitHub API rate limit exceeded for ${repoName}. Using cached/fallback data.`,
-				);
-				if (cachedData) {
-					return JSON.parse(cachedData);
-				}
-				return {
-					created_at: null,
-					pushed_at: null,
-					year: new Date().getFullYear(),
-					language: null,
-					stars: 0,
-					forks: 0,
-					watchers: 0,
-				};
+				return readCacheEntry(key) || emptyRepoMetadata();
 			}
 			throw new Error(`GitHub API error: ${response.statusText}`);
 		}
@@ -57,66 +40,25 @@ export async function fetchRepoMetadata(repoName) {
 			watchers: data.watchers_count || 0,
 		};
 
-		localStorage.setItem(cacheKey, JSON.stringify(metadata));
-		localStorage.setItem(cacheTimeKey, Date.now().toString());
-
+		writeCacheEntry(key, metadata);
 		return metadata;
-	} catch (error) {
-		const cachedData = localStorage.getItem(cacheKey);
-		if (cachedData) {
-			console.warn(
-				`Using cached data for ${repoName} due to error:`,
-				error.message,
-			);
-			return JSON.parse(cachedData);
-		}
-
-		console.warn(`Failed to fetch metadata for ${repoName}:`, error.message);
-		return {
-			created_at: null,
-			pushed_at: null,
-			year: new Date().getFullYear(),
-			language: null,
-			stars: 0,
-			forks: 0,
-			watchers: 0,
-		};
+	} catch (_error) {
+		return readCacheEntry(key) || emptyRepoMetadata();
 	}
 }
 
-/**
- * Groups projects by their year.
- *
- * @param {Array} projects - List of project objects with year property.
- * @returns {Object} - Projects grouped by year in descending order.
- */
-/**
- * Fetches profile and repository statistics directly from GitHub.
- * The result is cached for 24 hours so the homepage stays lightweight and low-upkeep.
- *
- * @param {string} username - GitHub username.
- * @returns {Promise<{followers: number, following: number, publicRepos: number, totalStars: number, languages: Array<{name: string, count: number}>} | null>}
- */
 export async function fetchUserStats(username) {
-	const cacheKey = `github_user_stats_v1_${username}`;
-	const cacheTimeKey = `github_user_stats_time_v1_${username}`;
-	const CACHE_DURATION = 24 * 60 * 60 * 1000;
+	const key = `github_user_stats_v1_${username}`;
+	const ttl = 24 * 60 * 60 * 1000;
+
+	const cached = readCacheEntry(key, ttl);
+	if (cached) return cached;
 
 	try {
-		const cachedData = localStorage.getItem(cacheKey);
-		const cachedTime = localStorage.getItem(cacheTimeKey);
-		if (
-			cachedData &&
-			cachedTime &&
-			Date.now() - Number(cachedTime) < CACHE_DURATION
-		) {
-			return JSON.parse(cachedData);
-		}
-
 		const [profileResponse, reposResponse] = await Promise.all([
-			fetch(`https://api.github.com/users/${encodeURIComponent(username)}`),
+			fetch(`${GITHUB_BASE}/users/${encodeURIComponent(username)}`),
 			fetch(
-				`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&type=owner`,
+				`${GITHUB_BASE}/users/${encodeURIComponent(username)}/repos?per_page=100&type=owner`,
 			),
 		]);
 
@@ -127,8 +69,9 @@ export async function fetchUserStats(username) {
 		const profile = await profileResponse.json();
 		const repositories = await reposResponse.json();
 		const languageCounts = repositories.reduce((counts, repo) => {
-			if (repo.language)
+			if (repo.language) {
 				counts[repo.language] = (counts[repo.language] || 0) + 1;
+			}
 			return counts;
 		}, {});
 
@@ -146,48 +89,27 @@ export async function fetchUserStats(username) {
 				.map(([name, count]) => ({ name, count })),
 		};
 
-		localStorage.setItem(cacheKey, JSON.stringify(stats));
-		localStorage.setItem(cacheTimeKey, Date.now().toString());
+		writeCacheEntry(key, stats);
 		return stats;
-	} catch (error) {
-		const cachedData = localStorage.getItem(cacheKey);
-		if (cachedData) return JSON.parse(cachedData);
-		console.warn(
-			`Failed to fetch GitHub user stats for ${username}:`,
-			error.message,
-		);
-		return null;
+	} catch (_error) {
+		return readCacheEntry(key) || null;
 	}
 }
 
-/**
- * Fetches public Mozilla Add-ons metadata and caches it for 24 hours.
- * This avoids third-party image badges while keeping extension metrics current.
- *
- * @param {string} addonId - Mozilla Add-ons slug.
- * @returns {Promise<{averageDailyUsers: number, weeklyDownloads: number, rating: number, ratingCount: number, version: string, lastUpdated: string} | null>}
- */
 export async function fetchAddonMetadata(addonId) {
-	const cacheKey = `amo_meta_v1_${addonId}`;
-	const cacheTimeKey = `amo_meta_time_v1_${addonId}`;
-	const CACHE_DURATION = 24 * 60 * 60 * 1000;
+	const key = `amo_meta_v1_${addonId}`;
+	const ttl = 24 * 60 * 60 * 1000;
+
+	const cached = readCacheEntry(key, ttl);
+	if (cached) return cached;
 
 	try {
-		const cachedData = localStorage.getItem(cacheKey);
-		const cachedTime = localStorage.getItem(cacheTimeKey);
-		if (
-			cachedData &&
-			cachedTime &&
-			Date.now() - Number(cachedTime) < CACHE_DURATION
-		) {
-			return JSON.parse(cachedData);
-		}
-
 		const response = await fetch(
-			`https://addons.mozilla.org/api/v5/addons/addon/${encodeURIComponent(addonId)}/`,
+			`${AMO_BASE}/api/v5/addons/addon/${encodeURIComponent(addonId)}/`,
 		);
-		if (!response.ok)
+		if (!response.ok) {
 			throw new Error(`Mozilla Add-ons API error: ${response.status}`);
+		}
 
 		const data = await response.json();
 		const metadata = {
@@ -199,17 +121,10 @@ export async function fetchAddonMetadata(addonId) {
 			lastUpdated: data.last_updated || "",
 		};
 
-		localStorage.setItem(cacheKey, JSON.stringify(metadata));
-		localStorage.setItem(cacheTimeKey, Date.now().toString());
+		writeCacheEntry(key, metadata);
 		return metadata;
-	} catch (error) {
-		const cachedData = localStorage.getItem(cacheKey);
-		if (cachedData) return JSON.parse(cachedData);
-		console.warn(
-			`Failed to fetch Mozilla Add-ons metadata for ${addonId}:`,
-			error.message,
-		);
-		return null;
+	} catch (_error) {
+		return readCacheEntry(key) || null;
 	}
 }
 
@@ -229,34 +144,17 @@ export function groupProjectsByYear(projects) {
 		}, {});
 }
 
-/**
- * Fetches dynamic project health metrics (latest release, open issues, size).
- * Caches results in localStorage for 24 hours to avoid rate limits.
- *
- * @param {string} repoName - The name of the repository (moodynooby/{repoName}).
- * @returns {Promise<{latestRelease: string, openIssues: number, size: number} | null>}
- */
 export async function fetchProjectHealth(repoName) {
-	const cacheKey = `github_health_v1_${repoName}`;
-	const cacheTimeKey = `github_health_time_v1_${repoName}`;
-	const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+	const key = `github_health_v1_${repoName}`;
+	const ttl = 24 * 60 * 60 * 1000;
+
+	const cached = readCacheEntry(key, ttl);
+	if (cached) return cached;
 
 	try {
-		const cachedData = localStorage.getItem(cacheKey);
-		const cachedTime = localStorage.getItem(cacheTimeKey);
-
-		if (cachedData && cachedTime) {
-			const age = Date.now() - parseInt(cachedTime, 10);
-			if (age < CACHE_DURATION) {
-				return JSON.parse(cachedData);
-			}
-		}
-
 		const [repoResponse, releasesResponse] = await Promise.all([
-			fetch(`https://api.github.com/repos/moodynooby/${repoName}`),
-			fetch(
-				`https://api.github.com/repos/moodynooby/${repoName}/releases/latest`,
-			),
+			fetch(`${GITHUB_BASE}/repos/moodynooby/${repoName}`),
+			fetch(`${GITHUB_BASE}/repos/moodynooby/${repoName}/releases/latest`),
 		]);
 
 		let repoData = {};
@@ -284,24 +182,9 @@ export async function fetchProjectHealth(repoName) {
 			pushed_at: repoData.pushed_at || null,
 		};
 
-		localStorage.setItem(cacheKey, JSON.stringify(healthData));
-		localStorage.setItem(cacheTimeKey, Date.now().toString());
-
+		writeCacheEntry(key, healthData);
 		return healthData;
-	} catch (error) {
-		const cachedData = localStorage.getItem(cacheKey);
-		if (cachedData) {
-			console.warn(
-				`Using cached health data for ${repoName} due to error:`,
-				error.message,
-			);
-			return JSON.parse(cachedData);
-		}
-
-		console.warn(
-			`Failed to fetch project health for ${repoName}:`,
-			error.message,
-		);
-		return null;
+	} catch (_error) {
+		return readCacheEntry(key) || null;
 	}
 }

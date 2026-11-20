@@ -14,7 +14,8 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-// Mock entries
+const GUESTBOOK_API = import.meta.env.VITE_GUESTBOOK_API;
+
 const mockEntries = [
 	{
 		id: 1,
@@ -25,59 +26,41 @@ const mockEntries = [
 	},
 ];
 
-// Simple PoW function: hash needs to end with '0'
-async function generateProofOfWork(str) {
-	let nonce = 0;
-	while (true) {
-		const input = `${str}-${nonce}`;
-		// Extremely simple hash for demonstration
-		let hash = 0;
-		for (let i = 0; i < input.length; i++) {
-			const char = input.charCodeAt(i);
-			hash = (hash << 5) - hash + char;
-			hash = hash & hash; // Convert to 32bit integer
-		}
-		if (Math.abs(hash) % 10 === 0) {
-			return { nonce, hash };
-		}
-		nonce++;
-	}
-}
-
 export default function Guestbook() {
 	const [entries, setEntries] = useState([]);
 	const [name, setName] = useState("");
 	const [message, setMessage] = useState("");
 	const [social, setSocial] = useState("");
 	const [emoji, setEmoji] = useState("😀");
-	const [honeypot, setHoneypot] = useState(""); // Honeypot field
+	const [honeypot, setHoneypot] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState("");
 
 	useEffect(() => {
 		const fetchEntries = async () => {
 			try {
-				const apiUrl = import.meta.env.VITE_GUESTBOOK_API;
-				if (apiUrl) {
-					const response = await fetch(apiUrl);
+				if (GUESTBOOK_API) {
+					const response = await fetch(GUESTBOOK_API);
 					if (response.ok) {
-						const data = await response.json();
-						setEntries(data);
+						setEntries(await response.json());
 						return;
 					}
 				}
 			} catch (_err) {
-				console.warn("Failed to fetch from remote API, using local fallback.");
+				// Fall through to the local fallback.
 			}
 
-			// Load entries from localStorage or mock
 			const stored = localStorage.getItem("guestbook_entries");
 			if (stored) {
-				setEntries(JSON.parse(stored));
-			} else {
-				setEntries(mockEntries);
-				localStorage.setItem("guestbook_entries", JSON.stringify(mockEntries));
+				try {
+					setEntries(JSON.parse(stored));
+					return;
+				} catch (_error) {
+					// Fall through to mock data.
+				}
 			}
+			setEntries(mockEntries);
+			localStorage.setItem("guestbook_entries", JSON.stringify(mockEntries));
 		};
 
 		fetchEntries();
@@ -87,10 +70,8 @@ export default function Guestbook() {
 		e.preventDefault();
 		setError("");
 
-		// Honeypot check
 		if (honeypot) {
-			console.warn("Spam bot detected via honeypot.");
-			return; // Silently reject
+			return;
 		}
 
 		if (!name.trim() || !message.trim()) {
@@ -98,7 +79,6 @@ export default function Guestbook() {
 			return;
 		}
 
-		// Rate limiting check
 		const lastSubmit = localStorage.getItem("guestbook_last_submit");
 		if (lastSubmit && Date.now() - Number(lastSubmit) < 60000) {
 			setError("Please wait a minute before posting again.");
@@ -108,9 +88,6 @@ export default function Guestbook() {
 		setIsSubmitting(true);
 
 		try {
-			// PoW Check
-			const pow = await generateProofOfWork(name + message);
-
 			const newEntry = {
 				id: Date.now(),
 				name,
@@ -118,14 +95,12 @@ export default function Guestbook() {
 				social,
 				emoji,
 				date: new Date().toISOString(),
-				pow, // Store proof
 			};
 
 			let isRemoteSuccess = false;
 			try {
-				const apiUrl = import.meta.env.VITE_GUESTBOOK_API;
-				if (apiUrl) {
-					const response = await fetch(apiUrl, {
+				if (GUESTBOOK_API) {
+					const response = await fetch(GUESTBOOK_API, {
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify(newEntry),
@@ -135,23 +110,18 @@ export default function Guestbook() {
 					}
 				}
 			} catch (_err) {
-				console.warn(
-					"Failed to submit to remote API, falling back to local storage.",
-				);
+				// Fall back to local storage.
 			}
 
-			// Fallback or optimistically update UI
-			const updatedEntries = [newEntry, ...entries];
-			setEntries(updatedEntries);
-			if (!isRemoteSuccess || !import.meta.env.VITE_GUESTBOOK_API) {
-				localStorage.setItem(
-					"guestbook_entries",
-					JSON.stringify(updatedEntries),
-				);
-			}
-			localStorage.setItem("guestbook_last_submit", Date.now().toString());
+			setEntries((prevEntries) => {
+				const updated = [newEntry, ...prevEntries];
+				if (!isRemoteSuccess || !GUESTBOOK_API) {
+					localStorage.setItem("guestbook_entries", JSON.stringify(updated));
+				}
+				return updated;
+			});
+			localStorage.setItem("guestbook_last_submit", String(Date.now()));
 
-			// Reset form
 			setName("");
 			setMessage("");
 			setSocial("");
@@ -215,7 +185,6 @@ export default function Guestbook() {
 						required
 					/>
 
-					{/* Honeypot Field - visually hidden */}
 					<Box sx={{ display: "none" }}>
 						<TextField
 							label="Do not fill this out"

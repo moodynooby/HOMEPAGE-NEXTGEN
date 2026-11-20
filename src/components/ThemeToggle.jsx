@@ -17,8 +17,7 @@ import { useState } from "react";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
 export default function ThemeToggle() {
-	const { mode, setThemeMode, highContrast, toggleHighContrast } =
-		useThemeContext();
+	const { mode, setMode, highContrast, toggleHighContrast } = useThemeContext();
 	const [anchorEl, setAnchorEl] = useState(null);
 
 	const handleOpenMenu = (event) => {
@@ -34,7 +33,7 @@ export default function ThemeToggle() {
 			<ToggleButtonGroup
 				value={mode}
 				exclusive
-				onChange={(_, newMode) => newMode && setThemeMode(newMode)}
+				onChange={(_, newMode) => newMode && setMode(newMode)}
 				size="small"
 				sx={{
 					"& .MuiToggleButton-root": {

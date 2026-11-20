@@ -1,13 +1,12 @@
+import { ThemeProvider } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import { createContext, useContext, useEffect, useState } from "react";
+import { getTheme } from "@/theme/theme";
 
 const ThemeContext = createContext();
 
-const getSystemPreference = () => {
-	return window.matchMedia("(prefers-color-scheme: dark)").matches
-		? "dark"
-		: "light";
-};
+const getSystemPreference = () =>
+	window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 
 export const useThemeContext = () => {
 	const context = useContext(ThemeContext);
@@ -22,55 +21,46 @@ export const useThemeContext = () => {
 export const ThemeContextProvider = ({ children }) => {
 	const [mode, setMode] = useState(() => {
 		const savedMode = localStorage.getItem("themeMode");
-		if (savedMode) return savedMode;
-		return "system";
+		return savedMode || "system";
 	});
-
-	const [highContrast, setHighContrast] = useState(() => {
-		return localStorage.getItem("highContrast") === "true";
-	});
+	const [highContrast, setHighContrast] = useState(
+		() => localStorage.getItem("highContrast") === "true",
+	);
+	const [systemMode, setSystemMode] = useState(() => getSystemPreference());
 
 	useEffect(() => {
 		localStorage.setItem("themeMode", mode);
-
-		const effectiveMode = mode === "system" ? getSystemPreference() : mode;
-		document.documentElement.setAttribute("data-theme", effectiveMode);
 	}, [mode]);
 
 	useEffect(() => {
 		localStorage.setItem("highContrast", highContrast);
-		if (highContrast) {
-			document.documentElement.setAttribute("data-high-contrast", "true");
-		} else {
-			document.documentElement.removeAttribute("data-high-contrast");
-		}
+		document.documentElement.toggleAttribute(
+			"data-high-contrast",
+			highContrast,
+		);
 	}, [highContrast]);
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-		const handleChange = (e) => {
-			if (mode === "system") {
-				document.documentElement.setAttribute(
-					"data-theme",
-					e.matches ? "dark" : "light",
-				);
-			}
-		};
+		const handleChange = (event) =>
+			setSystemMode(event.matches ? "dark" : "light");
 		mediaQuery.addEventListener("change", handleChange);
 		return () => mediaQuery.removeEventListener("change", handleChange);
-	}, [mode]);
+	}, []);
+
+	const effectiveMode = mode === "system" ? systemMode : mode;
+	const theme = getTheme(effectiveMode, highContrast);
+
+	useEffect(() => {
+		document.documentElement.setAttribute("data-theme", effectiveMode);
+	}, [effectiveMode]);
 
 	const toggleColorMode = () => {
-		setMode((prevMode) => {
-			if (prevMode === "system") {
-				return getSystemPreference() === "light" ? "dark" : "light";
-			}
-			return prevMode === "light" ? "dark" : "light";
-		});
-	};
-
-	const setThemeMode = (newMode) => {
-		setMode(newMode);
+		if (mode === "system") {
+			setMode(systemMode === "light" ? "dark" : "light");
+		} else {
+			setMode(mode === "light" ? "dark" : "light");
+		}
 	};
 
 	const toggleHighContrast = () => {
@@ -79,15 +69,16 @@ export const ThemeContextProvider = ({ children }) => {
 
 	const value = {
 		mode,
+		setMode,
 		toggleColorMode,
-		setThemeMode,
 		highContrast,
 		toggleHighContrast,
-		setHighContrast,
 	};
 
 	return (
-		<ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+		<ThemeContext.Provider value={value}>
+			<ThemeProvider theme={theme}>{children}</ThemeProvider>
+		</ThemeContext.Provider>
 	);
 };
 

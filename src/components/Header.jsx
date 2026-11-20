@@ -1,10 +1,5 @@
-import EmailIcon from "@mui/icons-material/Email";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import WebIcon from "@mui/icons-material/Web";
 import {
 	AppBar,
 	Box,
@@ -20,30 +15,16 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { useKBar } from "kbar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
 import ThemeToggle from "@/components/ThemeToggle";
 import socialLinks from "@/content/socialLinks.json";
-
-const iconMap = {
-	LinkedIn: LinkedInIcon,
-	GitHub: GitHubIcon,
-	Email: EmailIcon,
-	Instagram: InstagramIcon,
-	"Addons Profile": WebIcon,
-};
-
-const NAV_ITEMS = [
-	{ label: "Home", to: "/" },
-	{ label: "Projects", to: "/projects" },
-	{ label: "Gallery", to: "/gallery" },
-	{ label: "Directory", to: "/links" },
-];
+import { NAV_ITEMS } from "@/nav";
+import { socialIcons } from "@/utils/socialIcons";
 
 function SocialLinks() {
 	return (
 		<Box sx={{ display: "flex", gap: 0.75 }}>
 			{socialLinks.map((social) => {
-				const IconComponent = iconMap[social.alt];
+				const IconComponent = socialIcons[social.alt];
 				if (!IconComponent) return null;
 				return (
 					<IconButton

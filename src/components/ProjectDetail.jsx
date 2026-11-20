@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion, useReducedMotion } from "motion/react";
-import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
@@ -28,6 +27,8 @@ import ButtonAppBar from "@/components/Header";
 import TerminalDemo from "@/components/TerminalDemo";
 import projects from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
+import { readCacheEntry, writeCacheEntry } from "@/utils/cache";
+import { fetchAddonMetadata, fetchRepoMetadata } from "@/utils/githubUtils";
 
 const MONO_STACK =
 	'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace';
@@ -133,18 +134,15 @@ const readmeStyles = (theme) => ({
 	},
 });
 
-export default function ProjectDetail({ limit }) {
+export default function ProjectDetail() {
 	const { projectName } = useParams();
 	const navigate = useNavigate();
 	const abortControllerRef = useRef(null);
 	const shouldReduceMotion = useReducedMotion();
 	const theme = useTheme();
 
-	const displayedProjects = limit ? projects.slice(0, limit) : projects;
-	const currentIndex = displayedProjects.findIndex(
-		(p) => p.githubName === projectName,
-	);
-	const project = displayedProjects[currentIndex];
+	const projectIndex = projects.findIndex((p) => p.githubName === projectName);
+	const project = projectIndex === -1 ? null : projects[projectIndex];
 
 	const [markdown, setMarkdown] = useState("");
 	const [loading, setLoading] = useState(true);
@@ -160,25 +158,15 @@ export default function ProjectDetail({ limit }) {
 			return undefined;
 		}
 
-		if (abortControllerRef.current) {
-			abortControllerRef.current.abort();
-		}
-		abortControllerRef.current = new AbortController();
+		abortControllerRef.current?.abort();
+		const controller = new AbortController();
+		abortControllerRef.current = controller;
+		const { signal } = controller;
 
 		const cacheKey = `readme_${project.githubName}`;
-		const cacheTimeKey = `readme_time_${project.githubName}`;
-		const CACHE_DURATION = 1000 * 60 * 60 * 24;
+		const cachedContent = readCacheEntry(cacheKey, 24 * 60 * 60 * 1000);
 
-		const cachedContent = localStorage.getItem(cacheKey);
-		const cachedTime = localStorage.getItem(cacheTimeKey);
-
-		const { signal } = abortControllerRef.current;
-		const hasFreshCache =
-			cachedContent &&
-			cachedTime &&
-			Date.now() - parseInt(cachedTime, 10) < CACHE_DURATION;
-
-		if (hasFreshCache) {
+		if (cachedContent) {
 			setMarkdown(cachedContent);
 			setLoading(false);
 		} else {
@@ -188,8 +176,7 @@ export default function ProjectDetail({ limit }) {
 				.then((content) => {
 					if (!signal.aborted) {
 						setMarkdown(content);
-						localStorage.setItem(cacheKey, content);
-						localStorage.setItem(cacheTimeKey, Date.now().toString());
+						writeCacheEntry(cacheKey, content);
 						setLoading(false);
 					}
 				})
@@ -201,13 +188,10 @@ export default function ProjectDetail({ limit }) {
 				});
 		}
 
-		import("@/utils/githubUtils")
-			.then(({ fetchAddonMetadata, fetchRepoMetadata }) =>
-				Promise.all([
-					fetchRepoMetadata(project.githubName),
-					project.addonId ? fetchAddonMetadata(project.addonId) : null,
-				]),
-			)
+		Promise.all([
+			fetchRepoMetadata(project.githubName),
+			project.addonId ? fetchAddonMetadata(project.addonId) : null,
+		])
 			.then(([stats, addonStatsResult]) => {
 				if (!signal.aborted) {
 					setRepoStats(stats);
@@ -217,9 +201,7 @@ export default function ProjectDetail({ limit }) {
 			.catch(() => {});
 
 		return () => {
-			if (abortControllerRef.current) {
-				abortControllerRef.current.abort();
-			}
+			controller.abort();
 		};
 	}, [project, navigate]);
 
@@ -230,11 +212,10 @@ export default function ProjectDetail({ limit }) {
 		setSnackbarOpen(true);
 	};
 
-	const prevProject =
-		currentIndex > 0 ? displayedProjects[currentIndex - 1] : null;
+	const prevProject = projectIndex > 0 ? projects[projectIndex - 1] : null;
 	const nextProject =
-		currentIndex < displayedProjects.length - 1
-			? displayedProjects[currentIndex + 1]
+		projectIndex > -1 && projectIndex < projects.length - 1
+			? projects[projectIndex + 1]
 			: null;
 
 	return (
@@ -546,7 +527,3 @@ export default function ProjectDetail({ limit }) {
 		</Box>
 	);
 }
-
-ProjectDetail.propTypes = {
-	limit: PropTypes.number,
-};

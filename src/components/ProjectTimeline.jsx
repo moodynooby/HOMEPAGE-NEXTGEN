@@ -76,7 +76,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Ecosystem-wide chronological release timeline with multi-repo filter chips, keyword search, and slide-over changelog drawer.",
 		badge: "Feature",
-		badgeType: "feature",
 		commit: "6a81bf2",
 		commitUrl: "https://github.com/moodynooby/HOMEPAGE-NEXTGEN/commit/6a81bf2",
 		tags: ["React 19", "MUI 9", "Drawer", "Vitest", "Changelog"],
@@ -98,7 +97,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Tri-tier nutrition lookup cascading from offline SQLite database to Open Food Facts API and AI fallback with Telegram /food command.",
 		badge: "Feature",
-		badgeType: "feature",
 		commit: "0dcd893",
 		commitUrl: "https://github.com/moodynooby/diet-logs/commit/0dcd893",
 		tags: ["Open Food Facts", "AI Fallback", "Telegram Bot", "SQLite"],
@@ -120,7 +118,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Granular per-contact and whitelist override system with live chat header toggle chip and sync storage.",
 		badge: "Major",
-		badgeType: "major",
 		commit: "d34b173",
 		commitUrl:
 			"https://github.com/moodynooby/whatsapp-web-incognito/commit/d34b173",
@@ -144,7 +141,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Full hands-free audio review player with Edge-TTS voice synthesis, question-answer pause gaps, playlist compilation, and FSRS-4 repetition.",
 		badge: "Feature",
-		badgeType: "feature",
 		commit: "85f69a7",
 		commitUrl: "https://github.com/moodynooby/NotebookForge/commit/85f69a7",
 		tags: ["Edge-TTS", "FSRS-4", "FastAPI", "Audio Deck"],
@@ -166,7 +162,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Interactive SVG architecture topology visualizer mapping relationships, contracts, and data pathways across the ecosystem.",
 		badge: "Major",
-		badgeType: "major",
 		commit: "f2098bc",
 		commitUrl: "https://github.com/moodynooby/HOMEPAGE-NEXTGEN/commit/f2098bc",
 		tags: ["SVG Graph", "Cross-App", "Data Flows", "Architecture"],
@@ -188,7 +183,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Side-by-side editing canvas with instant fuzzy-search command palette and keyboard-driven page navigation.",
 		badge: "Enhancement",
-		badgeType: "enhancement",
 		commit: "c901e42",
 		commitUrl: "https://github.com/moodynooby/notion-lite/commit/c901e42",
 		tags: ["Tauri", "KBar", "Split Screen", "Hotkeys"],
@@ -209,7 +203,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Document viewer with interactive synchronized citations jumping directly to highlighted source snippets in original PDFs.",
 		badge: "Feature",
-		badgeType: "feature",
 		commit: "4a9b21e",
 		commitUrl: "https://github.com/moodynooby/NotebookForge/commit/4a9b21e",
 		tags: ["PDF Ingestion", "Live Citations", "NiceGUI"],
@@ -230,7 +223,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Resilient selector fallback algorithm maintaining incognito stealth hooks across WhatsApp Web DOM obfuscation changes.",
 		badge: "Resilience",
-		badgeType: "resilience",
 		commit: "8c21a4f",
 		commitUrl:
 			"https://github.com/moodynooby/whatsapp-web-incognito/commit/8c21a4f",
@@ -252,7 +244,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Automatic streak protection shields and configurable 4-hour morning grace period preventing accidental streak resets.",
 		badge: "Enhancement",
-		badgeType: "enhancement",
 		commit: "5b82c19",
 		commitUrl: "https://github.com/moodynooby/diet-logs/commit/5b82c19",
 		tags: ["Gamification", "SQLite", "Habit Engine"],
@@ -273,7 +264,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Four-quadrant tech radar tracking adoption levels (Adopt, Trial, Assess, Hold) with blip hover highlights and filtering.",
 		badge: "Feature",
-		badgeType: "feature",
 		commit: "d849a21",
 		commitUrl: "https://github.com/moodynooby/HOMEPAGE-NEXTGEN/commit/d849a21",
 		tags: ["Tech Radar", "Thoughtworks Model", "SVG"],
@@ -294,7 +284,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"One-click portable backup system archiving all SQLite documents, embedded assets, and metadata into standard markdown files.",
 		badge: "Feature",
-		badgeType: "feature",
 		commit: "bf83201",
 		commitUrl: "https://github.com/moodynooby/notion-lite/commit/bf83201",
 		tags: ["Rust", "ZIP Archive", "Data Sovereignty"],
@@ -315,7 +304,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"AI-generated conversational deep-dive audio discussions between two synthetic speakers from uploaded research papers.",
 		badge: "Major",
-		badgeType: "major",
 		commit: "7f1c30d",
 		commitUrl: "https://github.com/moodynooby/NotebookForge/commit/7f1c30d",
 		tags: ["Podcast Generator", "Edge-TTS", "Multi-speaker"],
@@ -336,7 +324,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Automated 7-day caloric and macro distribution scheduler compiling categorized grocery lists with supermarket aisle grouping.",
 		badge: "Major",
-		badgeType: "major",
 		commit: "39f82d1",
 		commitUrl: "https://github.com/moodynooby/diet-logs/commit/39f82d1",
 		tags: ["Meal Prep", "Pantry Sync", "PDF Reports"],
@@ -357,7 +344,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Background alarms and scheduling queue enabling deferred message dispatch while keeping browser tabs stealthy.",
 		badge: "Feature",
-		badgeType: "feature",
 		commit: "63df81a",
 		commitUrl:
 			"https://github.com/moodynooby/whatsapp-web-incognito/commit/63df81a",
@@ -379,7 +365,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Reimagined portfolio website designed with classic print editorial typography, high contrast modes, and dynamic GitHub telemetry.",
 		badge: "Initial Release",
-		badgeType: "initial",
 		commit: "90b1c83",
 		commitUrl: "https://github.com/moodynooby/HOMEPAGE-NEXTGEN/commit/90b1c83",
 		tags: ["React 19", "Newsreader", "MUI 9", "Emotion"],
@@ -400,7 +385,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Tree-structured recursive summarization clusters for multi-resolution document synthesis combining BM25 lexical search with dense embeddings.",
 		badge: "Architecture",
-		badgeType: "architecture",
 		commit: "1d38e92",
 		commitUrl: "https://github.com/moodynooby/NotebookForge/commit/1d38e92",
 		tags: ["RAPTOR", "BM25s", "FastEmbed", "Vector DB"],
@@ -421,7 +405,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Hands-free audio logging via Telegram voice notes automatically transcribed and parsed into caloric values.",
 		badge: "Feature",
-		badgeType: "feature",
 		commit: "24ac899",
 		commitUrl: "https://github.com/moodynooby/diet-logs/commit/24ac899",
 		tags: ["Whisper AI", "Telegram Bot", "Voice Note"],
@@ -442,7 +425,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Foundational local research assistant with SSRF-safe YouTube transcript extraction and web document scraper.",
 		badge: "Initial Release",
-		badgeType: "initial",
 		commit: "0a12f55",
 		commitUrl: "https://github.com/moodynooby/NotebookForge/commit/0a12f55",
 		tags: ["FastAPI", "NiceGUI", "SSR Guard"],
@@ -463,7 +445,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Wiki-style [[wikilinks]] resolving in real-time with an interactive 2D node graph illustrating note relationships.",
 		badge: "Major",
-		badgeType: "major",
 		commit: "7a62df8",
 		commitUrl: "https://github.com/moodynooby/notion-lite/commit/7a62df8",
 		tags: ["Backlinks", "Canvas Graph", "TipTap"],
@@ -484,7 +465,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Listens to voice notes without triggering blue microphone playback receipts; blocks background media preloading.",
 		badge: "Privacy",
-		badgeType: "privacy",
 		commit: "e2b490c",
 		commitUrl:
 			"https://github.com/moodynooby/whatsapp-web-incognito/commit/e2b490c",
@@ -505,7 +485,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Initial release of offline SQLite meal logging with daily caloric breakdowns and printable PDF monthly summaries.",
 		badge: "Initial Release",
-		badgeType: "initial",
 		commit: "91a8c3d",
 		commitUrl: "https://github.com/moodynooby/diet-logs/commit/91a8c3d",
 		tags: ["NiceGUI", "SQLite", "ReportLab"],
@@ -526,7 +505,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"High-performance distraction-free desktop editor built on Rust and Tauri with sub-millisecond document loading.",
 		badge: "Initial Release",
-		badgeType: "initial",
 		commit: "3b89110",
 		commitUrl: "https://github.com/moodynooby/notion-lite/commit/3b89110",
 		tags: ["Rust", "Tauri", "React 19", "SQLite"],
@@ -547,7 +525,6 @@ export const TIMELINE_MILESTONES = [
 		summary:
 			"Initial release blocking read receipts, presence broadcast updates, and typing indicators on WhatsApp Web.",
 		badge: "Initial Release",
-		badgeType: "initial",
 		commit: "1f7e42d",
 		commitUrl:
 			"https://github.com/moodynooby/whatsapp-web-incognito/commit/1f7e42d",
@@ -581,7 +558,6 @@ export default function ProjectTimeline() {
 	const [sortDesc, setSortDesc] = useState(true);
 	const [activeMilestone, setActiveMilestone] = useState(null);
 
-	// Project filter chips list with counts
 	const projectFilterOptions = useMemo(() => {
 		const projects = Object.keys(PROJECT_CONFIG);
 		const counts = { All: TIMELINE_MILESTONES.length };
@@ -599,7 +575,6 @@ export default function ProjectTimeline() {
 		];
 	}, []);
 
-	// Filtered & sorted milestones
 	const filteredMilestones = useMemo(() => {
 		const query = searchQuery.trim().toLowerCase();
 		return TIMELINE_MILESTONES.filter((milestone) => {
@@ -658,7 +633,6 @@ export default function ProjectTimeline() {
 				position: "relative",
 			}}
 		>
-			{/* Header */}
 			<Box sx={{ mb: 3 }}>
 				<Box
 					sx={{
@@ -735,7 +709,6 @@ export default function ProjectTimeline() {
 					</Box>
 				</Box>
 
-				{/* Search Field */}
 				<Box sx={{ mb: 2.5 }}>
 					<TextField
 						fullWidth
@@ -780,7 +753,6 @@ export default function ProjectTimeline() {
 					/>
 				</Box>
 
-				{/* Repository Filter Chips */}
 				<Box
 					sx={{
 						display: "flex",
@@ -856,7 +828,6 @@ export default function ProjectTimeline() {
 
 			<Divider sx={{ mb: 3 }} />
 
-			{/* Milestones count summary */}
 			<Box
 				sx={{
 					display: "flex",
@@ -880,7 +851,6 @@ export default function ProjectTimeline() {
 				</Typography>
 			</Box>
 
-			{/* Timeline Content */}
 			{filteredMilestones.length === 0 ? (
 				<Box
 					sx={{
@@ -931,7 +901,6 @@ export default function ProjectTimeline() {
 									sx={{ position: "relative" }}
 									data-testid={`milestone-item-${milestone.id}`}
 								>
-									{/* Timeline Node Marker */}
 									<Box
 										sx={{
 											position: "absolute",
@@ -948,7 +917,6 @@ export default function ProjectTimeline() {
 										}}
 									/>
 
-									{/* Card Item */}
 									<Card
 										variant="outlined"
 										sx={{
@@ -970,7 +938,6 @@ export default function ProjectTimeline() {
 											sx={{ p: 2 }}
 										>
 											<CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
-												{/* Metadata Header */}
 												<Box
 													sx={{
 														display: "flex",
@@ -1037,7 +1004,6 @@ export default function ProjectTimeline() {
 													</Box>
 												</Box>
 
-												{/* Milestone Title */}
 												<Typography
 													variant="h6"
 													component="h4"
@@ -1051,7 +1017,6 @@ export default function ProjectTimeline() {
 													{milestone.title}
 												</Typography>
 
-												{/* Milestone Summary */}
 												<Typography
 													variant="body2"
 													color="text.secondary"
@@ -1060,7 +1025,6 @@ export default function ProjectTimeline() {
 													{milestone.summary}
 												</Typography>
 
-												{/* Footer / Tags & Commit Link */}
 												<Box
 													sx={{
 														display: "flex",
@@ -1120,7 +1084,6 @@ export default function ProjectTimeline() {
 				</Box>
 			)}
 
-			{/* Slide-over Changelog Detail Drawer */}
 			<Drawer
 				anchor="right"
 				open={Boolean(activeMilestone)}
@@ -1144,7 +1107,6 @@ export default function ProjectTimeline() {
 					<Box
 						sx={{ display: "flex", flexDirection: "column", height: "100%" }}
 					>
-						{/* Drawer Top Bar */}
 						<Box
 							sx={{
 								display: "flex",
@@ -1199,7 +1161,6 @@ export default function ProjectTimeline() {
 							</IconButton>
 						</Box>
 
-						{/* Scrollable Body */}
 						<Box sx={{ flex: 1, overflowY: "auto", py: 3 }}>
 							<Typography
 								variant="overline"
@@ -1249,7 +1210,6 @@ export default function ProjectTimeline() {
 								</Box>
 							</Box>
 
-							{/* Commit Link Card */}
 							<Paper
 								variant="outlined"
 								sx={{
@@ -1298,7 +1258,6 @@ export default function ProjectTimeline() {
 								</Button>
 							</Paper>
 
-							{/* Summary */}
 							<Typography
 								variant="subtitle1"
 								sx={{ fontWeight: 600, mb: 0.75 }}
@@ -1313,7 +1272,6 @@ export default function ProjectTimeline() {
 								{activeMilestone.summary}
 							</Typography>
 
-							{/* Detailed Highlights */}
 							<Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
 								Key Deliverables &amp; Changes
 							</Typography>
@@ -1351,7 +1309,6 @@ export default function ProjectTimeline() {
 								))}
 							</Stack>
 
-							{/* Breaking Changes */}
 							{activeMilestone.breakingChanges && (
 								<Paper
 									variant="outlined"
@@ -1377,7 +1334,6 @@ export default function ProjectTimeline() {
 								</Paper>
 							)}
 
-							{/* Tags */}
 							<Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
 								Tags &amp; Capabilities
 							</Typography>
@@ -1394,7 +1350,6 @@ export default function ProjectTimeline() {
 							</Box>
 						</Box>
 
-						{/* Drawer Footer */}
 						<Box
 							sx={{
 								pt: 2,

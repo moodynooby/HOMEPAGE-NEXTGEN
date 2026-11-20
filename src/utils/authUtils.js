@@ -1,59 +1,36 @@
-/**
- * Authentication and Token Management Utilities
- * Uses standard Web Crypto API for secure SHA-256 password hashing.
- */
-
 const STORAGE_KEYS = {
 	PASSWORD_HASH: "editorial_admin_password_hash",
 	AUTH_SESSION: "editorial_admin_session",
 	GITHUB_TOKEN: "editorial_admin_github_token",
 };
 
-/**
- * Computes a SHA-256 hash of a string using Web Crypto API.
- * @param {string} text
- * @returns {Promise<string>} Hex-encoded SHA-256 hash
- */
-export async function hashPassword(text) {
-	if (!text) return "";
+export const MIN_PASSWORD_LENGTH = 4;
+
+async function hashPassword(text) {
 	const encoder = new TextEncoder();
 	const data = encoder.encode(text);
-	const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+	const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 	const hashArray = Array.from(new Uint8Array(hashBuffer));
 	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-/**
- * Checks if a master password has already been set.
- * @returns {boolean}
- */
 export function isPasswordSet() {
 	return Boolean(localStorage.getItem(STORAGE_KEYS.PASSWORD_HASH));
 }
 
-/**
- * Sets or updates the master password.
- * @param {string} password
- * @returns {Promise<void>}
- */
 export async function setMasterPassword(password) {
-	if (!password || password.trim().length < 4) {
-		throw new Error("Password must be at least 4 characters.");
+	if (!password || password.trim().length < MIN_PASSWORD_LENGTH) {
+		throw new Error(
+			`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
+		);
 	}
 	const hash = await hashPassword(password.trim());
 	localStorage.setItem(STORAGE_KEYS.PASSWORD_HASH, hash);
 }
 
-/**
- * Verifies a password against the stored master hash.
- * If no password was ever set, allows setting it or using default.
- * @param {string} password
- * @returns {Promise<boolean>}
- */
 export async function verifyPassword(password) {
 	const storedHash = localStorage.getItem(STORAGE_KEYS.PASSWORD_HASH);
 	if (!storedHash) {
-		// If no password exists yet, set this as the master password
 		await setMasterPassword(password);
 		return true;
 	}

@@ -1,26 +1,14 @@
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
-import EmailIcon from "@mui/icons-material/Email";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import WebIcon from "@mui/icons-material/Web";
 import { Box, Container, Typography } from "@mui/material";
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 
 import ButtonAppBar from "@/components/Header";
 import socialLinks from "@/content/socialLinks.json";
-
-const iconMap = {
-	LinkedIn: LinkedInIcon,
-	GitHub: GitHubIcon,
-	Email: EmailIcon,
-	Instagram: InstagramIcon,
-	"Addons Profile": WebIcon,
-};
+import { socialIcons } from "@/utils/socialIcons";
 
 function LinkRow({ link, alt }) {
-	const IconComponent = iconMap[alt];
+	const IconComponent = socialIcons[alt];
 
 	return (
 		<Box
@@ -119,21 +107,28 @@ export default function LinkTree() {
 					<Typography
 						variant="body1"
 						color="text.secondary"
-						sx={{ fontStyle: "italic", mb: 5 }}
+						sx={{ mb: 8, maxWidth: "46ch" }}
 					>
-						Where else to find me.
+						A simple directory of places where my work, writing, and ongoing
+						projects can be found.
 					</Typography>
 
 					<Box>
-						{socialLinks.map((social) => (
-							<LinkRow key={social.alt} link={social.link} alt={social.alt} />
+						{socialLinks.map((social, index) => (
+							<motion.div
+								key={social.alt}
+								initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={
+									shouldReduceMotion
+										? { duration: 0 }
+										: { delay: index * 0.06, duration: 0.45 }
+								}
+							>
+								<LinkRow link={social.link} alt={social.alt} />
+							</motion.div>
 						))}
-						<Box
-							sx={{
-								borderTop: "1px solid",
-								borderColor: "divider",
-							}}
-						/>
+						<Box sx={{ borderTop: "1px solid", borderColor: "divider" }} />
 					</Box>
 				</Container>
 			</motion.div>

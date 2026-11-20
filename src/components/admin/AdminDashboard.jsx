@@ -55,6 +55,7 @@ import {
 	commitProjectsToGitHub,
 	exportProjectsJson,
 } from "@/utils/githubPublisher";
+import { orderCategories } from "@/utils/projectCategories";
 
 const DRAFT_STORAGE_KEY = "editorial_admin_draft_projects";
 
@@ -70,16 +71,13 @@ export default function AdminDashboard() {
 					return parsed;
 				}
 			}
-		} catch {
-			// Ignore parse error and fallback
-		}
+		} catch {}
 		return defaultProjects;
 	});
 
 	const [searchQuery, setSearchQuery] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("All");
 
-	// Modals
 	const [tokenModalOpen, setTokenModalOpen] = useState(false);
 	const [editModalState, setEditModalState] = useState({
 		open: false,
@@ -98,20 +96,16 @@ export default function AdminDashboard() {
 	const [publishing, setPublishing] = useState(false);
 	const [publishResult, setPublishResult] = useState(null);
 
-	// Notification Snackbar
 	const [toast, setToast] = useState({
 		open: false,
 		message: "",
 		severity: "info",
 	});
 
-	// Save drafts to localStorage whenever projects change
 	useEffect(() => {
 		try {
 			localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(projects));
-		} catch {
-			// Storage full or unavailable
-		}
+		} catch {}
 	}, [projects]);
 
 	const handleLogout = () => {
@@ -123,16 +117,11 @@ export default function AdminDashboard() {
 		setToast({ open: true, message, severity });
 	};
 
-	// Categories list
 	const categories = useMemo(() => {
-		const cats = new Set(["All"]);
-		for (const p of projects) {
-			if (p.category) cats.add(p.category);
-		}
-		return Array.from(cats);
+		const cats = new Set(projects.map((p) => p.category).filter(Boolean));
+		return ["All", ...orderCategories([...cats])];
 	}, [projects]);
 
-	// Filtered view
 	const filteredProjects = useMemo(() => {
 		return projects
 			.map((p, originalIndex) => ({ ...p, originalIndex }))
@@ -148,7 +137,6 @@ export default function AdminDashboard() {
 			});
 	}, [projects, categoryFilter, searchQuery]);
 
-	// Reorder handlers
 	const moveProject = (index, direction) => {
 		const newIndex = index + direction;
 		if (newIndex < 0 || newIndex >= projects.length) return;
@@ -164,7 +152,6 @@ export default function AdminDashboard() {
 		);
 	};
 
-	// Toggle Featured
 	const toggleFeatured = (index) => {
 		setProjects((prev) => {
 			const copy = [...prev];
@@ -178,10 +165,8 @@ export default function AdminDashboard() {
 		);
 	};
 
-	// Save Project (Add / Edit)
 	const handleSaveProject = (savedData) => {
 		if (editModalState.index !== null) {
-			// Update existing
 			setProjects((prev) => {
 				const copy = [...prev];
 				copy[editModalState.index] = savedData;
@@ -189,14 +174,12 @@ export default function AdminDashboard() {
 			});
 			showToast(`Updated "${savedData.githubName}".`, "success");
 		} else {
-			// Add new to top
 			setProjects((prev) => [savedData, ...prev]);
 			showToast(`Added "${savedData.githubName}" to ledger.`, "success");
 		}
 		setEditModalState({ open: false, project: null, index: null });
 	};
 
-	// Delete Project
 	const confirmDelete = () => {
 		if (deleteConfirmState.index !== null) {
 			const name = projects[deleteConfirmState.index]?.githubName;
@@ -208,7 +191,6 @@ export default function AdminDashboard() {
 		setDeleteConfirmState({ open: false, index: null, project: null });
 	};
 
-	// Reset to original
 	const handleResetToDefault = () => {
 		if (
 			window.confirm(
@@ -221,7 +203,6 @@ export default function AdminDashboard() {
 		}
 	};
 
-	// Publish to GitHub
 	const handlePublish = async () => {
 		if (!githubToken) {
 			setPublishModalOpen(false);
@@ -267,7 +248,6 @@ export default function AdminDashboard() {
 		<Box
 			sx={{ minHeight: "100vh", backgroundColor: "background.default", pb: 12 }}
 		>
-			{/* Masthead Header */}
 			<Box
 				sx={{
 					borderBottom: 1,
@@ -381,7 +361,6 @@ export default function AdminDashboard() {
 				</Container>
 			</Box>
 
-			{/* Main Content Area */}
 			<Container maxWidth="lg" sx={{ mt: 5 }}>
 				{!githubToken && (
 					<Alert
@@ -403,7 +382,6 @@ export default function AdminDashboard() {
 					</Alert>
 				)}
 
-				{/* Action Toolbar */}
 				<Box
 					sx={{
 						display: "flex",
@@ -471,7 +449,6 @@ export default function AdminDashboard() {
 						</Button>
 					</Box>
 
-					{/* Search and Category Filter */}
 					<Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
 						<TextField
 							size="small"
@@ -506,7 +483,6 @@ export default function AdminDashboard() {
 					</Box>
 				</Box>
 
-				{/* Broadsheet Projects Table */}
 				<Card
 					elevation={0}
 					sx={{
@@ -827,7 +803,6 @@ export default function AdminDashboard() {
 				</Card>
 			</Container>
 
-			{/* Project Edit / Create Modal */}
 			<ProjectEditModal
 				open={editModalState.open}
 				project={editModalState.project}
@@ -838,7 +813,6 @@ export default function AdminDashboard() {
 				onSave={handleSaveProject}
 			/>
 
-			{/* GitHub Token Config Modal */}
 			<GitHubTokenModal
 				open={tokenModalOpen}
 				onClose={() => setTokenModalOpen(false)}
@@ -847,7 +821,6 @@ export default function AdminDashboard() {
 				}}
 			/>
 
-			{/* Delete Confirmation Dialog */}
 			<Dialog
 				open={deleteConfirmState.open}
 				onClose={() =>
@@ -889,7 +862,6 @@ export default function AdminDashboard() {
 				</DialogActions>
 			</Dialog>
 
-			{/* Publish to GitHub Modal */}
 			<Dialog
 				open={publishModalOpen}
 				onClose={() => {
@@ -1004,7 +976,6 @@ export default function AdminDashboard() {
 				</DialogActions>
 			</Dialog>
 
-			{/* Toast Notifications */}
 			<Snackbar
 				open={toast.open}
 				autoHideDuration={4000}

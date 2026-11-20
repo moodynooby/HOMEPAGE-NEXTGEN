@@ -1,7 +1,8 @@
+import { Theme } from "@astryxdesign/core/theme";
 import isPropValid from "@emotion/is-prop-valid";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline } from "@mui/material";
 import { MotionConfig } from "motion/react";
-import { lazy, StrictMode, Suspense } from "react";
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -16,72 +17,47 @@ import "@fontsource-variable/work-sans";
 import "./index.css";
 import CommandPalette from "@/components/CommandPalette";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import LandingPage from "@/components/LandingPage";
 import RouteLoader from "@/components/RouteLoader";
 import { BookmarksContextProvider } from "@/contexts/BookmarksContext";
-import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
-import { getTheme } from "@/theme/theme";
+import { ThemeContextProvider } from "@/contexts/ThemeContext";
+import { APP_ROUTES } from "@/routes";
+import { defaultThemeSlug, themes } from "./astryx-themes";
 
-const Projects = lazy(() => import("@/components/Projects"));
-const ProjectDetail = lazy(() => import("@/components/ProjectDetail"));
-const LinkTree = lazy(() => import("@/components/LinkTree"));
-const Gallery = lazy(() => import("@/components/Gallery"));
-const AdminDashboard = lazy(() => import("@/components/admin/AdminDashboard"));
-const TechRadar = lazy(() => import("@/components/TechRadar"));
-const ArchitectureTopology = lazy(
-	() => import("@/components/ArchitectureTopology"),
-);
-
-const AppContent = () => {
-	const { mode, highContrast } = useThemeContext();
-	const systemPreference = window.matchMedia("(prefers-color-scheme: dark)")
-		.matches
-		? "dark"
-		: "light";
-	const effectiveMode = mode === "system" ? systemPreference : mode;
-	const theme = getTheme(effectiveMode, highContrast);
-
-	return (
-		<ThemeProvider theme={theme}>
-			<CssBaseline />
+const AppContent = () => (
+	<>
+		<CssBaseline />
+		<BrowserRouter>
 			<MotionConfig isValidProp={isPropValid}>
-				<BrowserRouter>
-					<CommandPalette>
-						<ErrorBoundary>
-							<Suspense fallback={<RouteLoader />}>
-								<Routes>
-									<Route path="/" element={<LandingPage />} />
-									<Route path="/projects" element={<Projects />} />
+				<CommandPalette>
+					<ErrorBoundary>
+						<Suspense fallback={<RouteLoader />}>
+							<Routes>
+								{APP_ROUTES.map((route) => (
 									<Route
-										path="/projects/:projectName"
-										element={<ProjectDetail />}
+										key={route.path}
+										path={route.path}
+										element={route.element}
 									/>
-									<Route path="/links" element={<LinkTree />} />
-									<Route path="/gallery" element={<Gallery />} />
-									<Route path="/admin" element={<AdminDashboard />} />
-									<Route path="/radar" element={<TechRadar />} />
-									<Route
-										path="/architecture"
-										element={<ArchitectureTopology />}
-									/>
-								</Routes>
-							</Suspense>
-						</ErrorBoundary>
-					</CommandPalette>
-				</BrowserRouter>
+								))}
+							</Routes>
+						</Suspense>
+					</ErrorBoundary>
+				</CommandPalette>
 			</MotionConfig>
-		</ThemeProvider>
-	);
-};
+		</BrowserRouter>
+	</>
+);
 
 const root = createRoot(document.getElementById("root"));
 
 root.render(
 	<StrictMode>
-		<ThemeContextProvider>
-			<BookmarksContextProvider>
-				<AppContent />
-			</BookmarksContextProvider>
-		</ThemeContextProvider>
+		<Theme theme={themes[defaultThemeSlug]}>
+			<ThemeContextProvider>
+				<BookmarksContextProvider>
+					<AppContent />
+				</BookmarksContextProvider>
+			</ThemeContextProvider>
+		</Theme>
 	</StrictMode>,
 );

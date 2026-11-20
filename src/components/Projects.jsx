@@ -30,10 +30,20 @@ import {
 	fetchRepoMetadata,
 	groupProjectsByYear,
 } from "@/utils/githubUtils";
+import { orderCategories } from "@/utils/projectCategories";
 
 const MotionBox = motion.create(Box);
 
-export default function Projects({ limit, showAppBar = true }) {
+const queryParamFromLocation = ({ search }) =>
+	new URLSearchParams(search).get("q");
+
+const byRecencyDesc = (a, b) => {
+	const dateB = b.pushed_at ? new Date(b.pushed_at) : new Date(b.year, 0, 1);
+	const dateA = a.pushed_at ? new Date(a.pushed_at) : new Date(a.year, 0, 1);
+	return dateB - dateA;
+};
+
+export default function Projects({ showAppBar = true }) {
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 	const [projects, setProjects] = useState([]);
@@ -41,10 +51,9 @@ export default function Projects({ limit, showAppBar = true }) {
 	const [loadError, setLoadError] = useState("");
 	const location = useLocation();
 	const [activeCategory, setActiveCategory] = useState("All");
-	const [searchQuery, setSearchQuery] = useState(() => {
-		const params = new URLSearchParams(location.search);
-		return params.get("q") || "";
-	});
+	const [searchQuery, setSearchQuery] = useState(
+		() => queryParamFromLocation(location) || "",
+	);
 	const [sortBy, setSortBy] = useState("Recently Updated");
 	const [selectedLanguages, setSelectedLanguages] = useState([]);
 	const shouldReduceMotion = useReducedMotion();
@@ -54,22 +63,21 @@ export default function Projects({ limit, showAppBar = true }) {
 		const langs = new Set();
 		for (const p of projects) {
 			if (p.language) langs.add(p.language);
-			if (p.tags && Array.isArray(p.tags)) {
+			if (Array.isArray(p.tags)) {
 				for (const tag of p.tags) {
 					langs.add(tag);
 				}
 			}
 		}
-		return Array.from(langs).sort();
+		return [...langs].sort();
 	}, [projects]);
 
 	useEffect(() => {
-		const params = new URLSearchParams(location.search);
-		const q = params.get("q");
+		const q = queryParamFromLocation(location);
 		if (q !== null) {
 			setSearchQuery(q);
 		}
-	}, [location.search]);
+	}, [location]);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -94,22 +102,13 @@ export default function Projects({ limit, showAppBar = true }) {
 						};
 					}),
 				);
-				const sortedProjects = projectsWithMetadata.sort((a, b) => {
-					const dateB = b.pushed_at
-						? new Date(b.pushed_at)
-						: new Date(b.year, 0, 1);
-					const dateA = a.pushed_at
-						? new Date(a.pushed_at)
-						: new Date(a.year, 0, 1);
-					return dateB - dateA;
-				});
+				const sortedProjects = projectsWithMetadata.sort(byRecencyDesc);
 
 				if (isMounted) {
-					setProjects(limit ? sortedProjects.slice(0, limit) : sortedProjects);
+					setProjects(sortedProjects);
 					setLoadError("");
 				}
-			} catch (error) {
-				console.error("Unable to load projects", error);
+			} catch (_error) {
 				if (isMounted) {
 					setLoadError("Projects could not be loaded. Please try again.");
 				}
@@ -122,7 +121,7 @@ export default function Projects({ limit, showAppBar = true }) {
 		return () => {
 			isMounted = false;
 		};
-	}, [limit]);
+	}, []);
 
 	if (loading) {
 		return (
@@ -174,18 +173,10 @@ export default function Projects({ limit, showAppBar = true }) {
 		acc[project.category] = (acc[project.category] || 0) + 1;
 		return acc;
 	}, {});
-	const categoryOrder = [
-		"Web App",
-		"Browser Extension",
-		"Game",
-		"AI Tool",
-		"Computer Vision",
+	const dataCategories = [
+		...new Set(projects.map((p) => p.category).filter(Boolean)),
 	];
-	const categories = [
-		"All",
-		"Bookmarked",
-		...categoryOrder.filter((category) => categoryCounts[category]),
-	];
+	const categories = ["All", "Bookmarked", ...orderCategories(dataCategories)];
 
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 	const matchesQuery = (project) =>
@@ -222,15 +213,8 @@ export default function Projects({ limit, showAppBar = true }) {
 				return (b.year || 0) - (a.year || 0);
 			case "Year (Oldest)":
 				return (a.year || 0) - (b.year || 0);
-			default: {
-				const dateB = b.pushed_at
-					? new Date(b.pushed_at)
-					: new Date(b.year, 0, 1);
-				const dateA = a.pushed_at
-					? new Date(a.pushed_at)
-					: new Date(a.year, 0, 1);
-				return dateB - dateA;
-			}
+			default:
+				return byRecencyDesc(a, b);
 		}
 	});
 
@@ -400,7 +384,7 @@ export default function Projects({ limit, showAppBar = true }) {
 									} else if (category === "Bookmarked") {
 										count = bookmarks.length;
 									} else {
-										count = categoryCounts[category];
+										count = categoryCounts[category] || 0;
 									}
 									const label =
 										category === "Bookmarked"
@@ -534,7 +518,7 @@ export default function Projects({ limit, showAppBar = true }) {
 													year={year}
 												/>
 											))}
-										</Box>{" "}
+										</Box>
 									</Box>
 								))
 							) : (
@@ -560,6 +544,5 @@ export default function Projects({ limit, showAppBar = true }) {
 }
 
 Projects.propTypes = {
-	limit: PropTypes.number,
 	showAppBar: PropTypes.bool,
 };

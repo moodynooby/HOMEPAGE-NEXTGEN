@@ -7,14 +7,12 @@ import {
 	Email,
 	FilterList,
 	GitHub,
-	Home,
 	Info,
 	Keyboard,
 	Language,
 	LinkedIn,
 	Link as LinkIcon,
 	Lock,
-	Person,
 } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -37,13 +35,22 @@ import {
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import socialLinks from "@/content/socialLinks.json";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { NAV_ITEMS } from "@/nav";
+
+const socialByAlt = Object.fromEntries(
+	socialLinks.map((entry) => [entry.alt, entry]),
+);
+const socialEmail = socialByAlt.Email?.link.replace(/^mailto:/, "");
+const socialGithub = socialByAlt.GitHub?.link;
+const socialLinkedIn = socialByAlt.LinkedIn?.link;
+const socialAddons = socialByAlt["Addons Profile"]?.link;
 
 export default function CommandPalette({ children }) {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { setThemeMode } = useThemeContext();
+	const { setMode } = useThemeContext();
 	const theme = useTheme();
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
@@ -65,64 +72,41 @@ export default function CommandPalette({ children }) {
 		if (location.pathname !== "/") {
 			navigate("/");
 			setTimeout(() => {
-				const element = document.getElementById(sectionId);
-				if (element) {
-					element.scrollIntoView({ behavior: "smooth" });
-				}
+				document
+					.getElementById(sectionId)
+					?.scrollIntoView({ behavior: "smooth" });
 			}, 100);
 		} else {
-			const element = document.getElementById(sectionId);
-			if (element) {
-				element.scrollIntoView({ behavior: "smooth" });
-			}
+			document
+				.getElementById(sectionId)
+				?.scrollIntoView({ behavior: "smooth" });
 		}
 	};
 
-	const copyToClipboard = (text, _message) => {
-		navigator.clipboard.writeText(text);
-		// Assuming there is some global notification system or simple alert
-		// alert(message);
+	const copyToClipboard = (text) => {
+		navigator.clipboard?.writeText(text);
 	};
 
+	const navActions = NAV_ITEMS.map((item) => {
+		const Icon = item.icon;
+		return {
+			id: `nav-${item.to}`,
+			name: item.label,
+			shortcut: item.shortcut ? [item.shortcut] : [],
+			keywords: item.keywords,
+			perform: () => navigate(item.to),
+			icon: <Icon />,
+		};
+	});
+
 	const actions = [
-		{
-			id: "home",
-			name: "Home",
-			shortcut: ["h"],
-			keywords: "go-home",
-			perform: () => navigate("/"),
-			icon: <Home />,
-		},
-		{
-			id: "projects",
-			name: "Projects",
-			shortcut: ["p"],
-			keywords: "go-projects",
-			perform: () => navigate("/projects"),
-			icon: <AccountTree />,
-		},
-		{
-			id: "profile",
-			name: "Profile / Links",
-			shortcut: ["l"],
-			keywords: "go-links-profile",
-			perform: () => navigate("/links"),
-			icon: <Person />,
-		},
-		{
-			id: "gallery",
-			name: "Media Gallery",
-			shortcut: ["g"],
-			keywords: "go-gallery-photos-videos",
-			perform: () => navigate("/gallery"),
-			icon: <Collections />,
-		},
+		...navActions,
 		{
 			id: "theme-light",
 			name: "Theme: Light",
 			shortcut: ["t", "l"],
 			keywords: "theme-light-mode",
-			perform: () => setThemeMode("light"),
+			perform: () => setMode("light"),
 			icon: <Brightness7 />,
 		},
 		{
@@ -130,7 +114,7 @@ export default function CommandPalette({ children }) {
 			name: "Theme: Dark",
 			shortcut: ["t", "d"],
 			keywords: "theme-dark-mode",
-			perform: () => setThemeMode("dark"),
+			perform: () => setMode("dark"),
 			icon: <Brightness4 />,
 		},
 		{
@@ -138,7 +122,7 @@ export default function CommandPalette({ children }) {
 			name: "Theme: System",
 			shortcut: ["t", "s"],
 			keywords: "theme-system-auto",
-			perform: () => setThemeMode("system"),
+			perform: () => setMode("system"),
 			icon: <BrightnessAuto />,
 		},
 		{
@@ -195,15 +179,14 @@ export default function CommandPalette({ children }) {
 			id: "copy-link",
 			name: "Copy Portfolio Link",
 			keywords: "copy link url share",
-			perform: () =>
-				copyToClipboard(window.location.origin, "Portfolio link copied!"),
+			perform: () => copyToClipboard(window.location.origin),
 			icon: <LinkIcon />,
 		},
 		{
 			id: "copy-email",
 			name: "Copy Email",
 			keywords: "copy email contact",
-			perform: () => copyToClipboard("doshimanas27@gmail.com", "Email copied!"),
+			perform: () => copyToClipboard(socialEmail),
 			icon: <Email />,
 		},
 		{
@@ -232,8 +215,7 @@ export default function CommandPalette({ children }) {
 			name: "GitHub Profile",
 			shortcut: ["g"],
 			keywords: "external-github",
-			perform: () =>
-				window.open("https://github.com/moodynooby", "_blank", "noopener"),
+			perform: () => window.open(socialGithub, "_blank", "noopener"),
 			icon: <GitHub />,
 		},
 		{
@@ -241,12 +223,7 @@ export default function CommandPalette({ children }) {
 			name: "LinkedIn Profile",
 			shortcut: ["i"],
 			keywords: "external-linkedin",
-			perform: () =>
-				window.open(
-					"https://www.linkedin.com/in/manas-doshi-644751363",
-					"_blank",
-					"noopener",
-				),
+			perform: () => window.open(socialLinkedIn, "_blank", "noopener"),
 			icon: <LinkedIn />,
 		},
 		{
@@ -254,12 +231,7 @@ export default function CommandPalette({ children }) {
 			name: "Mozilla Add-ons Profile",
 			shortcut: ["a"],
 			keywords: "external-mozilla-addons",
-			perform: () =>
-				window.open(
-					"https://addons.mozilla.org/en-US/firefox/user/17859963/",
-					"_blank",
-					"noopener",
-				),
+			perform: () => window.open(socialAddons, "_blank", "noopener"),
 			icon: <Language />,
 		},
 	];

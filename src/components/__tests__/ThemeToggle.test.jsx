@@ -9,7 +9,7 @@ vi.mock("@/contexts/ThemeContext", () => ({
 }));
 
 describe("ThemeToggle", () => {
-	const mockSetThemeMode = vi.fn();
+	const mockSetMode = vi.fn();
 	const mockToggleHighContrast = vi.fn();
 
 	beforeEach(() => {
@@ -19,67 +19,63 @@ describe("ThemeToggle", () => {
 	it("renders with light mode selected", () => {
 		useThemeContext.mockReturnValue({
 			mode: "light",
-			setThemeMode: mockSetThemeMode,
+			setMode: mockSetMode,
 			highContrast: false,
 			toggleHighContrast: mockToggleHighContrast,
 		});
 
 		render(<ThemeToggle />);
 
-		const lightButton = screen.getByLabelText("Use light theme");
-		expect(lightButton).toHaveAttribute("aria-pressed", "true");
+		expect(screen.getByLabelText("Use light theme")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		);
 	});
 
 	it("renders with dark mode selected", () => {
 		useThemeContext.mockReturnValue({
 			mode: "dark",
-			setThemeMode: mockSetThemeMode,
+			setMode: mockSetMode,
 			highContrast: false,
 			toggleHighContrast: mockToggleHighContrast,
 		});
 
 		render(<ThemeToggle />);
 
-		const darkButton = screen.getByLabelText("Use dark theme");
-		expect(darkButton).toHaveAttribute("aria-pressed", "true");
+		expect(screen.getByLabelText("Use dark theme")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		);
 	});
 
-	it("calls setThemeMode when clicking a different mode", () => {
+	it("calls setMode when clicking a different mode", () => {
 		useThemeContext.mockReturnValue({
 			mode: "light",
-			setThemeMode: mockSetThemeMode,
+			setMode: mockSetMode,
 			highContrast: false,
 			toggleHighContrast: mockToggleHighContrast,
 		});
 
 		render(<ThemeToggle />);
 
-		const darkButton = screen.getByLabelText("Use dark theme");
-		fireEvent.click(darkButton);
+		fireEvent.click(screen.getByLabelText("Use dark theme"));
 
-		expect(mockSetThemeMode).toHaveBeenCalledWith("dark");
+		expect(mockSetMode).toHaveBeenCalledWith("dark");
 	});
 
 	it("opens settings menu and toggles high contrast", () => {
 		useThemeContext.mockReturnValue({
 			mode: "system",
-			setThemeMode: mockSetThemeMode,
+			setMode: mockSetMode,
 			highContrast: false,
 			toggleHighContrast: mockToggleHighContrast,
 		});
 
 		render(<ThemeToggle />);
 
-		// Open menu
-		const settingsButton = screen.getByLabelText("Theme settings");
-		fireEvent.click(settingsButton);
+		fireEvent.click(screen.getByLabelText("Theme settings"));
+		fireEvent.click(screen.getByText("High Contrast"));
 
-		// Check that High Contrast option exists
-		const highContrastItem = screen.getByText("High Contrast");
-		expect(highContrastItem).toBeInTheDocument();
-
-		// Toggle
-		fireEvent.click(highContrastItem);
 		expect(mockToggleHighContrast).toHaveBeenCalledTimes(1);
 	});
 });

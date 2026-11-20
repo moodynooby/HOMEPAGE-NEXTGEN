@@ -23,17 +23,20 @@ import {
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { fetchGitHubRepoDetails } from "@/utils/githubPublisher";
+import { PROJECT_CATEGORIES } from "@/utils/projectCategories";
 
-const CATEGORIES = [
-	"Web App",
-	"Browser Extension",
-	"CLI / Tool",
-	"Library",
-	"Service",
-	"Design System",
-	"Mobile App",
-	"Other",
-];
+const CATEGORIES = [...PROJECT_CATEGORIES, "Other"];
+
+const EMPTY_FORM = {
+	githubName: "",
+	tagline: "",
+	category: "Web App",
+	githubImg: "",
+	githubContentPath: "",
+	featured: false,
+	addonId: "",
+	chromeStatsId: "",
+};
 
 export default function ProjectEditModal({
 	open,
@@ -44,45 +47,28 @@ export default function ProjectEditModal({
 }) {
 	const isEdit = Boolean(project?.githubName);
 
-	const [formData, setFormData] = useState({
-		githubName: "",
-		tagline: "",
-		category: "Web App",
-		githubImg: "",
-		githubContentPath: "",
-		featured: false,
-		addonId: "",
-		chromeStatsId: "",
-	});
+	const [formData, setFormData] = useState(EMPTY_FORM);
 
 	const [fetchingGithub, setFetchingGithub] = useState(false);
 	const [fetchMessage, setFetchMessage] = useState(null);
 	const [error, setError] = useState("");
 
 	useEffect(() => {
-		if (project) {
-			setFormData({
-				githubName: project.githubName || "",
-				tagline: project.tagline || "",
-				category: project.category || "Web App",
-				githubImg: project.githubImg || "",
-				githubContentPath: project.githubContentPath || "",
-				featured: Boolean(project.featured),
-				addonId: project.addonId || "",
-				chromeStatsId: project.chromeStatsId || "",
-			});
-		} else {
-			setFormData({
-				githubName: "",
-				tagline: "",
-				category: "Web App",
-				githubImg: "",
-				githubContentPath: "",
-				featured: false,
-				addonId: "",
-				chromeStatsId: "",
-			});
-		}
+		setFormData(
+			project
+				? {
+						...EMPTY_FORM,
+						githubName: project.githubName || "",
+						tagline: project.tagline || "",
+						category: project.category || "Web App",
+						githubImg: project.githubImg || "",
+						githubContentPath: project.githubContentPath || "",
+						featured: Boolean(project.featured),
+						addonId: project.addonId || "",
+						chromeStatsId: project.chromeStatsId || "",
+					}
+				: EMPTY_FORM,
+		);
 		setFetchMessage(null);
 		setError("");
 	}, [project]);
@@ -423,7 +409,6 @@ export default function ProjectEditModal({
 						</Grid>
 					</Grid>
 
-					{/* Live Monograph Card Preview */}
 					<Box sx={{ mt: 4, pt: 3, borderTop: 1, borderColor: "divider" }}>
 						<Typography
 							variant="overline"
