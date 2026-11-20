@@ -1,4 +1,9 @@
-import { RestartAlt, Search } from "@mui/icons-material";
+import { motion, useReducedMotion } from "motion/react";
+import PropTypes from "prop-types";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
+import ButtonAppBar from "@/components/Header";
+import ProjectCard from "@/components/ProjectCard";
 import {
 	Alert,
 	Badge,
@@ -16,13 +21,8 @@ import {
 	Typography,
 	useMediaQuery,
 	useTheme,
-} from "@mui/material";
-import { motion, useReducedMotion } from "motion/react";
-import PropTypes from "prop-types";
-import { useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
-import ButtonAppBar from "@/components/Header";
-import ProjectCard from "@/components/ProjectCard";
+} from "@/components/ui";
+import { RestartAlt, Search } from "@/components/ui/icons";
 import projectsData from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import {

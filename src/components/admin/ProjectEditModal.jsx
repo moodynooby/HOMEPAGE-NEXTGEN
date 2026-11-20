@@ -1,4 +1,5 @@
-import { AutoFixHigh, Close, Star, StarBorder } from "@mui/icons-material";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import {
 	Alert,
 	Box,
@@ -19,9 +20,8 @@ import {
 	Switch,
 	TextField,
 	Typography,
-} from "@mui/material";
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+} from "@/components/ui";
+import { AutoFixHigh, Close, Star, StarBorder } from "@/components/ui/icons";
 import { fetchGitHubRepoDetails } from "@/utils/githubPublisher";
 import { PROJECT_CATEGORIES } from "@/utils/projectCategories";
 

@@ -1,5 +1,4 @@
-import CloseIcon from "@mui/icons-material/Close";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { useCallback, useMemo, useState } from "react";
 import {
 	Box,
 	Button,
@@ -10,8 +9,11 @@ import {
 	Stack,
 	Typography,
 	useTheme,
-} from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+} from "@/components/ui";
+import {
+	Close as CloseIcon,
+	RestartAlt as RestartAltIcon,
+} from "@/components/ui/icons";
 
 export const ECOSYSTEM_NODES = [
 	{

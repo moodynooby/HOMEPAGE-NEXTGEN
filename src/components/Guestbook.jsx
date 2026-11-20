@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
 	Avatar,
 	Box,
@@ -11,8 +12,7 @@ import {
 	Stack,
 	TextField,
 	Typography,
-} from "@mui/material";
-import { useEffect, useState } from "react";
+} from "@/components/ui";
 
 const GUESTBOOK_API = import.meta.env.VITE_GUESTBOOK_API;
 

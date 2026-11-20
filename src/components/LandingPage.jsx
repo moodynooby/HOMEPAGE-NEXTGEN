@@ -1,11 +1,3 @@
-import {
-	Box,
-	Button,
-	CircularProgress,
-	Container,
-	Divider,
-	Typography,
-} from "@mui/material";
 import { motion, useReducedMotion } from "motion/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -14,6 +6,14 @@ import Guestbook from "@/components/Guestbook";
 import ButtonAppBar from "@/components/Header";
 import ProjectTimeline from "@/components/ProjectTimeline";
 import TechRadar from "@/components/TechRadar";
+import {
+	Box,
+	Button,
+	CircularProgress,
+	Container,
+	Divider,
+	Typography,
+} from "@/components/ui";
 import projectsData from "@/content/projects.json";
 import {
 	fetchAddonMetadata,

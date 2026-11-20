@@ -21,9 +21,21 @@ export default defineConfig({
 		}),
 	],
 	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "./src"),
-		},
+		alias: [
+			{ find: "@", replacement: path.resolve(__dirname, "./src") },
+			{
+				find: "@mui/material/styles",
+				replacement: path.resolve(__dirname, "./src/components/ui/styles.js"),
+			},
+			{
+				find: "@mui/material",
+				replacement: path.resolve(__dirname, "./src/components/ui/index.jsx"),
+			},
+			{
+				find: /^@mui\/icons-material(\/.*)?$/,
+				replacement: path.resolve(__dirname, "./src/components/ui/icons.jsx"),
+			},
+		],
 	},
 	server: {
 		host: true,
@@ -41,9 +53,6 @@ export default defineConfig({
 			output: {
 				manualChunks: (id) => {
 					if (id.includes("node_modules")) {
-						if (id.includes("@mui") || id.includes("@emotion")) {
-							return "vendor-mui";
-						}
 						if (id.includes("@cloudinary")) {
 							return "vendor-cloudinary";
 						}

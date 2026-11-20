@@ -24,7 +24,7 @@ Run `pnpm biome check` on changed files and `pnpm build` to verify any non-trivi
 
 ## Architecture
 
-**Stack:** React 19 + Vite 8 SPA, React Router 7, MUI 9 + Emotion, `motion` (animations), `kbar` (command palette), `react-markdown` + `remark-gfm` (README rendering), Cloudinary (gallery assets), `yet-another-react-lightbox` (gallery lightbox), React Compiler (via `babel-plugin-react-compiler`).
+**Stack:** React 19 + Vite 8 SPA, React Router 7, Astryx Design System (`@astryxdesign/core`, `@astryxdesign/theme-neutral`), `lucide-react`, `motion` (animations), `kbar` (command palette), `react-markdown` + `remark-gfm` (README rendering), Cloudinary (gallery assets), `yet-another-react-lightbox` (gallery lightbox), React Compiler (via `babel-plugin-react-compiler`).
 
 - Path alias: `@/*` → `src/*` (see `vite.config.js`, `jsconfig.json`)
 - Routing: `BrowserRouter` in `src/main.jsx`; routes are lazy-loaded behind `Suspense` + `RouteLoader`

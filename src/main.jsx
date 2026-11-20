@@ -1,6 +1,4 @@
 import { Theme } from "@astryxdesign/core/theme";
-import isPropValid from "@emotion/is-prop-valid";
-import { CssBaseline } from "@mui/material";
 import { MotionConfig } from "motion/react";
 import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
@@ -21,38 +19,35 @@ import RouteLoader from "@/components/RouteLoader";
 import { BookmarksContextProvider } from "@/contexts/BookmarksContext";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
 import { APP_ROUTES } from "@/routes";
-import { defaultThemeSlug, themes } from "./astryx-themes";
+import { editorialTheme } from "@/theme/astryxTheme";
 
 const AppContent = () => (
-	<>
-		<CssBaseline />
-		<BrowserRouter>
-			<MotionConfig isValidProp={isPropValid}>
-				<CommandPalette>
-					<ErrorBoundary>
-						<Suspense fallback={<RouteLoader />}>
-							<Routes>
-								{APP_ROUTES.map((route) => (
-									<Route
-										key={route.path}
-										path={route.path}
-										element={route.element}
-									/>
-								))}
-							</Routes>
-						</Suspense>
-					</ErrorBoundary>
-				</CommandPalette>
-			</MotionConfig>
-		</BrowserRouter>
-	</>
+	<BrowserRouter>
+		<MotionConfig>
+			<CommandPalette>
+				<ErrorBoundary>
+					<Suspense fallback={<RouteLoader />}>
+						<Routes>
+							{APP_ROUTES.map((route) => (
+								<Route
+									key={route.path}
+									path={route.path}
+									element={route.element}
+								/>
+							))}
+						</Routes>
+					</Suspense>
+				</ErrorBoundary>
+			</CommandPalette>
+		</MotionConfig>
+	</BrowserRouter>
 );
 
 const root = createRoot(document.getElementById("root"));
 
 root.render(
 	<StrictMode>
-		<Theme theme={themes[defaultThemeSlug]}>
+		<Theme theme={editorialTheme}>
 			<ThemeContextProvider>
 				<BookmarksContextProvider>
 					<AppContent />

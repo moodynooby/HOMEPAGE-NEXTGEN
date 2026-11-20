@@ -1,11 +1,12 @@
+import { motion, useReducedMotion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
+import remarkGfm from "remark-gfm";
+import ButtonAppBar from "@/components/Header";
+import TerminalDemo from "@/components/TerminalDemo";
 import {
-	ArrowBack,
-	ArrowForward,
-	Bookmark,
-	BookmarkBorder,
-	Share,
-} from "@mui/icons-material";
-import {
+	alpha,
 	Box,
 	Button,
 	Container,
@@ -15,16 +16,15 @@ import {
 	Snackbar,
 	Tooltip,
 	Typography,
-} from "@mui/material";
-import { alpha, useTheme } from "@mui/material/styles";
-import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
-import remarkGfm from "remark-gfm";
-
-import ButtonAppBar from "@/components/Header";
-import TerminalDemo from "@/components/TerminalDemo";
+	useTheme,
+} from "@/components/ui";
+import {
+	ArrowBack,
+	ArrowForward,
+	Bookmark,
+	BookmarkBorder,
+	Share,
+} from "@/components/ui/icons";
 import projects from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import { readCacheEntry, writeCacheEntry } from "@/utils/cache";

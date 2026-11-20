@@ -1,6 +1,6 @@
-import { ThemeProvider } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import { createContext, useContext, useEffect, useState } from "react";
+import { ThemeProvider } from "@/components/ui/styles";
 import { getTheme } from "@/theme/theme";
 
 const ThemeContext = createContext();
@@ -11,9 +11,13 @@ const getSystemPreference = () =>
 export const useThemeContext = () => {
 	const context = useContext(ThemeContext);
 	if (!context) {
-		throw new Error(
-			"useThemeContext must be used within a ThemeContextProvider",
-		);
+		return {
+			mode: "system",
+			setMode: () => {},
+			toggleColorMode: () => {},
+			highContrast: false,
+			toggleHighContrast: () => {},
+		};
 	}
 	return context;
 };

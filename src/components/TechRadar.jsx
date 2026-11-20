@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
 	Box,
 	Chip,
@@ -6,9 +8,7 @@ import {
 	ListItemText,
 	Paper,
 	Typography,
-} from "@mui/material";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+} from "@/components/ui";
 
 const RADAR_SIZE = 800;
 const CENTER = RADAR_SIZE / 2;

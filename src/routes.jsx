@@ -1,4 +1,4 @@
-import { Lock } from "@mui/icons-material";
+import { Lock } from "lucide-react";
 import { lazy } from "react";
 
 import LandingPage from "@/components/LandingPage";

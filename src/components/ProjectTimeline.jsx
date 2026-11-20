@@ -1,13 +1,4 @@
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import ClearIcon from "@mui/icons-material/Clear";
-import CloseIcon from "@mui/icons-material/Close";
-import CommitIcon from "@mui/icons-material/Commit";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import LaunchIcon from "@mui/icons-material/Launch";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import SearchIcon from "@mui/icons-material/Search";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
+import { useMemo, useState } from "react";
 import {
 	Box,
 	Button,
@@ -24,8 +15,19 @@ import {
 	TextField,
 	Typography,
 	useTheme,
-} from "@mui/material";
-import { useMemo, useState } from "react";
+} from "@/components/ui";
+import {
+	CalendarTodayIcon,
+	ClearIcon,
+	CloseIcon,
+	CommitIcon,
+	FilterAltIcon,
+	GitHubIcon,
+	LaunchIcon,
+	RestartAltIcon,
+	SearchIcon,
+	SwapVertIcon,
+} from "@/components/ui/icons";
 
 export const PROJECT_CONFIG = {
 	NotebookForge: {

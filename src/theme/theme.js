@@ -1,4 +1,4 @@
-import { alpha, createTheme } from "@mui/material/styles";
+import { alpha, createTheme } from "@/components/ui/styles";
 
 const INK = "#38392e";
 const PARCHMENT = "#fdffda";

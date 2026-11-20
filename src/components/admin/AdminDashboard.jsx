@@ -1,20 +1,8 @@
-import {
-	Add,
-	ArrowDownward,
-	ArrowForward,
-	ArrowUpward,
-	CloudUpload,
-	Delete,
-	Download,
-	Edit,
-	GitHub,
-	Key,
-	Logout,
-	Refresh,
-	Search,
-	Star,
-	StarBorder,
-} from "@mui/icons-material";
+import { useEffect, useMemo, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import AdminLogin from "@/components/admin/AdminLogin";
+import GitHubTokenModal from "@/components/admin/GitHubTokenModal";
+import ProjectEditModal from "@/components/admin/ProjectEditModal";
 import {
 	Alert,
 	Box,
@@ -43,12 +31,24 @@ import {
 	TextField,
 	Tooltip,
 	Typography,
-} from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
-import AdminLogin from "@/components/admin/AdminLogin";
-import GitHubTokenModal from "@/components/admin/GitHubTokenModal";
-import ProjectEditModal from "@/components/admin/ProjectEditModal";
+} from "@/components/ui";
+import {
+	Add,
+	ArrowDownward,
+	ArrowForward,
+	ArrowUpward,
+	CloudUpload,
+	Delete,
+	Download,
+	Edit,
+	GitHub,
+	Key,
+	Logout,
+	Refresh,
+	Search,
+	Star,
+	StarBorder,
+} from "@/components/ui/icons";
 import defaultProjects from "@/content/projects.json";
 import { getGitHubToken, isAuthenticated, logout } from "@/utils/authUtils";
 import {

@@ -2,21 +2,21 @@ import { AdvancedImage, AdvancedVideo } from "@cloudinary/react";
 import { dpr, format, quality } from "@cloudinary/url-gen/actions/delivery";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
-import {
-	Box,
-	CircularProgress,
-	Container,
-	Typography,
-	useMediaQuery,
-	useTheme,
-} from "@mui/material";
-import { alpha } from "@mui/material/styles";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Video from "yet-another-react-lightbox/plugins/video";
+import {
+	alpha,
+	Box,
+	CircularProgress,
+	Container,
+	Typography,
+	useMediaQuery,
+	useTheme,
+} from "@/components/ui";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import ButtonAppBar from "@/components/Header";

@@ -1,22 +1,18 @@
 import {
-	ArrowForward,
+	ArrowRight,
 	Bookmark,
-	BookmarkBorder,
-	BugReport,
+	Bug,
 	Download,
-	Label,
+	HardDrive,
 	Star,
-	Storage,
-} from "@mui/icons-material";
-import { Box, IconButton, Typography } from "@mui/material";
+	Tag,
+} from "lucide-react";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import { fetchProjectHealth } from "@/utils/githubUtils";
-
-const MotionBox = motion.create(Box);
 
 export default function ProjectCard({
 	project,
@@ -40,263 +36,230 @@ export default function ProjectCard({
 		};
 	}, [project.githubName]);
 
-	// Status calculation
 	const isRecent =
 		health?.pushed_at &&
 		Date.now() - new Date(health.pushed_at).getTime() <
-			30 * 24 * 60 * 60 * 1000; // 30 days
+			30 * 24 * 60 * 60 * 1000;
 	const statusColor = isRecent ? "#4caf50" : "#ff9800";
 	const statusLabel = isRecent ? "Active" : "Maintenance";
 
 	return (
-		<MotionBox
+		<motion.div
 			initial={shouldReduceMotion ? false : { y: 16, opacity: 0 }}
 			whileInView={shouldReduceMotion ? undefined : { y: 0, opacity: 1 }}
 			viewport={{ once: true }}
 			transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.45 }}
-			sx={{ bgcolor: "background.default" }}
+			style={{ background: "var(--color-background-body, #fdffda)" }}
 		>
-			<Box
-				component={RouterLink}
+			<RouterLink
 				to={`/projects/${project.githubName}`}
 				aria-label={`Open project ${project.githubName}`}
-				sx={{
+				style={{
 					display: "flex",
 					alignItems: "center",
-					gap: { xs: 2.5, md: 4 },
-					py: { xs: 2.5, md: 3.5 },
-					px: { xs: 1.5, md: 2 },
-					cursor: "pointer",
+					gap: isMobile ? "1rem" : "1.5rem",
+					padding: isMobile ? "1rem 0.5rem" : "1.5rem 0.75rem",
 					textDecoration: "none",
-					color: "text.primary",
-					borderTop: "1px solid",
-					borderColor: "divider",
-					transition: "background-color 0.3s ease",
-					"&:hover": {
-						bgcolor: "action.hover",
-					},
-					"&:hover .ledger-arrow": {
-						transform: "translateX(4px)",
-						opacity: 1,
-					},
-					"&:hover .ledger-thumb img": {
-						filter: "grayscale(0%) contrast(100%)",
-					},
+					color: "var(--color-text-primary, #38392e)",
+					borderTop: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
+					transition: "background-color 0.2s ease",
 				}}
+				className="ledger-row"
 			>
 				{!isMobile && (
-					<Typography
-						variant="overline"
-						sx={{
-							width: 56,
+					<span
+						style={{
+							width: "48px",
 							flexShrink: 0,
-							color: "text.secondary",
-							lineHeight: 1,
+							color: "var(--color-text-secondary, #7d5d53)",
+							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
+							fontSize: "0.72rem",
+							letterSpacing: "0.1em",
+							textTransform: "uppercase",
 						}}
 					>
 						No. {String(entryNumber).padStart(2, "0")}
-					</Typography>
+					</span>
 				)}
 
-				<Box
+				<div
 					className="ledger-thumb"
-					sx={{
-						width: { xs: 56, md: 88 },
-						height: { xs: 56, md: 88 },
+					style={{
+						width: isMobile ? "56px" : "80px",
+						height: isMobile ? "56px" : "80px",
 						flexShrink: 0,
-						bgcolor: "background.paper",
-						border: "1px solid",
-						borderColor: "divider",
+						background: "var(--color-background-surface, #fdffda)",
+						border: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "center",
-						p: { xs: 1, md: 1.5 },
+						padding: "6px",
 						overflow: "hidden",
 					}}
 				>
-					<Box
-						component="img"
+					<img
 						src={project.githubImg}
 						alt=""
 						loading="lazy"
-						sx={{
+						style={{
 							maxWidth: "100%",
 							maxHeight: "100%",
 							objectFit: "contain",
 							filter: "grayscale(100%) contrast(115%)",
-							transition: "filter 0.5s ease-in-out",
+							transition: "filter 0.3s ease",
 						}}
 					/>
-				</Box>
+				</div>
 
-				<Box sx={{ flex: 1, minWidth: 0 }}>
-					<Typography
-						variant="h5"
-						sx={{ mb: 0.5, display: "flex", alignItems: "center", gap: 1 }}
+				<div style={{ flex: 1, minWidth: 0 }}>
+					<h5
+						style={{
+							margin: "0 0 0.25rem",
+							fontFamily:
+								"var(--font-family-heading, 'Newsreader', Georgia, serif)",
+							fontSize: "1.25rem",
+							fontWeight: 700,
+							display: "flex",
+							alignItems: "center",
+							gap: "8px",
+						}}
 					>
 						{project.githubName}
 						{health && (
-							<Box
+							<span
 								title={statusLabel}
-								sx={{ display: "flex", alignItems: "center" }}
+								style={{ display: "inline-flex", alignItems: "center" }}
 							>
-								<Box
-									sx={{
-										width: 8,
-										height: 8,
+								<span
+									style={{
+										width: "8px",
+										height: "8px",
 										borderRadius: "50%",
 										backgroundColor: statusColor,
-										position: "relative",
-										"&::after": {
-											content: '""',
-											position: "absolute",
-											top: 0,
-											left: 0,
-											right: 0,
-											bottom: 0,
-											borderRadius: "50%",
-											border: `2px solid ${statusColor}`,
-											animation: "pulse 2s infinite",
-										},
-										"@keyframes pulse": {
-											"0%": { transform: "scale(1)", opacity: 0.8 },
-											"70%": { transform: "scale(2.5)", opacity: 0 },
-											"100%": { transform: "scale(1)", opacity: 0 },
-										},
+										display: "inline-block",
 									}}
 								/>
-							</Box>
+							</span>
 						)}
-					</Typography>
+					</h5>
 
-					<Typography
-						variant="body2"
-						color="text.secondary"
-						sx={{
+					<p
+						style={{
+							margin: 0,
+							fontFamily:
+								"var(--font-family-body, 'Noto Serif', Georgia, serif)",
+							color: "var(--color-text-secondary, #7d5d53)",
+							fontSize: "0.875rem",
 							display: "-webkit-box",
 							WebkitLineClamp: 2,
 							WebkitBoxOrient: "vertical",
 							overflow: "hidden",
+							lineHeight: 1.5,
 						}}
 					>
 						{project.tagline}
-					</Typography>
-					<Box
-						sx={{
+					</p>
+
+					<div
+						style={{
 							display: "flex",
 							alignItems: "center",
-							columnGap: 1.5,
-							rowGap: 0.5,
-							mt: 1,
+							columnGap: "1rem",
+							rowGap: "0.25rem",
+							marginTop: "0.5rem",
 							flexWrap: "wrap",
+							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
+							fontSize: "0.7rem",
+							letterSpacing: "0.1em",
+							textTransform: "uppercase",
 						}}
 					>
-						<Typography
-							variant="overline"
-							color="secondary.main"
-							sx={{ lineHeight: 1, opacity: 0.85 }}
-						>
+						<span style={{ color: "var(--color-accent, #7d5d53)" }}>
 							{project.category}
-						</Typography>
-						<Typography
-							variant="overline"
-							color="text.secondary"
-							sx={{ lineHeight: 1, opacity: 0.85 }}
-						>
+						</span>
+						<span style={{ color: "var(--color-text-secondary, #7d5d53)" }}>
 							{year}
 							{project.language ? ` · ${project.language}` : ""}
-						</Typography>
+						</span>
 						{project.stars > 0 && (
-							<Box
-								sx={{
-									display: "flex",
+							<span
+								style={{
+									display: "inline-flex",
 									alignItems: "center",
-									gap: 0.5,
+									gap: "3px",
+									color: "var(--color-text-secondary)",
 								}}
 							>
-								<Star
-									sx={{
-										fontSize: "0.8rem",
-										color: "secondary.main",
-									}}
-								/>
-								<Typography
-									variant="overline"
-									color="text.secondary"
-									sx={{ lineHeight: 1, opacity: 0.85 }}
-								>
-									{project.stars}
-								</Typography>
-							</Box>
+								<Star size={12} strokeWidth={1.5} color="var(--color-accent)" />
+								<span>{project.stars}</span>
+							</span>
 						)}
 						{project.addonMetadata && (
-							<Box
-								sx={{
-									display: "flex",
+							<span
+								style={{
+									display: "inline-flex",
 									alignItems: "center",
-									gap: 0.5,
+									gap: "3px",
+									color: "var(--color-text-secondary)",
 								}}
 							>
 								<Download
-									sx={{
-										fontSize: "0.8rem",
-										color: "secondary.main",
-									}}
+									size={12}
+									strokeWidth={1.5}
+									color="var(--color-accent)"
 								/>
-								<Typography
-									variant="overline"
-									color="text.secondary"
-									sx={{ lineHeight: 1, opacity: 0.85 }}
-								>
+								<span>
 									{project.addonMetadata.averageDailyUsers.toLocaleString()}{" "}
 									users
-								</Typography>
-							</Box>
+								</span>
+							</span>
 						)}
-
 						{health?.latestRelease && (
-							<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-								<Label sx={{ fontSize: "0.8rem", color: "text.secondary" }} />
-								<Typography
-									variant="overline"
-									color="text.secondary"
-									sx={{ lineHeight: 1, opacity: 0.85 }}
-								>
-									{health.latestRelease}
-								</Typography>
-							</Box>
+							<span
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "3px",
+									color: "var(--color-text-secondary)",
+								}}
+							>
+								<Tag size={12} strokeWidth={1.5} />
+								<span>{health.latestRelease}</span>
+							</span>
 						)}
 						{health?.openIssues !== undefined && (
-							<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-								<BugReport
-									sx={{ fontSize: "0.8rem", color: "text.secondary" }}
-								/>
-								<Typography
-									variant="overline"
-									color="text.secondary"
-									sx={{ lineHeight: 1, opacity: 0.85 }}
-								>
+							<span
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "3px",
+									color: "var(--color-text-secondary)",
+								}}
+							>
+								<Bug size={12} strokeWidth={1.5} />
+								<span>
 									{health.openIssues} issue{health.openIssues !== 1 ? "s" : ""}
-								</Typography>
-							</Box>
+								</span>
+							</span>
 						)}
 						{health?.size > 0 && (
-							<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-								<Storage sx={{ fontSize: "0.8rem", color: "text.secondary" }} />
-								<Typography
-									variant="overline"
-									color="text.secondary"
-									sx={{ lineHeight: 1, opacity: 0.85 }}
-								>
-									{(health.size / 1024).toFixed(1)} MB
-								</Typography>
-							</Box>
+							<span
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "3px",
+									color: "var(--color-text-secondary)",
+								}}
+							>
+								<HardDrive size={12} strokeWidth={1.5} />
+								<span>{(health.size / 1024).toFixed(1)} MB</span>
+							</span>
 						)}
-					</Box>
-				</Box>
+					</div>
+				</div>
 
-				<IconButton
-					size="small"
+				<button
+					type="button"
 					onClick={(e) => {
 						e.preventDefault();
 						toggleBookmark(project.githubName);
@@ -306,30 +269,40 @@ export default function ProjectCard({
 							? "Remove bookmark"
 							: "Bookmark project"
 					}
-					sx={{ mr: 1, zIndex: 2 }}
+					style={{
+						background: "transparent",
+						border: "none",
+						cursor: "pointer",
+						padding: "6px",
+						color: isBookmarked(project.githubName)
+							? "var(--color-accent, #7d5d53)"
+							: "var(--color-text-secondary, #7d5d53)",
+						display: "flex",
+						alignItems: "center",
+					}}
 				>
-					{isBookmarked(project.githubName) ? (
-						<Bookmark color="primary" />
-					) : (
-						<BookmarkBorder />
-					)}
-				</IconButton>
+					<Bookmark
+						size={18}
+						strokeWidth={1.5}
+						fill={isBookmarked(project.githubName) ? "currentColor" : "none"}
+					/>
+				</button>
 
-				<Box
+				<div
 					className="ledger-arrow"
-					sx={{
+					style={{
 						flexShrink: 0,
-						color: "secondary.main",
+						color: "var(--color-accent, #7d5d53)",
 						display: "flex",
 						alignItems: "center",
 						opacity: 0.35,
-						transition: "transform 0.3s ease, opacity 0.3s ease",
+						transition: "transform 0.2s ease, opacity 0.2s ease",
 					}}
 				>
-					<ArrowForward />
-				</Box>
-			</Box>
-		</MotionBox>
+					<ArrowRight size={18} strokeWidth={1.5} />
+				</div>
+			</RouterLink>
+		</motion.div>
 	);
 }
 

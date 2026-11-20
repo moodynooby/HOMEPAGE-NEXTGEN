@@ -15,26 +15,26 @@ Every interaction should feel like an act of curation: authoritative, human, and
 3. **Restraint** — No shadows, no rounded corners, no pure black, no heavy borders. Separation comes from tonal shifts and whitespace.
 4. **Craft** — Paper grain, sepia accents, and a grayscale→color reveal on hover give the archive a tactile, physical quality.
 
-## 3. Color Tokens
+## 3. Design Tokens (Astryx Theme)
 
-All colors are defined once in `src/theme/theme.js` and exposed as MUI palette tokens. **Use tokens in components; never hard-code hex.** Values below are the implemented tokens.
+Tokens are configured via `defineTheme` in `src/theme/astryxTheme.js` (extending `@astryxdesign/theme-neutral`) and rendered into the document by `<Theme>` as CSS variables. **Use CSS variables in styles; never hard-code hex.**
 
-| Token | Light | Dark | Usage |
+| Astryx Token | Light | Dark | Usage |
 | --- | --- | --- | --- |
-| `primary.main` | `#5f5e5e` | `#fdffda` | Ink black; primary buttons, active states |
-| `primary.dark` | `#38392e` | `#f1f3c3` | Deep ink; gradients, hover states |
-| `primary.contrastText` | `#fdffda` | `#38392e` | Text on primary surfaces |
-| `secondary.main` | `#7d5d53` | `#a6827a` | Sepia; accents, italic years, links, arrows |
-| `background.default` / `.paper` | `#fdffda` | `#282a21` | Parchment canvas / card surfaces |
-| `text.primary` | `#38392e` | `#fdffda` | Body ink |
-| `text.secondary` | `#7d5d53` | `#a6827a` | Muted meta, labels |
-| `divider` | `rgba(56,57,46,.10)` | `rgba(253,255,218,.15)` | The "ghost border" — hairline rules only |
+| `--color-text-primary` | `#38392e` | `#fdffda` | Body ink |
+| `--color-text-secondary` | `#7d5d53` | `#a6827a` | Muted meta, labels |
+| `--color-accent` | `#7d5d53` | `#a6827a` | Sepia; accents, italic years, links, arrows |
+| `--color-background-body` | `#fdffda` | `#282a21` | Parchment canvas / body background |
+| `--color-background-surface` | `#fdffda` | `#282a21` | Card and modal surfaces |
+| `--color-border` | `rgba(56,57,46,.10)` | `rgba(253,255,218,.15)` | The "ghost border" — hairline rules only |
+| `--radius-*` | `0px` | `0px` | 0px corner radius everywhere |
 
 ### Rules
 
 - **No pure black.** `#38392e` is the darkest ink — it retains an organic softness that avoids digital eye strain.
-- **The ghost border.** Sectioning uses the `divider` token (≤15% opacity), never a strong 1px stroke. A boundary should feel like a faint indentation in the paper.
-- **Tonal separation.** Use `divider` and `action.hover` (subtle background shifts) instead of borders to define surfaces.
+- **The ghost border.** Sectioning uses `--color-border` / `rgba(56,57,46,.10)` (≤15% opacity), never a strong 1px stroke. A boundary should feel like a faint indentation in the paper.
+- **0px radius.** All Astryx radius tokens (`--radius-inner`, `--radius-element`, `--radius-container`, etc.) are locked to `0px`.
+- **Tonal separation.** Use subtle background shifts and ghost borders instead of heavy box shadows or heavy borders.
 
 ## 4. Typography
 
@@ -43,10 +43,10 @@ Three families, loaded via `@fontsource` in `src/main.jsx`. Typography is the pr
 | Role | Family | Weights loaded | Usage |
 | --- | --- | --- | --- |
 | Display / headlines | Newsreader | 400, 700, 800, 400-italic | Masthead, section titles, project titles, italic year medallions |
-| Body | Noto Serif | 400, 700 | `body1`/`body2` reading text, taglines, README content |
-| Labels / meta | Work Sans Variable | variable | Buttons, `caption`, `overline` — uppercase with letter-spacing |
+| Body | Noto Serif | 400, 700 | Reading text, taglines, README content |
+| Labels / meta | Work Sans Variable | variable | Buttons, captions, overline meta — uppercase with letter-spacing |
 
-MUI variant map (from the theme): `h1`–`h6` use Newsreader (weights 800/700/700/600/600/600, negative letter-spacing on `h1`/`h2`); `body1`/`body2` use Noto Serif; `button`, `caption`, and `overline` use Work Sans.
+Typographic roles: Heading tags (`h1`–`h6`) use Newsreader (weights 800/700/700/600, negative letter-spacing on display); body copy uses Noto Serif; buttons, captions, and overline badges use Work Sans.
 
 ### Usage notes
 
@@ -138,4 +138,4 @@ The design only shines if the content is curated. Follow the content model in [A
 - **Icons standing in for headings** (a pin before "Featured Projects") and **emoji as icon substitutes**. Hierarchy is type; icons are functional only.
 - **Filler metadata** — meaningless badges ("DEV"), fake coordinates, decorative status dots. Every label must inform.
 - **Hover-only content that can never fire** — verify selectors actually match (no invented class names like `.motion-box`); captions must be reachable by real hover/focus states.
-- **Hard-coded hex outside `theme.js`/`index.css`.** Components read tokens only; scrims behind modals are the sole exception.
+- **Hard-coded hex outside theme files / index.css.** Components read tokens and CSS variables only; scrims behind modals are the sole exception.

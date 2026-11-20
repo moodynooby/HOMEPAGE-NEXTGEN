@@ -1,5 +1,4 @@
-import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
-import { Box, Container, Typography } from "@mui/material";
+import { ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 
@@ -11,46 +10,52 @@ function LinkRow({ link, alt }) {
 	const IconComponent = socialIcons[alt];
 
 	return (
-		<Box
-			component="a"
+		<a
 			href={link}
 			target="_blank"
 			rel="noopener noreferrer"
 			aria-label={`Open ${alt} in a new tab`}
-			sx={{
+			style={{
 				display: "flex",
 				alignItems: "center",
-				gap: 3,
-				py: 3,
-				borderTop: "1px solid",
-				borderColor: "divider",
+				gap: "1.5rem",
+				padding: "1.5rem 0",
+				borderTop: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
 				textDecoration: "none",
-				color: "text.primary",
-				transition: "background-color 0.3s ease",
-				"&:hover": { bgcolor: "action.hover" },
-				"&:hover .directory-arrow": {
-					transform: "translate(4px, -4px)",
-					opacity: 1,
-					color: "secondary.main",
-				},
+				color: "var(--color-text-primary, #38392e)",
+				transition: "background-color 0.2s ease",
 			}}
+			className="link-tree-row"
 		>
-			<Box sx={{ display: "flex", color: "text.secondary" }}>
-				{IconComponent && <IconComponent fontSize="small" />}
-			</Box>
-			<Typography variant="h6" component="span" sx={{ flex: 1 }}>
+			<span
+				style={{
+					display: "flex",
+					color: "var(--color-text-secondary, #7d5d53)",
+				}}
+			>
+				{IconComponent && <IconComponent size={20} strokeWidth={1.5} />}
+			</span>
+			<span
+				style={{
+					flex: 1,
+					fontFamily: "var(--font-family-heading, 'Newsreader', serif)",
+					fontSize: "1.25rem",
+					fontWeight: 600,
+				}}
+			>
 				{alt}
-			</Typography>
-			<ArrowOutwardIcon
+			</span>
+			<ArrowUpRight
+				size={18}
+				strokeWidth={1.5}
 				className="directory-arrow"
-				sx={{
-					fontSize: "1rem",
-					color: "text.secondary",
-					opacity: 0.4,
-					transition: "transform 0.3s ease, opacity 0.3s ease, color 0.3s ease",
+				style={{
+					color: "var(--color-text-secondary, #7d5d53)",
+					opacity: 0.5,
+					transition: "transform 0.2s ease, opacity 0.2s ease",
 				}}
 			/>
-		</Box>
+		</a>
 	);
 }
 
@@ -63,57 +68,68 @@ export default function LinkTree() {
 	const shouldReduceMotion = useReducedMotion();
 
 	return (
-		<Box sx={{ minHeight: "100vh" }}>
+		<div
+			style={{
+				minHeight: "100vh",
+				background: "var(--color-background-body, #fdffda)",
+				color: "var(--color-text-primary, #38392e)",
+			}}
+		>
 			<ButtonAppBar />
 
 			<motion.div
-				initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+				initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6 }}
 			>
-				<Container maxWidth="sm" sx={{ pt: { xs: 7, md: 10 }, pb: 12 }}>
-					<Box
-						sx={{
-							width: 96,
-							height: 96,
-							mb: 4,
-							border: "1px solid",
-							borderColor: "divider",
-							bgcolor: "background.paper",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
+				<main
+					style={{
+						maxWidth: "680px",
+						margin: "0 auto",
+						padding: "4rem 1.5rem 6rem",
+					}}
+				>
+					<span
+						style={{
+							display: "block",
+							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
+							fontSize: "0.75rem",
+							letterSpacing: "0.15em",
+							textTransform: "uppercase",
+							color: "var(--color-accent, #7d5d53)",
+							marginBottom: "0.5rem",
 						}}
 					>
-						<Typography
-							variant="h3"
-							component="p"
-							sx={{ fontStyle: "italic", fontWeight: 400 }}
-						>
-							MD
-						</Typography>
-					</Box>
-
-					<Typography variant="overline" color="secondary.main">
-						The Directory
-					</Typography>
-					<Typography
-						variant="h1"
-						component="h1"
-						sx={{ mt: 1, mb: 2, fontSize: { xs: "2.4rem", md: "3rem" } }}
+						Index · Directory
+					</span>
+					<h1
+						style={{
+							fontFamily:
+								"var(--font-family-heading, 'Newsreader', Georgia, serif)",
+							fontSize: "clamp(2.5rem, 5vw, 3.5rem)",
+							fontWeight: 700,
+							margin: "0 0 1rem",
+							lineHeight: 1.1,
+						}}
 					>
-						Manas Doshi
-					</Typography>
-					<Typography
-						variant="body1"
-						color="text.secondary"
-						sx={{ mb: 8, maxWidth: "46ch" }}
+						Connected Profiles
+					</h1>
+					<p
+						style={{
+							fontFamily:
+								"var(--font-family-body, 'Noto Serif', Georgia, serif)",
+							color: "var(--color-text-secondary, #7d5d53)",
+							fontSize: "1.05rem",
+							marginBottom: "2.5rem",
+							maxWidth: "46ch",
+							lineHeight: 1.6,
+						}}
 					>
 						A simple directory of places where my work, writing, and ongoing
 						projects can be found.
-					</Typography>
+					</p>
 
-					<Box>
+					<div>
 						{socialLinks.map((social, index) => (
 							<motion.div
 								key={social.alt}
@@ -128,10 +144,15 @@ export default function LinkTree() {
 								<LinkRow link={social.link} alt={social.alt} />
 							</motion.div>
 						))}
-						<Box sx={{ borderTop: "1px solid", borderColor: "divider" }} />
-					</Box>
-				</Container>
+						<div
+							style={{
+								borderTop:
+									"1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
+							}}
+						/>
+					</div>
+				</main>
 			</motion.div>
-		</Box>
+		</div>
 	);
 }

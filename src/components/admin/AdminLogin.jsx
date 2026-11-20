@@ -1,4 +1,5 @@
-import { Lock, VpnKey } from "@mui/icons-material";
+import PropTypes from "prop-types";
+import { useState } from "react";
 import {
 	Alert,
 	Box,
@@ -9,9 +10,8 @@ import {
 	InputAdornment,
 	TextField,
 	Typography,
-} from "@mui/material";
-import PropTypes from "prop-types";
-import { useState } from "react";
+} from "@/components/ui";
+import { Lock, VpnKey } from "@/components/ui/icons";
 import { isPasswordSet, login, setMasterPassword } from "@/utils/authUtils";
 
 export default function AdminLogin({ onAuthenticated }) {

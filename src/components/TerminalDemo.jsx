@@ -1,9 +1,8 @@
-import { Box, Typography } from "@mui/material";
-import { alpha, useTheme } from "@mui/material/styles";
 import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
+import { useThemeContext } from "@/contexts/ThemeContext";
 
 const COMMANDS = {
 	help: "Show this help message",
@@ -15,14 +14,17 @@ const COMMANDS = {
 
 export default function TerminalDemo({ projectName }) {
 	const terminalRef = useRef(null);
-	const theme = useTheme();
+	const { mode } = useThemeContext();
 
 	useEffect(() => {
 		if (!terminalRef.current) return;
 
-		const isDark = theme.palette.mode === "dark";
-		const bgColor = isDark ? "#282a21" : "#fdffda"; // theme.palette.background.paper
-		const fgColor = isDark ? "#fdffda" : "#38392e"; // theme.palette.text.primary
+		const isDark =
+			mode === "dark" ||
+			(mode === "system" &&
+				window.matchMedia("(prefers-color-scheme: dark)").matches);
+		const bgColor = isDark ? "#282a21" : "#fdffda";
+		const fgColor = isDark ? "#fdffda" : "#38392e";
 
 		const term = new Terminal({
 			cursorBlink: true,
@@ -33,7 +35,7 @@ export default function TerminalDemo({ projectName }) {
 				background: bgColor,
 				foreground: fgColor,
 				cursor: fgColor,
-				selectionBackground: alpha(theme.palette.secondary.main, 0.3),
+				selectionBackground: "rgba(125, 93, 83, 0.3)",
 			},
 			convertEol: true,
 		});
@@ -48,6 +50,37 @@ export default function TerminalDemo({ projectName }) {
 
 		let currentInput = "";
 		let cursorOffset = 0;
+
+		const processCommand = (cmd) => {
+			if (!cmd) return;
+
+			switch (cmd) {
+				case "help":
+					term.writeln("Available commands:");
+					for (const [command, desc] of Object.entries(COMMANDS)) {
+						term.writeln(`  ${command.padEnd(20)} ${desc}`);
+					}
+					break;
+				case "fastmcp --help":
+					term.writeln("fastmcp: A fast model control panel.");
+					term.writeln("Usage: fastmcp [command] [options]");
+					break;
+				case "notebooklm run":
+					term.writeln("Starting NotebookLM pipeline...");
+					term.writeln("[INFO] Loading documents...");
+					term.writeln("[INFO] Indexing completed in 240ms.");
+					break;
+				case "diet logs":
+					term.writeln("2023-10-01 08:00:00 - Breakfast logged");
+					term.writeln("2023-10-01 12:30:00 - Lunch logged");
+					break;
+				case "clear":
+					term.clear();
+					break;
+				default:
+					term.writeln(`Command not found: ${cmd}`);
+			}
+		};
 
 		term.onData((data) => {
 			const code = data.charCodeAt(0);
@@ -108,80 +141,54 @@ export default function TerminalDemo({ projectName }) {
 			}
 		});
 
-		const processCommand = (cmd) => {
-			if (!cmd) return;
-
-			switch (cmd) {
-				case "help":
-					term.writeln("Available commands:");
-					for (const [command, desc] of Object.entries(COMMANDS)) {
-						term.writeln(`  ${command.padEnd(20)} ${desc}`);
-					}
-					break;
-				case "fastmcp --help":
-					term.writeln("fastmcp: A fast model control panel.");
-					term.writeln("Usage: fastmcp [command] [options]");
-					break;
-				case "notebooklm run":
-					term.writeln("Starting NotebookLM pipeline...");
-					term.writeln("[INFO] Loading documents...");
-					term.writeln("[INFO] Indexing completed in 240ms.");
-					break;
-				case "diet logs":
-					term.writeln("2023-10-01 08:00:00 - Breakfast logged");
-					term.writeln("2023-10-01 12:30:00 - Lunch logged");
-					break;
-				case "clear":
-					term.clear();
-					break;
-				default:
-					term.writeln(`Command not found: ${cmd}`);
-			}
-		};
-
 		return () => {
 			term.dispose();
 		};
-	}, [projectName, theme]);
+	}, [projectName, mode]);
 
 	return (
-		<Box
-			sx={{
-				mt: 6,
-				mb: 4,
-				border: "1px solid",
-				borderColor: "divider",
-				p: { xs: 2, md: 3 },
-				backgroundColor: "background.paper",
+		<section
+			style={{
+				marginTop: "3rem",
+				marginBottom: "2rem",
+				border: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
+				padding: "1.5rem",
+				backgroundColor: "var(--color-background-surface, #fdffda)",
 			}}
 		>
-			<Typography
-				variant="h3"
-				component="h2"
-				sx={{ mb: 2, fontSize: "1.3rem" }}
+			<h2
+				style={{
+					fontFamily:
+						"var(--font-family-heading, 'Newsreader', Georgia, serif)",
+					fontSize: "1.3rem",
+					margin: "0 0 0.5rem",
+					fontWeight: 700,
+					color: "var(--color-text-primary, #38392e)",
+				}}
 			>
 				Interactive Sandbox
-			</Typography>
-			<Typography
-				variant="body2"
-				color="text.secondary"
-				sx={{ mb: 3, fontStyle: "italic" }}
+			</h2>
+			<p
+				style={{
+					fontFamily: "var(--font-family-body, 'Noto Serif', Georgia, serif)",
+					color: "var(--color-text-secondary, #7d5d53)",
+					fontStyle: "italic",
+					fontSize: "0.875rem",
+					margin: "0 0 1.5rem",
+				}}
 			>
 				Simulated terminal environment. Try typing commands like "help".
-			</Typography>
-			<Box
+			</p>
+			<div
 				ref={terminalRef}
-				sx={{
+				style={{
 					height: 320,
 					width: "100%",
 					overflow: "hidden",
-					"& .xterm-viewport": {
-						backgroundColor: "transparent !important",
-					},
 				}}
 				data-testid="terminal-container"
 			/>
-		</Box>
+		</section>
 	);
 }
 

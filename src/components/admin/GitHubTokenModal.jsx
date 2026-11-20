@@ -1,4 +1,5 @@
-import { Close, Key } from "@mui/icons-material";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import {
 	Alert,
 	Box,
@@ -11,9 +12,8 @@ import {
 	InputAdornment,
 	TextField,
 	Typography,
-} from "@mui/material";
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+} from "@/components/ui";
+import { Close, Key } from "@/components/ui/icons";
 import {
 	clearGitHubToken,
 	getGitHubToken,

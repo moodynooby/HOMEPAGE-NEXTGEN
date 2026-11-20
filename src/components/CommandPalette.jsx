@@ -1,29 +1,4 @@
 import {
-	AccountTree,
-	Brightness4,
-	Brightness7,
-	BrightnessAuto,
-	Collections,
-	Email,
-	FilterList,
-	GitHub,
-	Info,
-	Keyboard,
-	Language,
-	LinkedIn,
-	Link as LinkIcon,
-	Lock,
-} from "@mui/icons-material";
-import CloseIcon from "@mui/icons-material/Close";
-import {
-	Box,
-	Fade,
-	IconButton,
-	Modal,
-	Typography,
-	useTheme,
-} from "@mui/material";
-import {
 	KBarAnimator,
 	KBarPortal,
 	KBarPositioner,
@@ -32,12 +7,28 @@ import {
 	KBarSearch,
 	useMatches,
 } from "kbar";
+import {
+	Filter,
+	FolderGit2,
+	Globe,
+	Image,
+	Info,
+	Keyboard,
+	Link as LinkIcon,
+	Lock,
+	Mail,
+	Monitor,
+	Moon,
+	Sun,
+	X,
+} from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import socialLinks from "@/content/socialLinks.json";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { NAV_ITEMS } from "@/nav";
+import { socialIcons } from "@/utils/socialIcons";
 
 const socialByAlt = Object.fromEntries(
 	socialLinks.map((entry) => [entry.alt, entry]),
@@ -51,7 +42,6 @@ export default function CommandPalette({ children }) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { setMode } = useThemeContext();
-	const theme = useTheme();
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
 	useEffect(() => {
@@ -95,9 +85,12 @@ export default function CommandPalette({ children }) {
 			shortcut: item.shortcut ? [item.shortcut] : [],
 			keywords: item.keywords,
 			perform: () => navigate(item.to),
-			icon: <Icon />,
+			icon: <Icon size={16} strokeWidth={1.5} />,
 		};
 	});
+
+	const GitHubIcon = socialIcons.GitHub;
+	const LinkedInIcon = socialIcons.LinkedIn;
 
 	const actions = [
 		...navActions,
@@ -107,7 +100,7 @@ export default function CommandPalette({ children }) {
 			shortcut: ["t", "l"],
 			keywords: "theme-light-mode",
 			perform: () => setMode("light"),
-			icon: <Brightness7 />,
+			icon: <Sun size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "theme-dark",
@@ -115,7 +108,7 @@ export default function CommandPalette({ children }) {
 			shortcut: ["t", "d"],
 			keywords: "theme-dark-mode",
 			perform: () => setMode("dark"),
-			icon: <Brightness4 />,
+			icon: <Moon size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "theme-system",
@@ -123,7 +116,7 @@ export default function CommandPalette({ children }) {
 			shortcut: ["t", "s"],
 			keywords: "theme-system-auto",
 			perform: () => setMode("system"),
-			icon: <BrightnessAuto />,
+			icon: <Monitor size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "shortcuts",
@@ -131,84 +124,84 @@ export default function CommandPalette({ children }) {
 			shortcut: ["?"],
 			keywords: "shortcuts cheatsheet help",
 			perform: () => setShortcutsOpen(true),
-			icon: <Keyboard />,
+			icon: <Keyboard size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "admin",
 			name: "Admin Dashboard",
 			keywords: "admin dashboard manage edit projects login",
 			perform: () => navigate("/admin"),
-			icon: <Lock />,
+			icon: <Lock size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "filter-react",
 			name: "Filter Projects: React",
 			keywords: "react",
 			perform: () => navigate("/projects?q=React"),
-			icon: <FilterList />,
+			icon: <Filter size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "filter-python",
 			name: "Filter Projects: Python",
 			keywords: "python",
 			perform: () => navigate("/projects?q=Python"),
-			icon: <FilterList />,
+			icon: <Filter size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "filter-ml",
 			name: "Filter Projects: Machine Learning",
 			keywords: "machine learning ml",
 			perform: () => navigate("/projects?q=Machine Learning"),
-			icon: <FilterList />,
+			icon: <Filter size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "filter-web3",
 			name: "Filter Projects: Web3",
 			keywords: "web3 crypto blockchain",
 			perform: () => navigate("/projects?q=Web3"),
-			icon: <FilterList />,
+			icon: <Filter size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "filter-rust",
 			name: "Filter Projects: Rust",
 			keywords: "rust",
 			perform: () => navigate("/projects?q=Rust"),
-			icon: <FilterList />,
+			icon: <Filter size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "copy-link",
 			name: "Copy Portfolio Link",
 			keywords: "copy link url share",
 			perform: () => copyToClipboard(window.location.origin),
-			icon: <LinkIcon />,
+			icon: <LinkIcon size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "copy-email",
 			name: "Copy Email",
 			keywords: "copy email contact",
 			perform: () => copyToClipboard(socialEmail),
-			icon: <Email />,
+			icon: <Mail size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "jump-projects",
 			name: "Jump to Section: Projects",
 			keywords: "jump navigate section projects featured",
 			perform: () => handleJumpToSection("projects-section"),
-			icon: <AccountTree />,
+			icon: <FolderGit2 size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "jump-experience",
 			name: "Jump to Section: Experience",
 			keywords: "jump navigate section experience visual archive",
 			perform: () => handleJumpToSection("experience-section"),
-			icon: <Collections />,
+			icon: <Image size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "jump-about",
 			name: "Jump to Section: About",
 			keywords: "jump navigate section about intro",
 			perform: () => handleJumpToSection("about-section"),
-			icon: <Info />,
+			icon: <Info size={16} strokeWidth={1.5} />,
 		},
 		{
 			id: "github",
@@ -216,7 +209,7 @@ export default function CommandPalette({ children }) {
 			shortcut: ["g"],
 			keywords: "external-github",
 			perform: () => window.open(socialGithub, "_blank", "noopener"),
-			icon: <GitHub />,
+			icon: GitHubIcon ? <GitHubIcon size={16} /> : null,
 		},
 		{
 			id: "linkedin",
@@ -224,7 +217,7 @@ export default function CommandPalette({ children }) {
 			shortcut: ["i"],
 			keywords: "external-linkedin",
 			perform: () => window.open(socialLinkedIn, "_blank", "noopener"),
-			icon: <LinkedIn />,
+			icon: LinkedInIcon ? <LinkedInIcon size={16} /> : null,
 		},
 		{
 			id: "addons",
@@ -232,7 +225,7 @@ export default function CommandPalette({ children }) {
 			shortcut: ["a"],
 			keywords: "external-mozilla-addons",
 			perform: () => window.open(socialAddons, "_blank", "noopener"),
-			icon: <Language />,
+			icon: <Globe size={16} strokeWidth={1.5} />,
 		},
 	];
 
@@ -250,16 +243,20 @@ export default function CommandPalette({ children }) {
 						style={{
 							maxWidth: "560px",
 							width: "100%",
-							background: theme.palette.background.paper,
-							color: theme.palette.text.primary,
+							background: "var(--color-background-surface, #fdffda)",
+							color: "var(--color-text-primary, #38392e)",
 							borderRadius: "0px",
-							border: `1px solid ${theme.palette.text.primary}`,
+							border: "1px solid var(--color-text-primary, #38392e)",
 							overflow: "hidden",
 							boxShadow: "none",
 						}}
 					>
-						<Box
-							sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}
+						<div
+							style={{
+								padding: "1rem",
+								borderBottom:
+									"1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
+							}}
 						>
 							<KBarSearch
 								style={{
@@ -270,72 +267,95 @@ export default function CommandPalette({ children }) {
 									outline: "none",
 									border: "none",
 									background: "transparent",
-									color: theme.palette.text.primary,
-									fontFamily: '"Work Sans Variable", "Work Sans", sans-serif',
+									color: "var(--color-text-primary, #38392e)",
+									fontFamily:
+										"var(--font-family-code, 'Work Sans', sans-serif)",
 									letterSpacing: "0.02em",
 								}}
 								placeholder="Type a command…"
 							/>
-						</Box>
+						</div>
 						<RenderResults />
 					</KBarAnimator>
 				</KBarPositioner>
 			</KBarPortal>
 			{children}
 
-			<Modal
-				open={shortcutsOpen}
-				onClose={() => setShortcutsOpen(false)}
-				aria-labelledby="shortcuts-modal-title"
-				aria-describedby="shortcuts-modal-description"
-				closeAfterTransition
-				sx={{
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					zIndex: 10000,
-					backdropFilter: "blur(4px)",
-				}}
-			>
-				<Fade in={shortcutsOpen}>
-					<Box
-						sx={{
-							bgcolor: "background.paper",
-							border: `1px solid ${theme.palette.text.primary}`,
-							boxShadow: 24,
-							p: 4,
-							maxWidth: 500,
+			{shortcutsOpen && (
+				<div
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="shortcuts-modal-title"
+					tabIndex={-1}
+					onKeyDown={(e) => {
+						if (e.key === "Escape") setShortcutsOpen(false);
+					}}
+					style={{
+						position: "fixed",
+						inset: 0,
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						zIndex: 10000,
+						backdropFilter: "blur(4px)",
+						background: "rgba(0, 0, 0, 0.4)",
+					}}
+					onClick={(e) => {
+						if (e.target === e.currentTarget) setShortcutsOpen(false);
+					}}
+				>
+					<div
+						style={{
+							background: "var(--color-background-surface, #fdffda)",
+							border: "1px solid var(--color-text-primary, #38392e)",
+							padding: "2rem",
+							maxWidth: "500px",
 							width: "90%",
 							borderRadius: 0,
 							outline: "none",
 						}}
 					>
-						<Box
-							sx={{
+						<div
+							style={{
 								display: "flex",
 								justifyContent: "space-between",
 								alignItems: "center",
-								mb: 3,
+								marginBottom: "1.5rem",
 							}}
 						>
-							<Typography
+							<h2
 								id="shortcuts-modal-title"
-								variant="h4"
-								component="h2"
+								style={{
+									margin: 0,
+									fontFamily:
+										"var(--font-family-heading, 'Newsreader', Georgia, serif)",
+									fontSize: "1.5rem",
+									fontWeight: 700,
+									color: "var(--color-text-primary, #38392e)",
+								}}
 							>
 								Keyboard Shortcuts
-							</Typography>
-							<IconButton
+							</h2>
+							<button
+								type="button"
 								onClick={() => setShortcutsOpen(false)}
-								sx={{ color: "text.primary" }}
 								aria-label="Close shortcuts modal"
+								style={{
+									background: "none",
+									border: "none",
+									cursor: "pointer",
+									color: "var(--color-text-primary)",
+									padding: "4px",
+									display: "flex",
+									alignItems: "center",
+								}}
 							>
-								<CloseIcon />
-							</IconButton>
-						</Box>
-						<Box
+								<X size={18} strokeWidth={1.5} />
+							</button>
+						</div>
+						<div
 							id="shortcuts-modal-description"
-							sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+							style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
 						>
 							{[
 								{ key: "Cmd/Ctrl + K", desc: "Open Command Palette" },
@@ -348,102 +368,133 @@ export default function CommandPalette({ children }) {
 								{ key: "T S", desc: "Theme: System" },
 								{ key: "?", desc: "Toggle this cheatsheet" },
 							].map((sc) => (
-								<Box
+								<div
 									key={sc.desc}
-									sx={{
+									style={{
 										display: "flex",
 										justifyContent: "space-between",
 										alignItems: "center",
-										borderBottom: `1px solid ${theme.palette.divider}`,
-										pb: 1,
+										borderBottom:
+											"1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
+										paddingBottom: "0.5rem",
 									}}
 								>
-									<Typography variant="body1">{sc.desc}</Typography>
-									<Box sx={{ display: "flex", gap: 0.5 }}>
+									<span
+										style={{
+											fontFamily:
+												"var(--font-family-body, 'Noto Serif', serif)",
+											fontSize: "0.875rem",
+											color: "var(--color-text-primary)",
+										}}
+									>
+										{sc.desc}
+									</span>
+									<div style={{ display: "flex", gap: "4px" }}>
 										{sc.key.split(" ").map((k) => (
-											<Box
+											<span
 												key={`${sc.desc}-${k}`}
-												sx={{
-													px: 1,
-													py: 0.5,
-													bgcolor: "action.selected",
+												style={{
+													padding: "2px 6px",
+													background:
+														"var(--color-overlay-pressed, rgba(56, 57, 46, 0.08))",
 													fontSize: "0.75rem",
 													fontWeight: 600,
 													textTransform: "uppercase",
-													border: `1px solid ${theme.palette.divider}`,
+													border: "1px solid var(--color-border)",
+													fontFamily:
+														"var(--font-family-code, 'Work Sans', sans-serif)",
 												}}
 											>
 												{k}
-											</Box>
+											</span>
 										))}
-									</Box>
-								</Box>
+									</div>
+								</div>
 							))}
-						</Box>
-					</Box>
-				</Fade>
-			</Modal>
+						</div>
+					</div>
+				</div>
+			)}
 		</KBarProvider>
 	);
 }
 
 function RenderResults() {
 	const { results } = useMatches();
-	const theme = useTheme();
 
 	return (
 		<KBarResults
 			items={results}
 			onRender={({ item, active }) =>
 				typeof item === "string" ? (
-					<Box sx={{ px: 3, pt: 2, pb: 1 }}>
-						<Typography variant="overline" color="text.secondary">
-							{item}
-						</Typography>
-					</Box>
+					<div
+						style={{
+							padding: "1rem 1.5rem 0.5rem",
+							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
+							fontSize: "0.7rem",
+							letterSpacing: "0.15em",
+							textTransform: "uppercase",
+							color: "var(--color-text-secondary, #7d5d53)",
+						}}
+					>
+						{item}
+					</div>
 				) : (
-					<Box
-						sx={{
-							px: 3,
-							py: 1.75,
-							background: active ? theme.palette.action.hover : "transparent",
-							borderLeft: `2px solid ${active ? theme.palette.secondary.main : "transparent"}`,
+					<div
+						style={{
+							padding: "0.75rem 1.5rem",
+							background: active
+								? "var(--color-overlay-hover, rgba(56, 57, 46, 0.06))"
+								: "transparent",
+							borderLeft: `2px solid ${active ? "var(--color-accent, #7d5d53)" : "transparent"}`,
 							display: "flex",
 							alignItems: "center",
 							justifyContent: "space-between",
 							cursor: "pointer",
-							transition: "background 0.15s ease, border-color 0.15s ease",
+							transition: "background 0.15s ease",
 						}}
 					>
-						<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+						<div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
 							{item.icon && (
-								<Box sx={{ display: "flex", opacity: 0.7 }}>{item.icon}</Box>
+								<span style={{ display: "flex", opacity: 0.7 }}>
+									{item.icon}
+								</span>
 							)}
-							<Typography variant="body2">{item.name}</Typography>
-						</Box>
+							<span
+								style={{
+									fontFamily:
+										"var(--font-family-body, 'Noto Serif', Georgia, serif)",
+									fontSize: "0.875rem",
+									color: "var(--color-text-primary, #38392e)",
+								}}
+							>
+								{item.name}
+							</span>
+						</div>
 						{item.shortcut?.length > 0 && (
-							<Box sx={{ display: "flex", gap: 0.5 }}>
+							<div style={{ display: "flex", gap: "4px" }}>
 								{item.shortcut.map((sc) => (
-									<Box
+									<span
 										key={sc}
-										sx={{
-											px: 0.75,
-											py: 0.25,
-											bgcolor: theme.palette.action.selected,
+										style={{
+											padding: "2px 6px",
+											background:
+												"var(--color-overlay-pressed, rgba(56, 57, 46, 0.08))",
 											fontSize: "0.65rem",
 											fontWeight: 600,
 											fontFamily:
-												'"Work Sans Variable", "Work Sans", sans-serif',
+												"var(--font-family-code, 'Work Sans', sans-serif)",
 											textTransform: "uppercase",
 											letterSpacing: "0.08em",
+											border: "1px solid var(--color-border)",
 										}}
 									>
 										{sc}
-									</Box>
+									</span>
 								))}
-							</Box>
+							</div>
 						)}
-					</Box>
+					</div>
 				)
 			}
 		/>

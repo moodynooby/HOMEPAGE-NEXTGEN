@@ -8,7 +8,7 @@ import {
 	useBookmarksContext,
 } from "@/contexts/BookmarksContext";
 import "@testing-library/jest-dom";
-import { ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@/components/ui/styles";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
 import { getTheme } from "@/theme/theme";
 

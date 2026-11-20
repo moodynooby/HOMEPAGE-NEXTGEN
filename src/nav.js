@@ -1,36 +1,31 @@
-import {
-	Collections as GalleryIcon,
-	Home as HomeIcon,
-	Person as ProfileIcon,
-	AccountTree as ProjectsIcon,
-} from "@mui/icons-material";
+import { FolderGit2, Home, Image, User } from "lucide-react";
 
 export const NAV_ITEMS = [
 	{
 		to: "/",
 		label: "Home",
-		icon: HomeIcon,
+		icon: Home,
 		shortcut: "h",
 		keywords: "go-home",
 	},
 	{
 		to: "/projects",
 		label: "Projects",
-		icon: ProjectsIcon,
+		icon: FolderGit2,
 		shortcut: "p",
 		keywords: "go-projects",
 	},
 	{
 		to: "/gallery",
 		label: "Gallery",
-		icon: GalleryIcon,
+		icon: Image,
 		shortcut: "g",
 		keywords: "go-gallery-photos-videos",
 	},
 	{
 		to: "/links",
 		label: "Directory",
-		icon: ProfileIcon,
+		icon: User,
 		shortcut: "l",
 		keywords: "go-links-profile",
 	},
