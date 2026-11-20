@@ -8,9 +8,7 @@ import {
 	useBookmarksContext,
 } from "@/contexts/BookmarksContext";
 import "@testing-library/jest-dom";
-import { ThemeProvider } from "@/components/ui/styles";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
-import { getTheme } from "@/theme/theme";
 
 // Mock matchMedia
 Object.defineProperty(window, "matchMedia", {
@@ -71,14 +69,11 @@ vi.mock("@/utils/githubUtils", async (importOriginal) => {
 });
 
 const renderWithProviders = (ui) => {
-	const theme = getTheme("light");
 	return render(
 		<ThemeContextProvider>
-			<ThemeProvider theme={theme}>
-				<BookmarksContextProvider>
-					<MemoryRouter>{ui}</MemoryRouter>
-				</BookmarksContextProvider>
-			</ThemeProvider>
+			<BookmarksContextProvider>
+				<MemoryRouter>{ui}</MemoryRouter>
+			</BookmarksContextProvider>
 		</ThemeContextProvider>,
 	);
 };
@@ -202,21 +197,18 @@ describe("Bookmarks Feature", () => {
 	});
 
 	test("ProjectDetail allows bookmarking from header", async () => {
-		const theme = getTheme("light");
 		render(
 			<ThemeContextProvider>
-				<ThemeProvider theme={theme}>
-					<BookmarksContextProvider>
-						<MemoryRouter initialEntries={["/projects/test-project-1"]}>
-							<Routes>
-								<Route
-									path="/projects/:projectName"
-									element={<ProjectDetail />}
-								/>
-							</Routes>
-						</MemoryRouter>
-					</BookmarksContextProvider>
-				</ThemeProvider>
+				<BookmarksContextProvider>
+					<MemoryRouter initialEntries={["/projects/test-project-1"]}>
+						<Routes>
+							<Route
+								path="/projects/:projectName"
+								element={<ProjectDetail />}
+							/>
+						</Routes>
+					</MemoryRouter>
+				</BookmarksContextProvider>
 			</ThemeContextProvider>,
 		);
 

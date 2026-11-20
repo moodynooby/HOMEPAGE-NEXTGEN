@@ -1,18 +1,4 @@
 import { useEffect, useState } from "react";
-import {
-	Avatar,
-	Box,
-	Button,
-	CircularProgress,
-	Divider,
-	List,
-	ListItem,
-	ListItemAvatar,
-	ListItemText,
-	Stack,
-	TextField,
-	Typography,
-} from "@/components/ui";
 
 const GUESTBOOK_API = import.meta.env.VITE_GUESTBOOK_API;
 
@@ -60,7 +46,6 @@ export default function Guestbook() {
 				}
 			}
 			setEntries(mockEntries);
-			localStorage.setItem("guestbook_entries", JSON.stringify(mockEntries));
 		};
 
 		fetchEntries();
@@ -68,9 +53,11 @@ export default function Guestbook() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setError("");
+		if (honeypot) return;
 
-		if (honeypot) {
+		const lastSubmit = localStorage.getItem("guestbook_last_submit");
+		if (lastSubmit && Date.now() - Number(lastSubmit) < 60000) {
+			setError("Please wait a minute before posting again.");
 			return;
 		}
 
@@ -79,33 +66,38 @@ export default function Guestbook() {
 			return;
 		}
 
-		const lastSubmit = localStorage.getItem("guestbook_last_submit");
-		if (lastSubmit && Date.now() - Number(lastSubmit) < 60000) {
-			setError("Please wait a minute before posting again.");
+		if (name.length > 50) {
+			setError("Name must be under 50 characters.");
+			return;
+		}
+
+		if (message.length > 500) {
+			setError("Message must be under 500 characters.");
 			return;
 		}
 
 		setIsSubmitting(true);
+		setError("");
+
+		const newEntry = {
+			id: Date.now(),
+			name: name.trim(),
+			message: message.trim(),
+			social: social.trim(),
+			emoji: emoji || "😀",
+			date: new Date().toISOString(),
+		};
 
 		try {
-			const newEntry = {
-				id: Date.now(),
-				name,
-				message,
-				social,
-				emoji,
-				date: new Date().toISOString(),
-			};
-
 			let isRemoteSuccess = false;
 			try {
 				if (GUESTBOOK_API) {
-					const response = await fetch(GUESTBOOK_API, {
+					const res = await fetch(GUESTBOOK_API, {
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify(newEntry),
 					});
-					if (response.ok) {
+					if (res.ok) {
 						isRemoteSuccess = true;
 					}
 				}
@@ -134,156 +126,120 @@ export default function Guestbook() {
 	};
 
 	return (
-		<Box sx={{ mt: 8, mb: 8 }} id="guestbook">
-			<Typography
-				variant="h3"
-				component="h2"
-				sx={{ fontFamily: "Newsreader", mb: 4 }}
-			>
-				Guestbook
-			</Typography>
-			<Typography
-				variant="body1"
-				sx={{ fontFamily: "Noto Serif", mb: 4, color: "text.secondary" }}
-			>
+		<section id="guestbook" className="my-8">
+			<h2 className="mb-4">Guestbook</h2>
+			<p className="text-secondary mb-4">
 				Leave a message, say hello, or just leave your mark.
-			</Typography>
+			</p>
 
-			<Box component="form" onSubmit={handleSubmit} sx={{ mb: 6 }}>
-				<Stack spacing={3}>
-					<Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-						<TextField
-							label="Name"
-							variant="outlined"
+			<form onSubmit={handleSubmit} className="flex flex-col gap-3 mb-6">
+				<div className="flex gap-2 flex-wrap">
+					<div className="form-group flex-1">
+						<label htmlFor="guestbook-name" className="form-label">
+							Name
+						</label>
+						<input
+							id="guestbook-name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							required
-							sx={{ flexGrow: 1 }}
 						/>
-						<TextField
-							label="Avatar / Emoji"
-							variant="outlined"
+					</div>
+					<div className="form-group" style={{ width: 120 }}>
+						<label htmlFor="guestbook-emoji" className="form-label">
+							Avatar / Emoji
+						</label>
+						<input
+							id="guestbook-emoji"
 							value={emoji}
 							onChange={(e) => setEmoji(e.target.value)}
-							inputProps={{ maxLength: 2 }}
-							sx={{ width: 120 }}
+							maxLength={2}
 						/>
-					</Box>
-					<TextField
-						label="Social Handle (Optional)"
-						variant="outlined"
+					</div>
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="guestbook-social" className="form-label">
+						Social Handle (Optional)
+					</label>
+					<input
+						id="guestbook-social"
 						value={social}
 						onChange={(e) => setSocial(e.target.value)}
 					/>
-					<TextField
-						label="Message"
-						variant="outlined"
-						multiline
+				</div>
+
+				<div className="form-group">
+					<label htmlFor="guestbook-message" className="form-label">
+						Message
+					</label>
+					<textarea
+						id="guestbook-message"
 						rows={3}
 						value={message}
 						onChange={(e) => setMessage(e.target.value)}
 						required
 					/>
+				</div>
 
-					<Box sx={{ display: "none" }}>
-						<TextField
-							label="Do not fill this out"
-							value={honeypot}
-							onChange={(e) => setHoneypot(e.target.value)}
-							tabIndex={-1}
-							autoComplete="off"
-						/>
-					</Box>
+				<div style={{ display: "none" }}>
+					<label htmlFor="guestbook-honeypot">Do not fill this out</label>
+					<input
+						id="guestbook-honeypot"
+						value={honeypot}
+						onChange={(e) => setHoneypot(e.target.value)}
+						tabIndex={-1}
+						autoComplete="off"
+					/>
+				</div>
 
-					{error && (
-						<Typography color="error" variant="body2">
-							{error}
-						</Typography>
-					)}
+				{error && <p className="text-error caption">{error}</p>}
 
-					<Button
-						type="submit"
-						variant="contained"
-						disabled={isSubmitting}
-						sx={{ width: { xs: "100%", sm: "auto" }, alignSelf: "flex-start" }}
-					>
-						{isSubmitting ? <CircularProgress size={24} /> : "Sign Guestbook"}
-					</Button>
-				</Stack>
-			</Box>
+				<button
+					type="submit"
+					disabled={isSubmitting}
+					className="btn btn-primary"
+					style={{ alignSelf: "flex-start" }}
+				>
+					{isSubmitting ? <span className="spinner" /> : "Sign Guestbook"}
+				</button>
+			</form>
 
-			<Divider sx={{ mb: 4 }} />
+			<hr className="divider mb-4" />
 
-			<List sx={{ p: 0 }}>
+			<ul className="list-unstyled">
 				{entries.map((entry) => (
-					<ListItem
+					<li
 						key={entry.id}
-						alignItems="flex-start"
-						sx={{
-							px: 0,
-							py: 2,
-							borderBottom: "1px solid",
-							borderColor: "divider",
+						className="flex gap-3 items-start py-2"
+						style={{
+							borderBottom:
+								"1px solid var(--color-border, var(--hairline-rule))",
 						}}
 					>
-						<ListItemAvatar>
-							<Avatar
-								sx={{
-									bgcolor: "background.paper",
-									border: "1px solid",
-									borderColor: "divider",
-								}}
-							>
-								{entry.emoji || "👤"}
-							</Avatar>
-						</ListItemAvatar>
-						<ListItemText
-							primary={
-								<Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
-									<Typography
-										variant="subtitle1"
-										component="span"
-										sx={{ fontWeight: 700 }}
-									>
-										{entry.name}
-									</Typography>
-									{entry.social && (
-										<Typography
-											variant="body2"
-											component="span"
-											color="text.secondary"
-										>
-											{entry.social.startsWith("@")
-												? entry.social
-												: `@${entry.social}`}
-										</Typography>
-									)}
-									<Typography
-										variant="caption"
-										component="span"
-										color="text.secondary"
-										sx={{ ml: "auto" }}
-									>
-										{new Date(entry.date).toLocaleDateString()}
-									</Typography>
-								</Box>
-							}
-							secondary={
-								<Typography
-									variant="body1"
-									sx={{
-										mt: 1,
-										fontFamily: "Noto Serif",
-										color: "text.primary",
-									}}
+						<span className="avatar">{entry.emoji || "👤"}</span>
+						<div className="flex-1">
+							<div className="flex items-baseline gap-2">
+								<span style={{ fontWeight: 700 }}>{entry.name}</span>
+								{entry.social && (
+									<span className="caption text-secondary">
+										{entry.social.startsWith("@")
+											? entry.social
+											: `@${entry.social}`}
+									</span>
+								)}
+								<span
+									className="caption text-secondary"
+									style={{ marginLeft: "auto" }}
 								>
-									{entry.message}
-								</Typography>
-							}
-						/>
-					</ListItem>
+									{new Date(entry.date).toLocaleDateString()}
+								</span>
+							</div>
+							<p className="mt-2">{entry.message}</p>
+						</div>
+					</li>
 				))}
-			</List>
-		</Box>
+			</ul>
+		</section>
 	);
 }

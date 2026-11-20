@@ -1,14 +1,6 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-	Box,
-	Chip,
-	List,
-	ListItem,
-	ListItemText,
-	Paper,
-	Typography,
-} from "@/components/ui";
 
 const RADAR_SIZE = 800;
 const CENTER = RADAR_SIZE / 2;
@@ -121,133 +113,110 @@ const BLIPS = [
 		quadrant: 3,
 		ring: 2,
 		theta: (-7 * Math.PI) / 8,
-		r: 280,
-		yoe: 1,
+		r: 260,
+		yoe: 2,
 		keyRepos: [],
 		projects: [],
 	},
 ];
 
-export default function TechRadar({ onActiveBlipChange }) {
+export default function TechRadar({ onBlipSelect }) {
 	const [activeBlip, setActiveBlip] = useState(null);
 
 	const handleBlipHover = (blip) => {
 		setActiveBlip(blip);
-		if (onActiveBlipChange) {
-			onActiveBlipChange(blip);
+		if (onBlipSelect) {
+			onBlipSelect(blip ? blip.projects : []);
 		}
 	};
 
 	const handleBlipLeave = () => {
-		// setActiveBlip(null); // Keep it active on click/hover for mobile/desktop friendliness or clear it
+		// Keep active blip selected or let it stay until another is hovered
 	};
 
 	return (
-		<Box
-			sx={{
-				display: "flex",
-				flexDirection: { xs: "column", md: "row" },
-				gap: 4,
-				alignItems: "flex-start",
-				p: 4,
-			}}
-		>
-			<Box
-				sx={{
-					position: "relative",
-					width: { xs: "100%", md: "60%" },
-					aspectRatio: "1 / 1",
-					maxWidth: RADAR_SIZE,
-				}}
+		<div className="flex flex-col md:flex-row gap-6 items-center w-full">
+			{/* SVG Radar */}
+			<div
+				className="flex-1"
+				style={{ maxWidth: 650, width: "100%", aspectRatio: "1/1" }}
 			>
 				<svg
 					viewBox={`0 0 ${RADAR_SIZE} ${RADAR_SIZE}`}
-					width="100%"
-					height="100%"
-					role="img"
-					aria-label="Technology Radar Chart"
+					style={{ width: "100%", height: "100%", display: "block" }}
+					aria-label="Interactive Technology Radar"
 				>
-					<title>Technology Radar Chart</title>
-					{/* Background */}
-					<rect width={RADAR_SIZE} height={RADAR_SIZE} fill="#f8f9fa" rx={16} />
-
 					{/* Rings */}
-					{RINGS.map((ring, index) => (
+					{RINGS.map((ring) => (
 						<circle
 							key={ring.name}
 							cx={CENTER}
 							cy={CENTER}
 							r={ring.radius}
 							fill="none"
-							stroke={ring.color}
-							strokeWidth={2}
-							strokeDasharray={index === RINGS.length - 1 ? "none" : "4 4"}
+							stroke="var(--color-border, var(--hairline-rule))"
+							strokeWidth="1"
+							strokeDasharray="4 4"
 						/>
-					))}
-					{/* Ring Labels */}
-					{RINGS.map((ring) => (
-						<text
-							key={`label-${ring.name}`}
-							x={CENTER}
-							y={CENTER - ring.radius + 15}
-							textAnchor="middle"
-							fill="#666"
-							fontSize="12"
-							fontWeight="bold"
-						>
-							{ring.name}
-						</text>
 					))}
 
 					{/* Quadrant Lines */}
-					<line
-						x1={0}
-						y1={CENTER}
-						x2={RADAR_SIZE}
-						y2={CENTER}
-						stroke="#ddd"
-						strokeWidth={2}
-					/>
 					<line
 						x1={CENTER}
 						y1={0}
 						x2={CENTER}
 						y2={RADAR_SIZE}
-						stroke="#ddd"
-						strokeWidth={2}
+						stroke="var(--color-border, var(--hairline-rule))"
+						strokeWidth="1.5"
+					/>
+					<line
+						x1={0}
+						y1={CENTER}
+						x2={RADAR_SIZE}
+						y2={CENTER}
+						stroke="var(--color-border, var(--hairline-rule))"
+						strokeWidth="1.5"
 					/>
 
 					{/* Quadrant Labels */}
-					<text
-						x={CENTER + 50}
-						y={50}
-						fill="#333"
-						fontSize="16"
-						fontWeight="bold"
-					>
-						Languages
-					</text>
-					<text
-						x={CENTER + 50}
-						y={RADAR_SIZE - 30}
-						fill="#333"
-						fontSize="16"
-						fontWeight="bold"
-					>
-						Frontend/UI
-					</text>
-					<text
-						x={50}
-						y={RADAR_SIZE - 30}
-						fill="#333"
-						fontSize="16"
-						fontWeight="bold"
-					>
-						Backend/Data
-					</text>
-					<text x={50} y={50} fill="#333" fontSize="16" fontWeight="bold">
-						DevOps/Cloud
-					</text>
+					{QUADRANTS.map((quad) => {
+						const dist = 380;
+						const x = CENTER + dist * Math.cos(quad.angle);
+						const y = CENTER + dist * Math.sin(quad.angle);
+						return (
+							<text
+								key={quad.name}
+								x={x}
+								y={y}
+								textAnchor="middle"
+								dominantBaseline="central"
+								fill="var(--color-text-secondary, #7d5d53)"
+								fontSize="14"
+								fontWeight="600"
+								letterSpacing="0.08em"
+								style={{ textTransform: "uppercase" }}
+							>
+								{quad.name}
+							</text>
+						);
+					})}
+
+					{/* Ring Labels */}
+					{RINGS.map((ring) => (
+						<text
+							key={ring.name}
+							x={CENTER + 6}
+							y={CENTER - ring.radius + 16}
+							fill="var(--color-text-secondary, #7d5d53)"
+							fontSize="10"
+							fontWeight="600"
+							letterSpacing="0.1em"
+							opacity="0.8"
+							style={{ textTransform: "uppercase" }}
+						>
+							{ring.name}
+						</text>
+					))}
 
 					{/* Blips */}
 					{BLIPS.map((blip) => {
@@ -284,7 +253,11 @@ export default function TechRadar({ onActiveBlipChange }) {
 									y={20}
 									textAnchor="middle"
 									fontSize="12"
-									fill={isActive ? "#000" : "#444"}
+									fill={
+										isActive
+											? "var(--color-text-primary, #38392e)"
+											: "var(--color-text-secondary, #7d5d53)"
+									}
 									fontWeight={isActive ? "bold" : "normal"}
 								>
 									{blip.name}
@@ -293,94 +266,83 @@ export default function TechRadar({ onActiveBlipChange }) {
 						);
 					})}
 				</svg>
-			</Box>
+			</div>
 
 			{/* Details Panel */}
-			<Box sx={{ width: { xs: "100%", md: "40%" } }}>
-				<Paper elevation={3} sx={{ p: 3, minHeight: 300, borderRadius: 2 }}>
-					{activeBlip ? (
-						<Box>
-							<Typography variant="h4" gutterBottom>
-								{activeBlip.name}
-							</Typography>
-							<Typography
-								variant="subtitle1"
-								color="text.secondary"
-								gutterBottom
-							>
-								Quadrant: {QUADRANTS[activeBlip.quadrant].name} | Ring:{" "}
-								{RINGS[activeBlip.ring].name}
-							</Typography>
-							<Box sx={{ my: 2 }}>
-								<Typography variant="body1">
-									<strong>Years of Experience:</strong> {activeBlip.yoe}
-								</Typography>
-							</Box>
+			<div
+				className="surface-card flex-1"
+				style={{ maxWidth: 440, width: "100%", minHeight: 320 }}
+			>
+				{activeBlip ? (
+					<div>
+						<h3 className="mb-1">{activeBlip.name}</h3>
+						<p className="caption text-secondary mb-3">
+							Quadrant: {QUADRANTS[activeBlip.quadrant].name} | Ring:{" "}
+							{RINGS[activeBlip.ring].name}
+						</p>
+						<p className="font-body mb-4">
+							<strong>Years of Experience:</strong> {activeBlip.yoe}
+						</p>
 
-							{activeBlip.keyRepos.length > 0 && (
-								<Box sx={{ mb: 2 }}>
-									<Typography variant="h6" gutterBottom>
-										Key Repositories
-									</Typography>
-									<Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-										{activeBlip.keyRepos.map((repo) => (
-											<Chip
-												key={repo}
-												label={repo}
-												component="a"
-												href={`https://github.com/moodynooby/${repo}`}
-												target="_blank"
-												clickable
-											/>
-										))}
-									</Box>
-								</Box>
-							)}
+						{activeBlip.keyRepos.length > 0 && (
+							<div className="mb-4">
+								<h5 className="mb-2">Key Repositories</h5>
+								<div className="flex gap-2 flex-wrap">
+									{activeBlip.keyRepos.map((repo) => (
+										<a
+											key={repo}
+											href={`https://github.com/moodynooby/${repo}`}
+											target="_blank"
+											rel="noreferrer"
+											className="chip"
+										>
+											{repo}
+										</a>
+									))}
+								</div>
+							</div>
+						)}
 
-							{activeBlip.projects.length > 0 && (
-								<Box>
-									<Typography variant="h6" gutterBottom>
-										Related Projects
-									</Typography>
-									<List dense>
-										{activeBlip.projects.map((proj) => (
-											<ListItem key={proj} disablePadding>
-												<ListItemText
-													primary={
-														<Link
-															to={`/projects/${proj}`}
-															style={{
-																textDecoration: "none",
-																color: "inherit",
-															}}
-														>
-															{proj}
-														</Link>
-													}
-												/>
-											</ListItem>
-										))}
-									</List>
-								</Box>
-							)}
-						</Box>
-					) : (
-						<Box
-							sx={{
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								height: "100%",
-								minHeight: 250,
-							}}
+						{activeBlip.projects.length > 0 && (
+							<div>
+								<h5 className="mb-2">Related Projects</h5>
+								<ul className="list-unstyled flex flex-col gap-1">
+									{activeBlip.projects.map((proj) => (
+										<li key={proj}>
+											<Link
+												to={`/projects/${proj}`}
+												className="caption"
+												style={{
+													textDecoration: "underline",
+													textUnderlineOffset: 3,
+												}}
+											>
+												{proj}
+											</Link>
+										</li>
+									))}
+								</ul>
+							</div>
+						)}
+					</div>
+				) : (
+					<div
+						className="flex items-center justify-center"
+						style={{ height: "100%", minHeight: 250 }}
+					>
+						<p
+							className="caption text-secondary"
+							style={{ fontStyle: "italic" }}
 						>
-							<Typography variant="h6" color="text.secondary">
-								Hover or click a blip to see details
-							</Typography>
-						</Box>
-					)}
-				</Paper>
-			</Box>
-		</Box>
+							Hover or click a blip to see details
+						</p>
+					</div>
+				)}
+			</div>
+		</div>
 	);
 }
+
+TechRadar.propTypes = {
+	onBlipSelect: PropTypes.func,
+};

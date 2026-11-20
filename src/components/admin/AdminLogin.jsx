@@ -1,17 +1,6 @@
+import { Key, Lock } from "lucide-react";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import {
-	Alert,
-	Box,
-	Button,
-	Card,
-	CardContent,
-	Container,
-	InputAdornment,
-	TextField,
-	Typography,
-} from "@/components/ui";
-import { Lock, VpnKey } from "@/components/ui/icons";
 import { isPasswordSet, login, setMasterPassword } from "@/utils/authUtils";
 
 export default function AdminLogin({ onAuthenticated }) {
@@ -55,156 +44,114 @@ export default function AdminLogin({ onAuthenticated }) {
 	};
 
 	return (
-		<Container maxWidth="sm" sx={{ py: { xs: 8, md: 14 } }}>
-			<Card
-				elevation={0}
-				sx={{
-					border: 1,
-					borderColor: "divider",
-					backgroundColor: "background.paper",
-					p: { xs: 3, md: 5 },
-				}}
-			>
-				<CardContent sx={{ p: 0 }}>
-					<Box sx={{ textAlign: "center", mb: 4 }}>
-						<Typography
-							variant="overline"
-							sx={{
-								color: "secondary.main",
-								letterSpacing: "0.15em",
-								fontWeight: 600,
-								display: "block",
-								mb: 1,
-							}}
-						>
-							Curator Desk • Security Check
-						</Typography>
-						<Typography
-							variant="h4"
-							component="h1"
-							sx={{
-								fontFamily: "Newsreader, serif",
-								fontWeight: 700,
-								color: "text.primary",
-								mb: 1.5,
-							}}
-						>
-							{hasMasterPassword
-								? "Ledger Access"
-								: "Initialize Curator Passkey"}
-						</Typography>
-						<Typography
-							variant="body2"
-							sx={{
-								color: "text.secondary",
-								maxWidth: 420,
-								mx: "auto",
-								lineHeight: 1.6,
-							}}
-						>
-							{hasMasterPassword
-								? "Enter the editorial passkey to manage projects, edit metadata, and publish changes to the live portfolio."
-								: "No passkey is established yet. Set a private master password to protect editorial publication controls."}
-						</Typography>
-					</Box>
+		<div className="container-sm py-8">
+			<div className="surface-card">
+				<div style={{ textAlign: "center", marginBottom: "2rem" }}>
+					<span className="overline mb-1">Curator Desk • Security Check</span>
+					<h2 className="mb-2">
+						{hasMasterPassword ? "Ledger Access" : "Initialize Curator Passkey"}
+					</h2>
+					<p
+						className="caption text-secondary"
+						style={{ maxWidth: 440, margin: "0 auto", lineHeight: 1.6 }}
+					>
+						{hasMasterPassword
+							? "Enter the editorial passkey to manage projects, edit metadata, and publish changes to the live portfolio."
+							: "No passkey is established yet. Set a private master password to protect editorial publication controls."}
+					</p>
+				</div>
 
-					{error && (
-						<Alert
-							severity="error"
-							sx={{
-								mb: 3,
-								border: 1,
-								borderColor: "error.light",
-								backgroundColor: "transparent",
+				{error && (
+					<div
+						className="surface-card mb-4 text-error"
+						style={{
+							padding: "0.75rem 1rem",
+							borderLeft: "4px solid #b71c1c",
+						}}
+					>
+						{error}
+					</div>
+				)}
+
+				<form onSubmit={handleLogin} className="flex flex-col gap-4">
+					<div className="form-group">
+						<label htmlFor="admin-passkey" className="form-label">
+							{hasMasterPassword ? "Master Passkey" : "Create Passkey"}
+						</label>
+						<div
+							style={{
+								position: "relative",
+								display: "flex",
+								alignItems: "center",
 							}}
 						>
-							{error}
-						</Alert>
-					)}
-
-					<Box component="form" onSubmit={handleLogin} noValidate>
-						<TextField
-							fullWidth
-							label={hasMasterPassword ? "Master Passkey" : "Create Passkey"}
-							type="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							autoFocus
-							margin="normal"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<Lock fontSize="small" sx={{ color: "text.secondary" }} />
-									</InputAdornment>
-								),
-							}}
-							placeholder="Enter passkey..."
-							sx={{
-								"& .MuiOutlinedInput-root": {
-									"& fieldset": {
-										borderColor: "divider",
-									},
-								},
-							}}
-						/>
-
-						{!hasMasterPassword && (
-							<TextField
-								fullWidth
-								label="Confirm Passkey"
-								type="password"
-								value={confirmPassword}
-								onChange={(e) => setConfirmPassword(e.target.value)}
-								margin="normal"
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<VpnKey
-												fontSize="small"
-												sx={{ color: "text.secondary" }}
-											/>
-										</InputAdornment>
-									),
-								}}
-								placeholder="Repeat passkey..."
-								sx={{
-									"& .MuiOutlinedInput-root": {
-										"& fieldset": {
-											borderColor: "divider",
-										},
-									},
+							<Lock
+								size={16}
+								style={{
+									position: "absolute",
+									left: 12,
+									color: "var(--color-text-secondary, #7d5d53)",
+									pointerEvents: "none",
 								}}
 							/>
-						)}
+							<input
+								id="admin-passkey"
+								type="password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								placeholder="Enter passkey..."
+								style={{ paddingLeft: "2.4rem" }}
+							/>
+						</div>
+					</div>
 
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							disabled={submitting}
-							sx={{
-								mt: 3,
-								py: 1.25,
-								backgroundColor: "primary.main",
-								color: "primary.contrastText",
-								fontWeight: 600,
-								letterSpacing: "0.08em",
-								textTransform: "uppercase",
-								"&:hover": {
-									backgroundColor: "primary.dark",
-								},
-							}}
-						>
-							{submitting
-								? "Verifying..."
-								: hasMasterPassword
-									? "Unlock Curator Console"
-									: "Set Passkey & Enter"}
-						</Button>
-					</Box>
-				</CardContent>
-			</Card>
-		</Container>
+					{!hasMasterPassword && (
+						<div className="form-group">
+							<label htmlFor="admin-confirm-passkey" className="form-label">
+								Confirm Passkey
+							</label>
+							<div
+								style={{
+									position: "relative",
+									display: "flex",
+									alignItems: "center",
+								}}
+							>
+								<Key
+									size={16}
+									style={{
+										position: "absolute",
+										left: 12,
+										color: "var(--color-text-secondary, #7d5d53)",
+										pointerEvents: "none",
+									}}
+								/>
+								<input
+									id="admin-confirm-passkey"
+									type="password"
+									value={confirmPassword}
+									onChange={(e) => setConfirmPassword(e.target.value)}
+									placeholder="Repeat passkey..."
+									style={{ paddingLeft: "2.4rem" }}
+								/>
+							</div>
+						</div>
+					)}
+
+					<button
+						type="submit"
+						disabled={submitting}
+						className="btn btn-primary w-full mt-2"
+					>
+						{submitting
+							? "Verifying..."
+							: hasMasterPassword
+								? "Unlock Curator Console"
+								: "Set Passkey & Enter"}
+					</button>
+				</form>
+			</div>
+		</div>
 	);
 }
 

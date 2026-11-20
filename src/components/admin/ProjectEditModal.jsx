@@ -1,27 +1,6 @@
+import { Star, Wand2, X } from "lucide-react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import {
-	Alert,
-	Box,
-	Button,
-	Chip,
-	CircularProgress,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	FormControl,
-	FormControlLabel,
-	Grid,
-	IconButton,
-	InputLabel,
-	MenuItem,
-	Select,
-	Switch,
-	TextField,
-	Typography,
-} from "@/components/ui";
-import { AutoFixHigh, Close, Star, StarBorder } from "@/components/ui/icons";
 import { fetchGitHubRepoDetails } from "@/utils/githubPublisher";
 import { PROJECT_CATEGORIES } from "@/utils/projectCategories";
 
@@ -48,7 +27,6 @@ export default function ProjectEditModal({
 	const isEdit = Boolean(project?.githubName);
 
 	const [formData, setFormData] = useState(EMPTY_FORM);
-
 	const [fetchingGithub, setFetchingGithub] = useState(false);
 	const [fetchMessage, setFetchMessage] = useState(null);
 	const [error, setError] = useState("");
@@ -58,14 +36,10 @@ export default function ProjectEditModal({
 			project
 				? {
 						...EMPTY_FORM,
-						githubName: project.githubName || "",
-						tagline: project.tagline || "",
-						category: project.category || "Web App",
-						githubImg: project.githubImg || "",
-						githubContentPath: project.githubContentPath || "",
-						featured: Boolean(project.featured),
+						...project,
 						addonId: project.addonId || "",
 						chromeStatsId: project.chromeStatsId || "",
+						featured: Boolean(project.featured),
 					}
 				: EMPTY_FORM,
 		);
@@ -79,52 +53,39 @@ export default function ProjectEditModal({
 
 	const handleAutoFetch = async () => {
 		if (!formData.githubName.trim()) {
-			setError("Enter a GitHub Repository Name first (e.g. NotebookForge).");
+			setFetchMessage({
+				type: "error",
+				text: "Enter a repository name first (e.g. NotebookForge).",
+			});
 			return;
 		}
 
 		setFetchingGithub(true);
 		setFetchMessage(null);
-		setError("");
 
 		try {
-			const cleanName = formData.githubName
-				.replace(/^moodynooby\//i, "")
-				.trim();
-			const details = await fetchGitHubRepoDetails(cleanName, githubToken);
-
-			let inferredCategory = formData.category;
-			const topics = details.topics || [];
-			if (
-				topics.includes("extension") ||
-				topics.includes("chrome-extension") ||
-				topics.includes("firefox-addon")
-			) {
-				inferredCategory = "Browser Extension";
-			} else if (topics.includes("cli") || topics.includes("tool")) {
-				inferredCategory = "CLI / Tool";
-			} else if (topics.includes("library") || topics.includes("package")) {
-				inferredCategory = "Library";
-			}
-
-			const defaultReadmeUrl = `https://raw.githubusercontent.com/moodynooby/${cleanName}/${details.defaultBranch}/README.md`;
+			const details = await fetchGitHubRepoDetails(
+				formData.githubName.trim(),
+				githubToken,
+			);
 
 			setFormData((prev) => ({
 				...prev,
-				githubName: cleanName,
-				tagline: prev.tagline || details.description || "",
-				category: inferredCategory,
-				githubContentPath: prev.githubContentPath || defaultReadmeUrl,
+				githubName: details.name || prev.githubName,
+				tagline: details.description || prev.tagline,
+				githubContentPath: details.defaultReadmeUrl || prev.githubContentPath,
 			}));
 
 			setFetchMessage({
 				type: "success",
-				text: `Fetched "${details.name}" (${details.stars}★, ${details.language || "Code"}). Tagline and content path auto-populated.`,
+				text: `Fetched info from GitHub! Default branch: ${details.defaultBranch}.`,
 			});
 		} catch (err) {
 			setFetchMessage({
 				type: "error",
-				text: err.message || "Failed to fetch repository metadata.",
+				text:
+					err.message ||
+					"Failed to query GitHub repository. Check the name or provide a token.",
 			});
 		} finally {
 			setFetchingGithub(false);
@@ -133,28 +94,38 @@ export default function ProjectEditModal({
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		setError("");
+
 		if (!formData.githubName.trim()) {
-			setError("GitHub Name is required.");
+			setError("GitHub repository name is required.");
 			return;
 		}
 		if (!formData.tagline.trim()) {
-			setError("Tagline description is required.");
+			setError("A tagline is required for the monograph entry.");
+			return;
+		}
+		if (!formData.category.trim()) {
+			setError("Category is required.");
+			return;
+		}
+		if (!formData.githubContentPath.trim()) {
+			setError("A raw README URL (githubContentPath) is required.");
+			return;
+		}
+		if (!formData.githubImg.trim()) {
+			setError("A preview image URL is required.");
 			return;
 		}
 
 		const cleanProject = {
 			githubName: formData.githubName.trim(),
 			tagline: formData.tagline.trim(),
-			category: formData.category,
-			githubContentPath:
-				formData.githubContentPath.trim() ||
-				`https://raw.githubusercontent.com/moodynooby/${formData.githubName.trim()}/main/README.md`,
+			category: formData.category.trim(),
 			githubImg: formData.githubImg.trim(),
+			githubContentPath: formData.githubContentPath.trim(),
+			featured: Boolean(formData.featured),
 		};
 
-		if (formData.featured) {
-			cleanProject.featured = true;
-		}
 		if (formData.addonId.trim()) {
 			cleanProject.addonId = formData.addonId.trim();
 		}
@@ -165,408 +136,235 @@ export default function ProjectEditModal({
 		onSave(cleanProject);
 	};
 
+	if (!open) return null;
+
 	return (
-		<Dialog
-			open={open}
-			onClose={onClose}
-			maxWidth="md"
-			fullWidth
-			PaperProps={{
-				sx: {
-					backgroundColor: "background.paper",
-					border: 1,
-					borderColor: "divider",
-					backgroundImage: "none",
-				},
+		<div
+			className="dialog-backdrop"
+			role="dialog"
+			aria-modal="true"
+			tabIndex={-1}
+			onClick={(e) => {
+				if (e.target === e.currentTarget) onClose();
+			}}
+			onKeyDown={(e) => {
+				if (e.key === "Escape") onClose();
 			}}
 		>
-			<DialogTitle
-				sx={{
-					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "center",
-					borderBottom: 1,
-					borderColor: "divider",
-					py: 2,
-				}}
-			>
-				<Box>
-					<Typography
-						variant="overline"
-						sx={{
-							color: "secondary.main",
-							letterSpacing: "0.15em",
-							fontWeight: 600,
-						}}
+			<div className="dialog-panel" style={{ maxWidth: 720 }}>
+				<div className="dialog-header">
+					<div>
+						<span className="overline">Ledger Monograph Entry</span>
+						<h3 className="mt-1">
+							{isEdit
+								? `Edit Entry: ${project.githubName}`
+								: "New Project Monograph"}
+						</h3>
+					</div>
+					<button
+						type="button"
+						onClick={onClose}
+						aria-label="Close"
+						className="btn btn-icon btn-ghost"
 					>
-						Ledger Monograph Entry
-					</Typography>
-					<Typography
-						variant="h5"
-						component="div"
-						sx={{
-							fontFamily: "Newsreader, serif",
-							fontWeight: 700,
-							color: "text.primary",
-						}}
-					>
-						{isEdit
-							? `Edit Entry: ${project.githubName}`
-							: "New Project Monograph"}
-					</Typography>
-				</Box>
-				<IconButton onClick={onClose} size="small" aria-label="Close">
-					<Close />
-				</IconButton>
-			</DialogTitle>
+						<X size={18} />
+					</button>
+				</div>
 
-			<Box component="form" onSubmit={handleSubmit} noValidate>
-				<DialogContent sx={{ py: 3 }}>
-					{error && (
-						<Alert severity="error" sx={{ mb: 3 }}>
-							{error}
-						</Alert>
-					)}
+				<form onSubmit={handleSubmit} noValidate>
+					<div className="flex flex-col gap-4">
+						{error && (
+							<div
+								className="surface-card text-error"
+								style={{
+									padding: "0.75rem 1rem",
+									borderLeft: "4px solid #b71c1c",
+								}}
+							>
+								{error}
+							</div>
+						)}
 
-					{fetchMessage && (
-						<Alert severity={fetchMessage.type} sx={{ mb: 3 }}>
-							{fetchMessage.text}
-						</Alert>
-					)}
+						{fetchMessage && (
+							<div
+								className="surface-card"
+								style={{
+									padding: "0.75rem 1rem",
+									borderLeft: `4px solid ${fetchMessage.type === "success" ? "#2e7d32" : "#b71c1c"}`,
+								}}
+							>
+								<p className="caption">{fetchMessage.text}</p>
+							</div>
+						)}
 
-					<Box
-						sx={{
-							p: 2,
-							mb: 3,
-							border: 1,
-							borderColor: "divider",
-							backgroundColor: "background.default",
-						}}
-					>
-						<Typography
-							variant="subtitle2"
-							sx={{
-								fontFamily: "Work Sans, sans-serif",
-								fontWeight: 600,
-								textTransform: "uppercase",
-								letterSpacing: "0.08em",
-								mb: 1.5,
-								color: "text.secondary",
+						{/* GitHub Sync Banner */}
+						<div
+							className="surface-card"
+							style={{
+								padding: "1rem",
+								backgroundColor: "var(--color-background-body, #fdffda)",
 							}}
 						>
-							GitHub Repository Sync
-						</Typography>
-						<Grid container spacing={2} alignItems="center">
-							<Grid item xs={12} sm={8}>
-								<TextField
-									fullWidth
-									size="small"
-									label="GitHub Repository Name"
-									placeholder="e.g. NotebookForge or moodynooby/diet-logs"
-									value={formData.githubName}
-									onChange={(e) => handleChange("githubName", e.target.value)}
-									required
-								/>
-							</Grid>
-							<Grid item xs={12} sm={4}>
-								<Button
-									fullWidth
-									variant="outlined"
+							<span className="overline mb-2">GitHub Repository Sync</span>
+							<div className="flex gap-2 items-center flex-wrap">
+								<div className="flex-1" style={{ minWidth: 240 }}>
+									<input
+										id="github-repo-name"
+										value={formData.githubName}
+										onChange={(e) => handleChange("githubName", e.target.value)}
+										placeholder="e.g. NotebookForge or moodynooby/diet-logs"
+										required
+									/>
+								</div>
+								<button
+									type="button"
 									onClick={handleAutoFetch}
 									disabled={fetchingGithub || !formData.githubName.trim()}
-									startIcon={
-										fetchingGithub ? (
-											<CircularProgress size={16} color="inherit" />
-										) : (
-											<AutoFixHigh />
-										)
-									}
-									sx={{
-										borderColor: "divider",
-										color: "text.primary",
-										textTransform: "none",
-										"&:hover": { borderColor: "primary.main" },
-									}}
+									className="btn btn-outline btn-sm"
 								>
-									{fetchingGithub ? "Fetching..." : "Auto-Fill Metadata"}
-								</Button>
-							</Grid>
-						</Grid>
-					</Box>
+									{fetchingGithub ? (
+										<span
+											className="spinner"
+											style={{ width: 14, height: 14 }}
+										/>
+									) : (
+										<Wand2 size={14} />
+									)}
+									<span>
+										{fetchingGithub ? "Fetching..." : "Auto-Fill Metadata"}
+									</span>
+								</button>
+							</div>
+						</div>
 
-					<Grid container spacing={2.5}>
-						<Grid item xs={12} sm={6}>
-							<FormControl fullWidth size="small">
-								<InputLabel id="category-select-label">Category</InputLabel>
-								<Select
-									labelId="category-select-label"
+						{/* Category & Featured */}
+						<div className="flex gap-4 items-center flex-wrap">
+							<div className="form-group flex-1" style={{ minWidth: 200 }}>
+								<label htmlFor="project-category" className="form-label">
+									Category
+								</label>
+								<select
+									id="project-category"
 									value={formData.category}
-									label="Category"
 									onChange={(e) => handleChange("category", e.target.value)}
 								>
 									{CATEGORIES.map((cat) => (
-										<MenuItem key={cat} value={cat}>
+										<option key={cat} value={cat}>
 											{cat}
-										</MenuItem>
+										</option>
 									))}
-								</Select>
-							</FormControl>
-						</Grid>
+								</select>
+							</div>
 
-						<Grid
-							item
-							xs={12}
-							sm={6}
-							sx={{ display: "flex", alignItems: "center" }}
-						>
-							<FormControlLabel
-								control={
-									<Switch
-										checked={formData.featured}
-										onChange={(e) => handleChange("featured", e.target.checked)}
-										color="primary"
+							<div
+								className="flex items-center gap-2"
+								style={{ marginTop: "1.2rem" }}
+							>
+								<button
+									type="button"
+									onClick={() => handleChange("featured", !formData.featured)}
+									className={`chip ${formData.featured ? "chip-active" : ""}`}
+								>
+									<Star
+										size={14}
+										fill={formData.featured ? "currentColor" : "none"}
 									/>
-								}
-								label={
-									<Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-										{formData.featured ? (
-											<Star fontSize="small" sx={{ color: "primary.main" }} />
-										) : (
-											<StarBorder
-												fontSize="small"
-												sx={{ color: "text.secondary" }}
-											/>
-										)}
-										<Typography variant="body2" sx={{ fontWeight: 500 }}>
-											Pin as Featured Monograph
-										</Typography>
-									</Box>
-								}
-							/>
-						</Grid>
+									<span>Featured on Homepage</span>
+								</button>
+							</div>
+						</div>
 
-						<Grid item xs={12}>
-							<TextField
-								fullWidth
-								multiline
+						{/* Tagline */}
+						<div className="form-group">
+							<label htmlFor="project-tagline" className="form-label">
+								Tagline (Editorial Summary)
+							</label>
+							<textarea
+								id="project-tagline"
 								rows={2}
-								label="Tagline / Concise Editorial Description"
 								value={formData.tagline}
 								onChange={(e) => handleChange("tagline", e.target.value)}
-								placeholder="One or two sentence summary in the editorial archive voice."
+								placeholder="One crisp, informative sentence describing what this project does."
 								required
-								helperText="Displays in the main broadsheet ledger below the project title."
 							/>
-						</Grid>
+						</div>
 
-						<Grid item xs={12}>
-							<TextField
-								fullWidth
-								size="small"
-								label="Image URL (Thumbnail or Logo)"
-								value={formData.githubImg}
-								onChange={(e) => handleChange("githubImg", e.target.value)}
-								placeholder="https://raw.githubusercontent.com/.../logo.svg"
-								helperText="SVG or PNG asset URL representing the project mark."
-							/>
-						</Grid>
-
-						<Grid item xs={12}>
-							<TextField
-								fullWidth
-								size="small"
-								label="README Markdown Raw Content Path"
-								value={formData.githubContentPath}
-								onChange={(e) =>
-									handleChange("githubContentPath", e.target.value)
-								}
-								placeholder="https://raw.githubusercontent.com/moodynooby/{repo}/main/README.md"
-								helperText="Fetched dynamically on the Project Detail monograph reading view."
-							/>
-						</Grid>
-
-						<Grid item xs={12} sm={6}>
-							<TextField
-								fullWidth
-								size="small"
-								label="Firefox Addon ID (Optional)"
-								value={formData.addonId}
-								onChange={(e) => handleChange("addonId", e.target.value)}
-								placeholder="e.g. modern-translate-web-pages"
-								helperText="For Firefox extensions to fetch live install counts."
-							/>
-						</Grid>
-
-						<Grid item xs={12} sm={6}>
-							<TextField
-								fullWidth
-								size="small"
-								label="Chrome Stats ID (Optional)"
-								value={formData.chromeStatsId}
-								onChange={(e) => handleChange("chromeStatsId", e.target.value)}
-								placeholder="e.g. modern-translate-web-pages"
-							/>
-						</Grid>
-					</Grid>
-
-					<Box sx={{ mt: 4, pt: 3, borderTop: 1, borderColor: "divider" }}>
-						<Typography
-							variant="overline"
-							sx={{
-								color: "secondary.main",
-								letterSpacing: "0.15em",
-								fontWeight: 600,
-								display: "block",
-								mb: 1.5,
-							}}
-						>
-							Live Monograph Preview
-						</Typography>
-
-						<Box
-							sx={{
-								border: 1,
-								borderColor: "divider",
-								backgroundColor: "background.paper",
-								p: 2.5,
-								display: "flex",
-								alignItems: "flex-start",
-								gap: 2,
-							}}
-						>
-							{formData.githubImg ? (
-								<Box
-									component="img"
-									src={formData.githubImg}
-									alt="Thumbnail"
-									sx={{
-										width: 48,
-										height: 48,
-										objectFit: "contain",
-										border: 1,
-										borderColor: "divider",
-										p: 0.5,
-										backgroundColor: "background.default",
-									}}
-									onError={(e) => {
-										e.target.style.display = "none";
-									}}
+						{/* Images & Paths */}
+						<div className="flex gap-4 flex-wrap">
+							<div className="form-group flex-1" style={{ minWidth: 240 }}>
+								<label htmlFor="project-img" className="form-label">
+									Logo / Thumbnail URL
+								</label>
+								<input
+									id="project-img"
+									value={formData.githubImg}
+									onChange={(e) => handleChange("githubImg", e.target.value)}
+									placeholder="https://... or /logo.png"
+									required
 								/>
-							) : (
-								<Box
-									sx={{
-										width: 48,
-										height: 48,
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-										border: 1,
-										borderColor: "divider",
-										backgroundColor: "background.default",
-										color: "text.secondary",
-										fontFamily: "Newsreader, serif",
-										fontWeight: 700,
-									}}
-								>
-									{formData.githubName.slice(0, 2).toUpperCase() || "PR"}
-								</Box>
-							)}
+							</div>
 
-							<Box sx={{ flex: 1, minWidth: 0 }}>
-								<Box
-									sx={{
-										display: "flex",
-										alignItems: "center",
-										gap: 1,
-										flexWrap: "wrap",
-										mb: 0.5,
-									}}
-								>
-									<Typography
-										variant="h6"
-										component="span"
-										sx={{
-											fontFamily: "Newsreader, serif",
-											fontWeight: 700,
-											color: "text.primary",
-										}}
-									>
-										{formData.githubName || "Project Name"}
-									</Typography>
-									<Chip
-										label={formData.category}
-										size="small"
-										variant="outlined"
-										sx={{
-											fontSize: "0.65rem",
-											height: 20,
-											borderColor: "divider",
-											textTransform: "uppercase",
-											letterSpacing: "0.08em",
-										}}
-									/>
-									{formData.featured && (
-										<Chip
-											icon={<Star sx={{ fontSize: "0.8rem !important" }} />}
-											label="Featured"
-											size="small"
-											sx={{
-												fontSize: "0.65rem",
-												height: 20,
-												backgroundColor: "secondary.main",
-												color: "#fff",
-											}}
-										/>
-									)}
-								</Box>
-								<Typography
-									variant="body2"
-									sx={{
-										color: "text.secondary",
-										fontFamily: "Noto Serif, serif",
-										fontSize: "0.85rem",
-										lineHeight: 1.4,
-									}}
-								>
-									{formData.tagline ||
-										"Project tagline or editorial description..."}
-								</Typography>
-							</Box>
-						</Box>
-					</Box>
-				</DialogContent>
+							<div className="form-group flex-1" style={{ minWidth: 240 }}>
+								<label htmlFor="project-readme" className="form-label">
+									Pinned README URL
+								</label>
+								<input
+									id="project-readme"
+									value={formData.githubContentPath}
+									onChange={(e) =>
+										handleChange("githubContentPath", e.target.value)
+									}
+									placeholder="https://raw.githubusercontent.com/.../main/README.md"
+									required
+								/>
+							</div>
+						</div>
 
-				<DialogActions
-					sx={{
-						px: 3,
-						py: 2,
-						borderTop: 1,
-						borderColor: "divider",
-						backgroundColor: "background.default",
-					}}
-				>
-					<Button onClick={onClose} sx={{ color: "text.secondary" }}>
-						Cancel
-					</Button>
-					<Button
-						type="submit"
-						variant="contained"
-						sx={{
-							backgroundColor: "primary.main",
-							color: "primary.contrastText",
-							fontWeight: 600,
-							letterSpacing: "0.08em",
-							textTransform: "uppercase",
-							"&:hover": {
-								backgroundColor: "primary.dark",
-							},
-						}}
-					>
-						{isEdit ? "Update Project" : "Add to Ledger"}
-					</Button>
-				</DialogActions>
-			</Box>
-		</Dialog>
+						{/* Optional Extension IDs */}
+						<div className="flex gap-4 flex-wrap">
+							<div className="form-group flex-1" style={{ minWidth: 240 }}>
+								<label htmlFor="project-addon-id" className="form-label">
+									Firefox Add-on Slug (Optional)
+								</label>
+								<input
+									id="project-addon-id"
+									value={formData.addonId}
+									onChange={(e) => handleChange("addonId", e.target.value)}
+									placeholder="e.g. lean-dark-reader"
+								/>
+							</div>
+
+							<div className="form-group flex-1" style={{ minWidth: 240 }}>
+								<label htmlFor="project-chromestats-id" className="form-label">
+									ChromeStats ID (Optional)
+								</label>
+								<input
+									id="project-chromestats-id"
+									value={formData.chromeStatsId}
+									onChange={(e) =>
+										handleChange("chromeStatsId", e.target.value)
+									}
+									placeholder="Extension ID or slug"
+								/>
+							</div>
+						</div>
+					</div>
+
+					<div className="dialog-footer">
+						<button
+							type="button"
+							onClick={onClose}
+							className="btn btn-ghost btn-sm"
+						>
+							Cancel
+						</button>
+						<button type="submit" className="btn btn-primary btn-sm">
+							{isEdit ? "Update Ledger Entry" : "Add to Ledger"}
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
 	);
 }
 
@@ -574,6 +372,15 @@ ProjectEditModal.propTypes = {
 	open: PropTypes.bool.isRequired,
 	onClose: PropTypes.func.isRequired,
 	onSave: PropTypes.func.isRequired,
-	project: PropTypes.object,
+	project: PropTypes.shape({
+		githubName: PropTypes.string,
+		tagline: PropTypes.string,
+		category: PropTypes.string,
+		githubImg: PropTypes.string,
+		githubContentPath: PropTypes.string,
+		featured: PropTypes.bool,
+		addonId: PropTypes.string,
+		chromeStatsId: PropTypes.string,
+	}),
 	githubToken: PropTypes.string,
 };

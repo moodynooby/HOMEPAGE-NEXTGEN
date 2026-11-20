@@ -1,7 +1,5 @@
 import PropTypes from "prop-types";
 import { createContext, useContext, useEffect, useState } from "react";
-import { ThemeProvider } from "@/components/ui/styles";
-import { getTheme } from "@/theme/theme";
 
 const ThemeContext = createContext();
 
@@ -53,7 +51,6 @@ export const ThemeContextProvider = ({ children }) => {
 	}, []);
 
 	const effectiveMode = mode === "system" ? systemMode : mode;
-	const theme = getTheme(effectiveMode, highContrast);
 
 	useEffect(() => {
 		document.documentElement.setAttribute("data-theme", effectiveMode);
@@ -77,12 +74,11 @@ export const ThemeContextProvider = ({ children }) => {
 		toggleColorMode,
 		highContrast,
 		toggleHighContrast,
+		effectiveMode,
 	};
 
 	return (
-		<ThemeContext.Provider value={value}>
-			<ThemeProvider theme={theme}>{children}</ThemeProvider>
-		</ThemeContext.Provider>
+		<ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 	);
 };
 

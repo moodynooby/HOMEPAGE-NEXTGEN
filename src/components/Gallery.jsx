@@ -8,36 +8,12 @@ import { useEffect, useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Video from "yet-another-react-lightbox/plugins/video";
-import {
-	alpha,
-	Box,
-	CircularProgress,
-	Container,
-	Typography,
-	useMediaQuery,
-	useTheme,
-} from "@/components/ui";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import ButtonAppBar from "@/components/Header";
 import { cld, fetchAllMediaByTag } from "@/utils/cloudinary";
 
-const MotionBox = motion.create(Box);
-
-const LazyImage = ({ children, ...props }) => (
-	<MotionBox
-		initial={{ opacity: 0 }}
-		whileInView={{ opacity: 1 }}
-		viewport={{ once: true, amount: 0.1 }}
-		{...props}
-	>
-		{children}
-	</MotionBox>
-);
-
 export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
-	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 	const [media, setMedia] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -53,23 +29,22 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 					.delivery(quality("auto"))
 					.toURL(),
 			};
-		} else {
-			return {
-				type: "video",
-				sources: [
-					{
-						src: cld.video(item.public_id).delivery(format("mp4")).toURL(),
-						type: "video/mp4",
-					},
-				],
-				poster: cld
-					.image(`${item.public_id}.jpg`)
-					.resize(fill().width(1920).height(1080))
-					.delivery(format("auto"))
-					.delivery(quality("auto"))
-					.toURL(),
-			};
 		}
+		return {
+			type: "video",
+			sources: [
+				{
+					src: cld.video(item.public_id).delivery(format("mp4")).toURL(),
+					type: "video/mp4",
+				},
+			],
+			poster: cld
+				.image(`${item.public_id}.jpg`)
+				.resize(fill().width(1920).height(1080))
+				.delivery(format("auto"))
+				.delivery(quality("auto"))
+				.toURL(),
+		};
 	});
 
 	const handleMediaClick = (index) => {
@@ -88,81 +63,48 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 
 	if (loading) {
 		return (
-			<Box
-				sx={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					minHeight: "40vh",
-				}}
+			<div
+				className="flex justify-center items-center"
+				style={{ minHeight: "40vh" }}
 			>
-				<CircularProgress color="secondary" />
-			</Box>
+				<span className="spinner" />
+			</div>
 		);
 	}
 
 	return (
 		<>
 			{showAppBar && <ButtonAppBar />}
-			<Box
-				sx={{
-					pt: showAppBar ? { xs: 10, md: 14 } : 4,
-					pb: 8,
+			<div
+				style={{
+					paddingTop: showAppBar ? "5rem" : "1.5rem",
+					paddingBottom: "3rem",
 					position: "relative",
 					minHeight: showAppBar ? "100vh" : "auto",
 				}}
 			>
-				<Container maxWidth="xl">
+				<div className="container">
 					{showAppBar && (
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.7 }}
+							style={{ textAlign: "center", marginBottom: "3rem" }}
 						>
-							<Typography
-								variant="h2"
-								component="h1"
-								sx={{
-									textAlign: "center",
-									mb: 1,
-									fontSize: { xs: "2rem", sm: "2.6rem", md: "3.25rem" },
-								}}
-							>
-								The Visual Archive
-							</Typography>
-							<Typography
-								variant="body2"
-								component="p"
-								sx={{
-									textAlign: "center",
-									fontStyle: "italic",
-									color: "text.secondary",
-									mb: { xs: 6, md: 10 },
-								}}
+							<h1 className="mb-2">The Visual Archive</h1>
+							<p
+								className="caption text-secondary"
+								style={{ fontStyle: "italic" }}
 							>
 								Captured moments and kinetic studies, preserved for the record.
-							</Typography>
+							</p>
 						</motion.div>
 					)}
 
-					<Box
-						sx={{
-							display: "grid",
-							gridTemplateColumns: {
-								xs: "1fr",
-								sm: "repeat(2, 1fr)",
-								md: "repeat(3, 1fr)",
-								lg: "repeat(4, 1fr)",
-							},
-							gap: 4,
-							gridAutoFlow: "dense",
-						}}
-					>
+					<div className="gallery-grid">
 						{media.map((item, index) => {
-							const isLarge =
-								!isMobile && (index % 7 === 0 || index % 11 === 0);
-							const isTall = !isMobile && index % 5 === 0;
-
+							const isLarge = index % 7 === 0 || index % 11 === 0;
+							const isTall = index % 5 === 0;
 							const imageWidth = isLarge ? 800 : 400;
 							const imageHeight = isTall ? 800 : isLarge ? 600 : 400;
 
@@ -179,7 +121,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 								.delivery(dpr("auto"));
 
 							return (
-								<LazyImage
+								<motion.div
 									key={item.public_id}
 									initial={{ opacity: 0, scale: 0.97 }}
 									whileInView={{ opacity: 1, scale: 1 }}
@@ -189,22 +131,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 										delay: Math.min(index, 8) * 0.04,
 									}}
 									onClick={() => handleMediaClick(index)}
-									sx={{
-										gridColumn: isLarge ? "span 2" : "span 1",
-										gridRow: isTall ? "span 2" : "span 1",
-										position: "relative",
-										overflow: "hidden",
-										bgcolor: "background.paper",
-										border: "1px solid",
-										borderColor: "divider",
-										aspectRatio: isLarge ? "16/9" : isTall ? "3/4" : "1/1",
-										cursor: "pointer",
-										"&:hover img, &:hover video": {
-											filter: "grayscale(0%) contrast(100%)",
-											transform: "scale(1.02)",
-										},
-										"&:hover .gallery-caption": { opacity: 1 },
-									}}
+									className={`gallery-item ${isLarge ? "large" : isTall ? "tall" : ""}`}
 								>
 									{item.resource_type === "image" ? (
 										<AdvancedImage
@@ -234,66 +161,34 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 										/>
 									)}
 
-									<Box
-										className="gallery-caption"
-										sx={{
-											position: "absolute",
-											bottom: 0,
-											left: 0,
-											right: 0,
-											py: 1,
-											px: 2,
-											bgcolor: (th) =>
-												alpha(th.palette.background.default, 0.82),
-											borderTop: "1px solid",
-											borderColor: "divider",
-											backdropFilter: "blur(6px)",
-											opacity: 0,
-											transition: "opacity 0.4s ease",
-										}}
-									>
-										<Typography variant="overline" color="text.primary">
+									<div className="gallery-caption">
+										<span className="overline">
 											{item.resource_type === "video" ? "Kinetic" : "Static"}
 											{" · "}
 											{new Date(item.created_at).getFullYear()}
-										</Typography>
-									</Box>
+										</span>
+									</div>
 
 									{item.resource_type === "video" && (
-										<Box
-											sx={{
+										<span
+											className="badge"
+											style={{
 												position: "absolute",
 												top: 12,
 												right: 12,
-												width: 28,
-												height: 28,
-												bgcolor: (th) =>
-													alpha(th.palette.background.default, 0.7),
-												display: "flex",
-												alignItems: "center",
-												justifyContent: "center",
-												backdropFilter: "blur(4px)",
-												border: "1px solid",
-												borderColor: "divider",
+												backgroundColor:
+													"var(--color-background-surface, #fdffda)",
+												padding: "2px 6px",
 											}}
 										>
-											<Box
-												sx={{
-													width: 0,
-													height: 0,
-													borderTop: "5px solid transparent",
-													borderBottom: "5px solid transparent",
-													borderLeft: `8px solid ${theme.palette.text.primary}`,
-													ml: "2px",
-												}}
-											/>
-										</Box>
+											▶
+										</span>
 									)}
-								</LazyImage>
+								</motion.div>
 							);
 						})}
-					</Box>
-				</Container>
+					</div>
+				</div>
 				<Lightbox
 					open={lightboxOpen}
 					close={() => setLightboxOpen(false)}
@@ -309,7 +204,7 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 						playsInline: true,
 					}}
 				/>
-			</Box>
+			</div>
 		</>
 	);
 }

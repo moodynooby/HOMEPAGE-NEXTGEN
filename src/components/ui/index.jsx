@@ -1,4 +1,4 @@
-import React, {
+import {
 	createContext,
 	forwardRef,
 	useContext,
@@ -8,51 +8,55 @@ import React, {
 
 const SelectContext = createContext(null);
 
-// --- Design Token & SX Resolver ---
-
-const SPACING_MAP = {
-	0: "0px",
-	0.5: "4px",
-	1: "8px",
-	1.5: "12px",
-	2: "16px",
-	2.5: "20px",
-	3: "24px",
-	3.5: "28px",
-	4: "32px",
-	5: "40px",
-	6: "48px",
-	7: "56px",
-	8: "64px",
-	10: "80px",
-	12: "96px",
-};
-
-const resolveVal = (val, isSpace = false) => {
-	if (val === undefined || val === null) return undefined;
-	if (typeof val === "object") {
-		return resolveVal(val.md ?? val.sm ?? val.xs, isSpace);
+export const resolveSx = (sx) => {
+	if (!sx) return {};
+	if (typeof sx === "function") return sx(THEME_OBJECT);
+	const s = {};
+	for (const [k, v] of Object.entries(sx)) {
+		const val =
+			typeof v === "object" && v !== null ? (v.md ?? v.sm ?? v.xs) : v;
+		if (val === undefined || val === null) continue;
+		if (k === "mb")
+			s.marginBottom = typeof val === "number" ? `${val * 8}px` : val;
+		else if (k === "mt")
+			s.marginTop = typeof val === "number" ? `${val * 8}px` : val;
+		else if (k === "my") {
+			s.marginTop = s.marginBottom =
+				typeof val === "number" ? `${val * 8}px` : val;
+		} else if (k === "mx") {
+			s.marginLeft = s.marginRight =
+				typeof val === "number" ? `${val * 8}px` : val;
+		} else if (k === "m")
+			s.margin = typeof val === "number" ? `${val * 8}px` : val;
+		else if (k === "p")
+			s.padding = typeof val === "number" ? `${val * 8}px` : val;
+		else if (k === "px") {
+			s.paddingLeft = s.paddingRight =
+				typeof val === "number" ? `${val * 8}px` : val;
+		} else if (k === "py") {
+			s.paddingTop = s.paddingBottom =
+				typeof val === "number" ? `${val * 8}px` : val;
+		} else if (k === "gap")
+			s.gap = typeof val === "number" ? `${val * 8}px` : val;
+		else if (k === "display") s.display = val;
+		else if (k === "flexDirection") s.flexDirection = val;
+		else if (k === "alignItems") s.alignItems = val;
+		else if (k === "justifyContent") s.justifyContent = val;
+		else if (k === "flexWrap") s.flexWrap = val;
+		else if (k === "flex") s.flex = val;
+		else if (k === "width") s.width = val;
+		else if (k === "maxWidth") s.maxWidth = val;
+		else if (k === "color")
+			s.color =
+				val === "text.secondary" ? "var(--color-text-secondary, #7d5d53)" : val;
+		else if (k === "bgcolor")
+			s.backgroundColor =
+				val === "background.paper"
+					? "var(--color-background-surface, #fdffda)"
+					: val;
+		else if (!k.startsWith("&") && !k.startsWith("@")) s[k] = val;
 	}
-	if (isSpace && SPACING_MAP[val] !== undefined) return SPACING_MAP[val];
-	if (isSpace && typeof val === "number") return `${val * 8}px`;
-
-	if (val === "text.primary") return "var(--color-text-primary, #38392e)";
-	if (val === "text.secondary") return "var(--color-text-secondary, #7d5d53)";
-	if (val === "secondary.main" || val === "secondary")
-		return "var(--color-accent, #7d5d53)";
-	if (val === "primary.main" || val === "primary")
-		return "var(--color-text-primary, #38392e)";
-	if (val === "background.default")
-		return "var(--color-background-body, #fdffda)";
-	if (val === "background.paper")
-		return "var(--color-background-surface, #fdffda)";
-	if (val === "divider") return "var(--color-border, rgba(56, 57, 46, 0.10))";
-	if (val === "action.hover")
-		return "var(--color-overlay-hover, rgba(56, 57, 46, 0.05))";
-	if (val === "action.selected")
-		return "var(--color-overlay-pressed, rgba(56, 57, 46, 0.10))";
-
-	return val;
+	return s;
 };
 
 const THEME_OBJECT = {
@@ -76,101 +80,55 @@ const THEME_OBJECT = {
 		},
 		divider: "var(--color-border, rgba(56, 57, 46, 0.10))",
 		action: {
-			hover: "var(--color-overlay-hover, rgba(56, 57, 46, 0.05))",
-			selected: "var(--color-overlay-pressed, rgba(56, 57, 46, 0.10))",
+			hover: "rgba(56, 57, 46, 0.05)",
+			selected: "rgba(56, 57, 46, 0.10)",
 		},
 	},
-	breakpoints: {
-		down: (key) => key,
-	},
+	breakpoints: { down: (key) => key },
 	spacing: (n) => `${n * 8}px`,
 };
 
-export const resolveSx = (sx) => {
-	if (!sx) return {};
-	if (typeof sx === "function") return sx(THEME_OBJECT);
-
-	const style = {};
-	for (const [key, val] of Object.entries(sx)) {
-		if (key === "p") style.padding = resolveVal(val, true);
-		else if (key === "px") {
-			style.paddingLeft = resolveVal(val, true);
-			style.paddingRight = resolveVal(val, true);
-		} else if (key === "py") {
-			style.paddingTop = resolveVal(val, true);
-			style.paddingBottom = resolveVal(val, true);
-		} else if (key === "pt") style.paddingTop = resolveVal(val, true);
-		else if (key === "pb") style.paddingBottom = resolveVal(val, true);
-		else if (key === "pl") style.paddingLeft = resolveVal(val, true);
-		else if (key === "pr") style.paddingRight = resolveVal(val, true);
-		else if (key === "m") style.margin = resolveVal(val, true);
-		else if (key === "mx") {
-			style.marginLeft = resolveVal(val, true);
-			style.marginRight = resolveVal(val, true);
-		} else if (key === "my") {
-			style.marginTop = resolveVal(val, true);
-			style.marginBottom = resolveVal(val, true);
-		} else if (key === "mt") style.marginTop = resolveVal(val, true);
-		else if (key === "mb") style.marginBottom = resolveVal(val, true);
-		else if (key === "ml") style.marginLeft = resolveVal(val, true);
-		else if (key === "mr") style.marginRight = resolveVal(val, true);
-		else if (key === "gap") style.gap = resolveVal(val, true);
-		else if (key === "rowGap") style.rowGap = resolveVal(val, true);
-		else if (key === "columnGap") style.columnGap = resolveVal(val, true);
-		else if (key === "bgcolor") style.backgroundColor = resolveVal(val);
-		else if (key === "color") style.color = resolveVal(val);
-		else if (key === "borderColor") style.borderColor = resolveVal(val);
-		else if (key === "borderRadius") style.borderRadius = resolveVal(val);
-		else if (!key.startsWith("&") && !key.startsWith("@")) {
-			style[key] = resolveVal(val);
-		}
-	}
-	return style;
-};
-
-// --- Theme Hooks & Helpers ---
-
 export const useTheme = () => THEME_OBJECT;
-
 export const useMediaQuery = () => {
 	const [matches, setMatches] = useState(
 		typeof window !== "undefined" ? window.innerWidth < 900 : false,
 	);
 	useEffect(() => {
-		const handler = () => setMatches(window.innerWidth < 900);
-		window.addEventListener("resize", handler);
-		return () => window.removeEventListener("resize", handler);
+		const h = () => setMatches(window.innerWidth < 900);
+		window.addEventListener("resize", h);
+		return () => window.removeEventListener("resize", h);
 	}, []);
 	return matches;
 };
-
-export const alpha = (color, opacity) => {
-	if (!color) return `rgba(56, 57, 46, ${opacity})`;
-	if (color.startsWith("#")) {
-		const r = Number.parseInt(color.slice(1, 3), 16) || 56;
-		const g = Number.parseInt(color.slice(3, 5), 16) || 57;
-		const b = Number.parseInt(color.slice(5, 7), 16) || 46;
-		return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-	}
-	return color;
-};
-
+export const alpha = (color, opacity) =>
+	color?.startsWith("#")
+		? `rgba(${parseInt(color.slice(1, 3), 16)}, ${parseInt(color.slice(3, 5), 16)}, ${parseInt(color.slice(5, 7), 16)}, ${opacity})`
+		: `rgba(56, 57, 46, ${opacity})`;
 export const createTheme = () => THEME_OBJECT;
-
 export const ThemeProvider = ({ children }) => <>{children}</>;
 export const CssBaseline = () => null;
 
-// --- Core Layout & Typography Components ---
-
 export const Box = forwardRef(
-	({ component: Component = "div", sx, style, children, ...props }, ref) => {
-		const resolvedStyle = { ...resolveSx(sx), ...style };
-		return (
-			<Component ref={ref} style={resolvedStyle} {...props}>
-				{children}
-			</Component>
-		);
-	},
+	(
+		{
+			component: Component = "div",
+			sx,
+			style,
+			className = "",
+			children,
+			...props
+		},
+		ref,
+	) => (
+		<Component
+			ref={ref}
+			className={className}
+			style={{ ...resolveSx(sx), ...style }}
+			{...props}
+		>
+			{children}
+		</Component>
+	),
 );
 Box.displayName = "Box";
 
@@ -178,30 +136,20 @@ export const Container = ({
 	maxWidth = "lg",
 	sx,
 	style,
+	className = "",
 	children,
 	...props
 }) => {
-	const maxW =
-		maxWidth === "xs"
-			? "440px"
-			: maxWidth === "sm"
-				? "640px"
-				: maxWidth === "md"
-					? "900px"
-					: maxWidth === "lg"
-						? "1200px"
-						: "100%";
+	const cls =
+		maxWidth === "sm"
+			? "container-sm"
+			: maxWidth === "md"
+				? "container-md"
+				: "container";
 	return (
 		<div
-			style={{
-				maxWidth: maxW,
-				margin: "0 auto",
-				paddingLeft: "1.5rem",
-				paddingRight: "1.5rem",
-				boxSizing: "border-box",
-				...resolveSx(sx),
-				...style,
-			}}
+			className={`${cls} ${className}`.trim()}
+			style={{ ...resolveSx(sx), ...style }}
 			{...props}
 		>
 			{children}
@@ -218,96 +166,48 @@ export const Typography = forwardRef(
 			gutterBottom,
 			sx,
 			style,
+			className = "",
 			children,
 			...props
 		},
 		ref,
 	) => {
 		let Tag = component;
-		const typStyle = {
-			margin: 0,
-			...(gutterBottom ? { marginBottom: "0.75rem" } : {}),
-		};
-
-		if (color === "text.secondary") {
-			typStyle.color = "var(--color-text-secondary, #7d5d53)";
-		} else if (color === "secondary.main") {
-			typStyle.color = "var(--color-accent, #7d5d53)";
-		} else if (color === "text.primary") {
-			typStyle.color = "var(--color-text-primary, #38392e)";
+		let cls = className;
+		if (variant === "h1") {
+			Tag = Tag || "h1";
+		} else if (variant === "h2") {
+			Tag = Tag || "h2";
+		} else if (variant === "h3") {
+			Tag = Tag || "h3";
+		} else if (variant === "h4") {
+			Tag = Tag || "h4";
+		} else if (variant === "h5") {
+			Tag = Tag || "h5";
+		} else if (variant === "h6") {
+			Tag = Tag || "h6";
+		} else if (variant === "overline") {
+			Tag = Tag || "span";
+			cls = `${cls} overline`;
+		} else if (variant === "caption") {
+			Tag = Tag || "span";
+			cls = `${cls} caption`;
+		} else if (variant === "body2") {
+			Tag = Tag || "p";
+			cls = `${cls} font-body`;
+		} else {
+			Tag = Tag || "p";
 		}
 
-		switch (variant) {
-			case "h1":
-				Tag = Tag || "h1";
-				typStyle.fontFamily = "var(--font-family-heading, 'Newsreader', serif)";
-				typStyle.fontSize = "3.5rem";
-				typStyle.fontWeight = 800;
-				typStyle.lineHeight = 1.1;
-				break;
-			case "h2":
-				Tag = Tag || "h2";
-				typStyle.fontFamily = "var(--font-family-heading, 'Newsreader', serif)";
-				typStyle.fontSize = "2.5rem";
-				typStyle.fontWeight = 700;
-				break;
-			case "h3":
-				Tag = Tag || "h3";
-				typStyle.fontFamily = "var(--font-family-heading, 'Newsreader', serif)";
-				typStyle.fontSize = "1.75rem";
-				typStyle.fontWeight = 700;
-				break;
-			case "h4":
-				Tag = Tag || "h4";
-				typStyle.fontFamily = "var(--font-family-heading, 'Newsreader', serif)";
-				typStyle.fontSize = "1.4rem";
-				typStyle.fontWeight = 600;
-				break;
-			case "h5":
-				Tag = Tag || "h5";
-				typStyle.fontFamily = "var(--font-family-heading, 'Newsreader', serif)";
-				typStyle.fontSize = "1.2rem";
-				typStyle.fontWeight = 600;
-				break;
-			case "h6":
-				Tag = Tag || "h6";
-				typStyle.fontFamily = "var(--font-family-heading, 'Newsreader', serif)";
-				typStyle.fontSize = "1.05rem";
-				typStyle.fontWeight = 600;
-				break;
-			case "overline":
-				Tag = Tag || "span";
-				typStyle.fontFamily =
-					"var(--font-family-code, 'Work Sans', sans-serif)";
-				typStyle.fontSize = "0.72rem";
-				typStyle.letterSpacing = "0.12em";
-				typStyle.textTransform = "uppercase";
-				typStyle.fontWeight = 600;
-				break;
-			case "caption":
-				Tag = Tag || "span";
-				typStyle.fontFamily =
-					"var(--font-family-code, 'Work Sans', sans-serif)";
-				typStyle.fontSize = "0.75rem";
-				break;
-			case "body2":
-				Tag = Tag || "p";
-				typStyle.fontFamily = "var(--font-family-body, 'Noto Serif', serif)";
-				typStyle.fontSize = "0.875rem";
-				typStyle.lineHeight = 1.6;
-				break;
-			default:
-				Tag = Tag || "p";
-				typStyle.fontFamily = "var(--font-family-body, 'Noto Serif', serif)";
-				typStyle.fontSize = "1rem";
-				typStyle.lineHeight = 1.7;
-				break;
-		}
+		if (color === "text.secondary") cls = `${cls} text-secondary`;
+		else if (color === "error") cls = `${cls} text-error`;
+		if (gutterBottom) cls = `${cls} mb-3`;
 
 		return (
 			<Tag
 				ref={ref}
-				style={{ ...typStyle, ...resolveSx(sx), ...style }}
+				className={cls.trim()}
+				style={{ ...resolveSx(sx), ...style }}
 				{...props}
 			>
 				{children}
@@ -320,534 +220,99 @@ Typography.displayName = "Typography";
 export const Button = forwardRef(
 	(
 		{
-			variant = "text",
-			component: Component = "button",
+			variant = "contained",
+			size,
+			color: _color,
 			startIcon,
 			endIcon,
-			size = "medium",
 			sx,
 			style,
+			className = "",
 			children,
+			disabled,
 			...props
 		},
 		ref,
 	) => {
-		const btnStyle = {
-			display: "inline-flex",
-			alignItems: "center",
-			justifyContent: "center",
-			gap: "6px",
-			fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-			fontSize: size === "small" ? "0.75rem" : "0.85rem",
-			letterSpacing: "0.08em",
-			textTransform: "uppercase",
-			fontWeight: 600,
-			padding: size === "small" ? "4px 10px" : "8px 16px",
-			borderRadius: 0,
-			cursor: "pointer",
-			textDecoration: "none",
-			transition: "all 0.2s ease",
-			border: "none",
-			background: "transparent",
-			color: "var(--color-text-primary, #38392e)",
-		};
-
-		if (variant === "contained") {
-			btnStyle.background = "var(--color-text-primary, #38392e)";
-			btnStyle.color = "var(--color-background-body, #fdffda)";
-		} else if (variant === "outlined") {
-			btnStyle.border = "1px solid var(--color-border, rgba(56, 57, 46, 0.2))";
-			btnStyle.background = "transparent";
-		}
-
+		const variantCls =
+			variant === "contained"
+				? "btn-primary"
+				: variant === "outlined"
+					? "btn-outline"
+					: "btn-ghost";
+		const sizeCls = size === "small" ? "btn-sm" : "";
 		return (
-			<Component
+			<button
 				ref={ref}
-				style={{ ...btnStyle, ...resolveSx(sx), ...style }}
+				disabled={disabled}
+				className={`btn ${variantCls} ${sizeCls} ${className}`.trim()}
+				style={{ ...resolveSx(sx), ...style }}
 				{...props}
 			>
-				{startIcon && (
-					<span style={{ display: "inline-flex" }}>{startIcon}</span>
-				)}
+				{startIcon && <span className="btn-icon-start">{startIcon}</span>}
 				{children}
-				{endIcon && <span style={{ display: "inline-flex" }}>{endIcon}</span>}
-			</Component>
+				{endIcon && <span className="btn-icon-end">{endIcon}</span>}
+			</button>
 		);
 	},
 );
 Button.displayName = "Button";
 
 export const IconButton = forwardRef(
+	({ sx, style, className = "", children, ...props }, ref) => (
+		<button
+			ref={ref}
+			className={`btn btn-icon btn-ghost ${className}`.trim()}
+			style={{ ...resolveSx(sx), ...style }}
+			{...props}
+		>
+			{children}
+		</button>
+	),
+);
+IconButton.displayName = "IconButton";
+
+export const Chip = forwardRef(
 	(
 		{
-			component: Component = "button",
-			size = "medium",
+			label,
+			variant = "outlined",
+			color: _color,
+			size,
+			onClick,
+			clickable: _cl,
 			sx,
 			style,
-			children,
+			className = "",
 			...props
 		},
 		ref,
 	) => {
-		const iconBtnStyle = {
-			background: "transparent",
-			border: "none",
-			borderRadius: 0,
-			cursor: "pointer",
-			padding: size === "small" ? "4px" : "8px",
-			display: "inline-flex",
-			alignItems: "center",
-			justifyContent: "center",
-			color: "var(--color-text-primary, #38392e)",
-			...resolveSx(sx),
-			...style,
-		};
+		const Component = onClick ? "button" : "span";
+		const activeCls = variant === "filled" ? "chip-active" : "";
+		const sizeCls = size === "small" ? "btn-sm" : "";
 		return (
-			<Component ref={ref} style={iconBtnStyle} {...props}>
-				{children}
+			<Component
+				ref={ref}
+				onClick={onClick}
+				className={`chip ${activeCls} ${sizeCls} ${className}`.trim()}
+				style={{ ...resolveSx(sx), ...style }}
+				{...props}
+			>
+				{label}
 			</Component>
 		);
 	},
 );
-IconButton.displayName = "IconButton";
+Chip.displayName = "Chip";
 
-export const Divider = ({ sx, style, ...props }) => (
+export const Divider = ({ sx, style, className = "", ...props }) => (
 	<hr
-		style={{
-			border: "none",
-			borderTop: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-			margin: 0,
-			width: "100%",
-			...resolveSx(sx),
-			...style,
-		}}
+		className={`divider ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
 		{...props}
 	/>
 );
-
-export const Chip = ({
-	label,
-	variant = "filled",
-	size = "medium",
-	clickable,
-	onDelete,
-	deleteIcon,
-	icon,
-	sx,
-	style,
-	...props
-}) => (
-	<span
-		style={{
-			display: "inline-flex",
-			alignItems: "center",
-			cursor: clickable ? "pointer" : "default",
-			padding: size === "small" ? "2px 6px" : "4px 10px",
-			fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-			fontSize: "0.72rem",
-			letterSpacing: "0.08em",
-			textTransform: "uppercase",
-			fontWeight: 600,
-			borderRadius: 0,
-			border: "1px solid var(--color-border, rgba(56, 57, 46, 0.15))",
-			background:
-				variant === "filled"
-					? "var(--color-overlay-hover, rgba(56, 57, 46, 0.05))"
-					: "transparent",
-			color: "var(--color-text-primary, #38392e)",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{icon && (
-			<span style={{ marginRight: 4, display: "inline-flex" }}>{icon}</span>
-		)}
-		{label}
-	</span>
-);
-
-export const Alert = ({ severity = "info", sx, style, children, ...props }) => (
-	<div
-		role="alert"
-		style={{
-			padding: "0.75rem 1rem",
-			border: "1px solid var(--color-border, rgba(56, 57, 46, 0.2))",
-			background:
-				severity === "error"
-					? "rgba(220, 38, 38, 0.08)"
-					: "var(--color-overlay-hover, rgba(56, 57, 46, 0.05))",
-			color: "var(--color-text-primary, #38392e)",
-			fontFamily: "var(--font-family-body, serif)",
-			fontSize: "0.9rem",
-			borderRadius: 0,
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</div>
-);
-
-export const Skeleton = ({
-	variant = "text",
-	width,
-	height,
-	sx,
-	style,
-	...props
-}) => (
-	<div
-		style={{
-			width: width || "100%",
-			height: height || (variant === "circular" ? "40px" : "20px"),
-			borderRadius: variant === "circular" ? "50%" : 0,
-			background: "var(--color-border, rgba(56, 57, 46, 0.10))",
-			opacity: 0.6,
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	/>
-);
-
-export const Badge = ({ badgeContent, children, sx, style, ...props }) => (
-	<div
-		style={{
-			position: "relative",
-			display: "inline-flex",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-		{badgeContent !== undefined && (
-			<span
-				style={{
-					position: "absolute",
-					top: 0,
-					right: 0,
-					transform: "translate(50%, -50%)",
-					padding: "2px 5px",
-					fontSize: "0.65rem",
-					background: "var(--color-accent, #7d5d53)",
-					color: "#ffffff",
-					fontWeight: 700,
-					borderRadius: 0,
-				}}
-			>
-				{badgeContent}
-			</span>
-		)}
-	</div>
-);
-
-export const Switch = ({ checked, onChange, inputProps, ...props }) => (
-	<input
-		type="checkbox"
-		checked={checked}
-		onChange={onChange}
-		style={{ cursor: "pointer", accentColor: "var(--color-accent)" }}
-		{...inputProps}
-		{...props}
-	/>
-);
-
-export const LinearProgress = ({ sx, style, ...props }) => (
-	<div
-		style={{
-			width: "100%",
-			height: "2px",
-			background: "var(--color-border, rgba(56, 57, 46, 0.15))",
-			overflow: "hidden",
-			position: "relative",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		<div
-			style={{
-				width: "50%",
-				height: "100%",
-				background: "var(--color-accent, #7d5d53)",
-				position: "absolute",
-			}}
-		/>
-	</div>
-);
-
-export const CircularProgress = ({ size = 24, sx, style, ...props }) => (
-	<div
-		style={{
-			width: size,
-			height: size,
-			border: "2px solid var(--color-border)",
-			borderTopColor: "var(--color-accent, #7d5d53)",
-			borderRadius: "50%",
-			animation: "spin 0.8s linear infinite",
-			display: "inline-block",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	/>
-);
-
-export const Drawer = ({
-	open,
-	onClose,
-	anchor = "right",
-	children,
-	slotProps,
-	PaperProps,
-	...props
-}) => {
-	if (!open) return null;
-	const isRight = anchor === "right";
-	return (
-		<div
-			role="dialog"
-			aria-modal="true"
-			tabIndex={-1}
-			onKeyDown={(e) => {
-				if (e.key === "Escape" && onClose) onClose();
-			}}
-			style={{
-				position: "fixed",
-				inset: 0,
-				zIndex: 9999,
-				background: "rgba(0, 0, 0, 0.4)",
-				backdropFilter: "blur(2px)",
-				display: "flex",
-				justifyContent: isRight ? "flex-end" : "flex-start",
-			}}
-			onClick={(e) => {
-				if (e.target === e.currentTarget && onClose) onClose();
-			}}
-			{...props}
-		>
-			<aside
-				style={{
-					width: "100%",
-					maxWidth: "500px",
-					height: "100%",
-					background: "var(--color-background-surface, #fdffda)",
-					borderLeft: "1px solid var(--color-border)",
-					overflowY: "auto",
-					boxSizing: "border-box",
-					padding: "1.5rem",
-					...resolveSx(PaperProps?.sx || slotProps?.paper?.sx),
-				}}
-			>
-				{children}
-			</aside>
-		</div>
-	);
-};
-
-export const Dialog = ({ open, onClose, children, ...props }) => {
-	if (!open) return null;
-	return (
-		<div
-			role="dialog"
-			aria-modal="true"
-			tabIndex={-1}
-			onKeyDown={(e) => {
-				if (e.key === "Escape" && onClose) onClose();
-			}}
-			style={{
-				position: "fixed",
-				inset: 0,
-				zIndex: 9999,
-				background: "rgba(0, 0, 0, 0.4)",
-				backdropFilter: "blur(2px)",
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				padding: "1rem",
-			}}
-			onClick={(e) => {
-				if (e.target === e.currentTarget && onClose) onClose();
-			}}
-			{...props}
-		>
-			<div
-				style={{
-					background: "var(--color-background-surface, #fdffda)",
-					border: "1px solid var(--color-border)",
-					maxWidth: "550px",
-					width: "100%",
-					padding: "1.5rem",
-					boxSizing: "border-box",
-					borderRadius: 0,
-				}}
-			>
-				{children}
-			</div>
-		</div>
-	);
-};
-
-export const DialogTitle = ({ children, sx, style, ...props }) => (
-	<h2
-		style={{
-			margin: "0 0 1rem",
-			fontFamily: "var(--font-family-heading, 'Newsreader', serif)",
-			fontSize: "1.5rem",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</h2>
-);
-
-export const DialogContent = ({ children, sx, style, ...props }) => (
-	<div
-		style={{
-			marginBottom: "1.5rem",
-			fontFamily: "var(--font-family-body, 'Noto Serif', serif)",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</div>
-);
-
-export const DialogActions = ({ children, sx, style, ...props }) => (
-	<div
-		style={{
-			display: "flex",
-			justifyContent: "flex-end",
-			gap: "0.75rem",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</div>
-);
-
-export const Modal = ({ open, onClose, children, ...props }) => {
-	if (!open) return null;
-	return (
-		<div
-			role="dialog"
-			aria-modal="true"
-			tabIndex={-1}
-			onKeyDown={(e) => {
-				if (e.key === "Escape" && onClose) onClose();
-			}}
-			style={{
-				position: "fixed",
-				inset: 0,
-				zIndex: 9999,
-				background: "rgba(0, 0, 0, 0.4)",
-				backdropFilter: "blur(4px)",
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-			}}
-			onClick={(e) => {
-				if (e.target === e.currentTarget && onClose) onClose();
-			}}
-			{...props}
-		>
-			{children}
-		</div>
-	);
-};
-
-export const Fade = ({ in: inProp = true, children }) =>
-	inProp ? children : null;
-
-export const Menu = ({ open, children, ...props }) => {
-	if (!open) return null;
-	return (
-		<div
-			style={{
-				position: "absolute",
-				zIndex: 9999,
-				background: "var(--color-background-surface, #fdffda)",
-				border: "1px solid var(--color-border)",
-				padding: "4px 0",
-				borderRadius: 0,
-				boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-			}}
-			{...props}
-		>
-			{children}
-		</div>
-	);
-};
-
-export const MenuItem = forwardRef(
-	(
-		{
-			component: Component,
-			value,
-			selected,
-			onClick,
-			children,
-			sx,
-			style,
-			...props
-		},
-		ref,
-	) => {
-		const selectCtx = useContext(SelectContext);
-		if (selectCtx) {
-			return (
-				<option
-					ref={ref}
-					value={value}
-					onClick={(e) => {
-						if (onClick) onClick(e);
-						if (selectCtx.onSelect) {
-							selectCtx.onSelect(value);
-						}
-					}}
-					{...props}
-				>
-					{children}
-				</option>
-			);
-		}
-		const Tag = Component || "div";
-		return (
-			<Tag
-				ref={ref}
-				role="menuitem"
-				onClick={onClick}
-				style={{
-					padding: "8px 16px",
-					cursor: "pointer",
-					fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-					fontSize: "0.85rem",
-					background: selected
-						? "var(--color-overlay-pressed, rgba(56, 57, 46, 0.10))"
-						: "transparent",
-					color: "var(--color-text-primary, #38392e)",
-					textDecoration: "none",
-					display: "block",
-					...resolveSx(sx),
-					...style,
-				}}
-				{...props}
-			>
-				{children}
-			</Tag>
-		);
-	},
-);
-MenuItem.displayName = "MenuItem";
 
 export const TextField = forwardRef(
 	(
@@ -856,81 +321,92 @@ export const TextField = forwardRef(
 			value,
 			onChange,
 			placeholder,
-			type = "text",
+			required,
 			multiline,
 			rows = 3,
-			fullWidth,
-			variant,
+			error: _err,
+			helperText: _ht,
+			fullWidth: _fw,
+			variant: _v,
 			InputProps,
-			inputProps,
 			slotProps,
+			inputProps,
 			id,
 			sx,
 			style,
+			className = "",
 			...props
 		},
 		ref,
 	) => {
+		const fieldId =
+			id ||
+			(label
+				? `field-${label.toLowerCase().replace(/[^a-z0-9]/g, "-")}`
+				: undefined);
 		const startAdornment =
 			InputProps?.startAdornment || slotProps?.input?.startAdornment;
-		const inputId = id || `tf-${Math.random().toString(36).substring(2, 7)}`;
-		const Element = multiline ? "textarea" : "input";
+		const isStandard = _v === "standard";
+		const inputClass = isStandard ? "input-standard" : "input";
 		return (
 			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "4px",
-					width: fullWidth ? "100%" : "auto",
-					...resolveSx(sx),
-					...style,
-				}}
+				className={`form-group ${className}`.trim()}
+				style={{ ...resolveSx(sx), ...style }}
 			>
 				{label && (
-					<label
-						htmlFor={inputId}
-						style={{
-							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-							fontSize: "0.75rem",
-							letterSpacing: "0.08em",
-							textTransform: "uppercase",
-							color: "var(--color-text-secondary, #7d5d53)",
-						}}
-					>
+					<label htmlFor={fieldId} className="form-label">
 						{label}
 					</label>
 				)}
 				<div
 					style={{
+						position: "relative",
 						display: "flex",
-						alignItems: multiline ? "flex-start" : "center",
-						border: "1px solid var(--color-border, rgba(56, 57, 46, 0.2))",
-						background: "transparent",
-						padding: "4px 8px",
+						alignItems: "center",
+						width: "100%",
 					}}
 				>
-					{startAdornment}
-					<Element
-						ref={ref}
-						id={inputId}
-						type={multiline ? undefined : type}
-						rows={multiline ? rows : undefined}
-						value={value}
-						onChange={onChange}
-						placeholder={placeholder}
-						style={{
-							width: "100%",
-							border: "none",
-							outline: "none",
-							background: "transparent",
-							color: "var(--color-text-primary, #38392e)",
-							fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-							fontSize: "0.875rem",
-							resize: multiline ? "vertical" : "none",
-						}}
-						{...inputProps}
-						{...props}
-					/>
+					{startAdornment && (
+						<div
+							style={{
+								position: "absolute",
+								left: 10,
+								display: "flex",
+								alignItems: "center",
+								pointerEvents: "none",
+								color: "var(--color-text-secondary, #7d5d53)",
+							}}
+						>
+							{startAdornment}
+						</div>
+					)}
+					{multiline ? (
+						<textarea
+							ref={ref}
+							id={fieldId}
+							rows={rows}
+							value={value}
+							onChange={onChange}
+							placeholder={placeholder}
+							required={required}
+							className={inputClass}
+							{...inputProps}
+							{...props}
+						/>
+					) : (
+						<input
+							ref={ref}
+							id={fieldId}
+							value={value}
+							onChange={onChange}
+							placeholder={placeholder}
+							required={required}
+							className={inputClass}
+							style={startAdornment ? { paddingLeft: "2.2rem" } : undefined}
+							{...inputProps}
+							{...props}
+						/>
+					)}
 				</div>
 			</div>
 		);
@@ -943,45 +419,30 @@ export const Select = forwardRef(
 		{
 			value,
 			onChange,
-			label,
-			labelId,
-			"aria-labelledby": ariaLabelledby,
 			children,
+			id,
+			labelId,
+			"aria-label": ariaLabel,
+			"aria-labelledby": ariaLabelledby,
 			sx,
 			style,
+			className = "",
 			...props
 		},
 		ref,
 	) => {
-		const contextVal = {
-			inSelect: true,
-			onSelect: (val) => {
-				if (onChange) {
-					onChange({ target: { value: val, name: props.name } });
-				}
-			},
-		};
-
+		const onSelect = (val) => onChange?.({ target: { value: val } });
 		return (
-			<SelectContext.Provider value={contextVal}>
+			<SelectContext.Provider value={{ selectedValue: value, onSelect }}>
 				<select
 					ref={ref}
+					id={id}
 					value={value}
 					onChange={onChange}
-					aria-label={label}
-					aria-labelledby={labelId || ariaLabelledby}
-					style={{
-						padding: "8px 12px",
-						border: "1px solid var(--color-border, rgba(56, 57, 46, 0.2))",
-						background: "transparent",
-						color: "var(--color-text-primary, #38392e)",
-						fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-						fontSize: "0.85rem",
-						borderRadius: 0,
-						outline: "none",
-						...resolveSx(sx),
-						...style,
-					}}
+					aria-label={ariaLabel}
+					aria-labelledby={ariaLabelledby || labelId}
+					className={`select ${className}`.trim()}
+					style={{ ...resolveSx(sx), ...style }}
 					{...props}
 				>
 					{children}
@@ -992,245 +453,192 @@ export const Select = forwardRef(
 );
 Select.displayName = "Select";
 
-export const FormControl = ({ children, sx, style, ...props }) => (
+export const MenuItem = forwardRef(
+	({ value, children, onClick, ...props }, ref) => {
+		const ctx = useContext(SelectContext);
+		const handleClick = (e) => {
+			onClick?.(e);
+			ctx?.onSelect?.(value);
+		};
+		return (
+			<option ref={ref} value={value} onClick={handleClick} {...props}>
+				{children}
+			</option>
+		);
+	},
+);
+MenuItem.displayName = "MenuItem";
+
+export const FormControl = ({
+	children,
+	sx,
+	style,
+	className = "",
+	...props
+}) => (
 	<div
-		style={{
-			display: "flex",
-			flexDirection: "column",
-			gap: "4px",
-			...resolveSx(sx),
-			...style,
-		}}
+		className={`form-group ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
 		{...props}
 	>
 		{children}
 	</div>
 );
 
-export const InputLabel = ({ children, id, htmlFor, sx, style, ...props }) => (
+export const InputLabel = ({
+	id,
+	htmlFor,
+	children,
+	sx,
+	style,
+	className = "",
+	...props
+}) => (
 	<label
 		id={id}
-		htmlFor={htmlFor}
-		style={{
-			fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
-			fontSize: "0.75rem",
-			letterSpacing: "0.08em",
-			textTransform: "uppercase",
-			color: "var(--color-text-secondary, #7d5d53)",
-			...resolveSx(sx),
-			...style,
-		}}
+		htmlFor={htmlFor || id}
+		className={`form-label ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
 		{...props}
 	>
 		{children}
 	</label>
 );
 
-export const InputAdornment = ({ children, position, sx, style }) => (
-	<span
-		style={{
-			display: "inline-flex",
-			alignItems: "center",
-			marginRight: position === "start" ? "6px" : 0,
-			marginLeft: position === "end" ? "6px" : 0,
-			color: "var(--color-text-secondary)",
-			...resolveSx(sx),
-			...style,
-		}}
-	>
-		{children}
-	</span>
-);
+export const InputAdornment = ({ position: _pos, children }) => <>{children}</>;
 
-export const Snackbar = ({ open, message, children }) =>
-	open ? (
+export const Dialog = ({ open, onClose, children }) => {
+	if (!open) return null;
+	return (
 		<div
-			style={{
-				position: "fixed",
-				bottom: "20px",
-				left: "50%",
-				transform: "translateX(-50%)",
-				padding: "10px 20px",
-				background: "var(--color-text-primary, #38392e)",
-				color: "var(--color-background-body, #fdffda)",
-				borderRadius: 0,
-				zIndex: 10000,
-				fontSize: "0.875rem",
+			className="dialog-backdrop"
+			role="dialog"
+			aria-modal="true"
+			tabIndex={-1}
+			onClick={(e) => {
+				if (e.target === e.currentTarget) onClose?.();
+			}}
+			onKeyDown={(e) => {
+				if (e.key === "Escape") onClose?.();
 			}}
 		>
-			{message || children}
-		</div>
-	) : null;
-
-export const Tooltip = ({ title, children }) =>
-	React.cloneElement(children, { title });
-
-export const Grid = ({
-	container,
-	item,
-	xs,
-	md,
-	spacing,
-	sx,
-	style,
-	children,
-	...props
-}) => {
-	const gridStyle = { boxSizing: "border-box" };
-	if (container) {
-		gridStyle.display = "grid";
-		gridStyle.gridTemplateColumns = "repeat(auto-fit, minmax(280px, 1fr))";
-		gridStyle.gap = spacing ? `${spacing * 8}px` : "1.5rem";
-	}
-	return (
-		<div style={{ ...gridStyle, ...resolveSx(sx), ...style }} {...props}>
-			{children}
+			<div className="dialog-panel">{children}</div>
 		</div>
 	);
 };
 
-export const Card = ({ sx, style, children, ...props }) => (
-	<article
-		style={{
-			background: "var(--color-background-surface, #fdffda)",
-			border: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-			borderRadius: 0,
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</article>
-);
-export const CardContent = ({ sx, style, children, ...props }) => (
-	<div style={{ padding: "1.5rem", ...resolveSx(sx), ...style }} {...props}>
-		{children}
-	</div>
-);
-export const CardMedia = ({
-	component: Component = "img",
-	sx,
-	style,
-	...props
-}) => (
-	<Component
-		style={{ width: "100%", display: "block", ...resolveSx(sx), ...style }}
-		{...props}
-	/>
-);
-export const CardActions = ({ sx, style, children, ...props }) => (
+export const DialogTitle = ({ children, sx, style, className = "" }) => (
 	<div
-		style={{
-			padding: "0.75rem 1.5rem",
-			display: "flex",
-			alignItems: "center",
-			gap: "0.5rem",
-			...resolveSx(sx),
-			...style,
-		}}
+		className={`dialog-header ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
+	>
+		<h4 style={{ margin: 0 }}>{children}</h4>
+	</div>
+);
+
+export const DialogContent = ({ children, sx, style, className = "" }) => (
+	<div className={className} style={{ ...resolveSx(sx), ...style }}>
+		{children}
+	</div>
+);
+
+export const DialogActions = ({ children, sx, style, className = "" }) => (
+	<div
+		className={`dialog-footer ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
+	>
+		{children}
+	</div>
+);
+
+export const TableContainer = ({
+	children,
+	sx,
+	style,
+	className = "",
+	...props
+}) => (
+	<div
+		className={`table-container ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
 		{...props}
 	>
 		{children}
 	</div>
 );
-export const CardActionArea = ({
-	component: Component = "button",
+export const Table = ({ children, sx, style, className = "", ...props }) => (
+	<table
+		className={`table ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
+		{...props}
+	>
+		{children}
+	</table>
+);
+export const TableHead = ({ children, ...props }) => (
+	<thead {...props}>{children}</thead>
+);
+export const TableBody = ({ children, ...props }) => (
+	<tbody {...props}>{children}</tbody>
+);
+export const TableRow = ({ children, ...props }) => (
+	<tr {...props}>{children}</tr>
+);
+export const TableCell = ({
+	children,
+	component: Comp,
 	sx,
 	style,
+	...props
+}) => {
+	const Tag = Comp || "td";
+	return (
+		<Tag style={{ ...resolveSx(sx), ...style }} {...props}>
+			{children}
+		</Tag>
+	);
+};
+
+export const Card = forwardRef(
+	({ sx, style, className = "", children, ...props }, ref) => (
+		<div
+			ref={ref}
+			className={`card ${className}`.trim()}
+			style={{ ...resolveSx(sx), ...style }}
+			{...props}
+		>
+			{children}
+		</div>
+	),
+);
+Card.displayName = "Card";
+export const CardContent = ({
 	children,
+	sx,
+	style,
+	className = "",
 	...props
 }) => (
-	<Component
+	<div className={className} style={{ ...resolveSx(sx), ...style }} {...props}>
+		{children}
+	</div>
+);
+export const CardMedia = ({ component: Comp = "img", ...props }) => (
+	<Comp {...props} />
+);
+export const CardActionArea = ({ sx, style, children, ...props }) => (
+	<button
+		type="button"
 		style={{
 			display: "block",
-			textAlign: "inherit",
 			width: "100%",
+			textAlign: "inherit",
 			background: "none",
 			border: "none",
 			padding: 0,
 			cursor: "pointer",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</Component>
-);
-
-export const AppBar = ({ children, sx, style, ...props }) => (
-	<header style={{ width: "100%", ...resolveSx(sx), ...style }} {...props}>
-		{children}
-	</header>
-);
-export const Toolbar = ({ children, sx, style, ...props }) => (
-	<div
-		style={{
-			display: "flex",
-			alignItems: "center",
-			minHeight: "52px",
-			padding: "0 1rem",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</div>
-);
-
-export const ToggleButtonGroup = ({
-	value,
-	onChange,
-	children,
-	sx,
-	style,
-	...props
-}) => (
-	<div
-		role="group"
-		style={{
-			display: "inline-flex",
-			border: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{React.Children.map(children, (child) =>
-			React.cloneElement(child, {
-				selected: child.props.value === value,
-				onClick: () => onChange?.(null, child.props.value),
-			}),
-		)}
-	</div>
-);
-
-export const ToggleButton = ({
-	selected,
-	onClick,
-	children,
-	sx,
-	style,
-	...props
-}) => (
-	<button
-		type="button"
-		onClick={onClick}
-		style={{
-			background: selected
-				? "var(--color-overlay-pressed, rgba(56, 57, 46, 0.10))"
-				: "transparent",
-			border: "none",
-			borderRight: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-			color: selected
-				? "var(--color-text-primary, #38392e)"
-				: "var(--color-text-secondary, #7d5d53)",
-			padding: "4px 8px",
-			cursor: "pointer",
-			display: "inline-flex",
-			alignItems: "center",
+			font: "inherit",
+			color: "inherit",
 			...resolveSx(sx),
 			...style,
 		}}
@@ -1239,22 +647,120 @@ export const ToggleButton = ({
 		{children}
 	</button>
 );
+export const Paper = forwardRef(
+	({ sx, style, className = "", children, ...props }, ref) => (
+		<div
+			ref={ref}
+			className={`surface-card ${className}`.trim()}
+			style={{ ...resolveSx(sx), ...style }}
+			{...props}
+		>
+			{children}
+		</div>
+	),
+);
+Paper.displayName = "Paper";
 
-export const Paper = Box;
+export const Drawer = ({
+	open,
+	onClose,
+	anchor: _a,
+	slotProps: _sp,
+	children,
+	className = "",
+	...props
+}) => {
+	if (!open) return null;
+	return (
+		<div
+			className="dialog-backdrop"
+			role="dialog"
+			aria-modal="true"
+			tabIndex={-1}
+			onClick={(e) => {
+				if (e.target === e.currentTarget) onClose?.();
+			}}
+			onKeyDown={(e) => {
+				if (e.key === "Escape") onClose?.();
+			}}
+			style={{ justifyContent: "flex-end", padding: 0 }}
+			{...props}
+		>
+			<div
+				className={`surface-card ${className}`.trim()}
+				style={{
+					width: "min(540px, 100vw)",
+					height: "100vh",
+					overflowY: "auto",
+					padding: "1.5rem",
+				}}
+			>
+				{children}
+			</div>
+		</div>
+	);
+};
 
-export const Stack = ({
-	direction = "column",
-	spacing = 0,
+export const CircularProgress = ({ size = 20 }) => (
+	<span className="spinner" style={{ width: size, height: size }} />
+);
+export const Skeleton = ({ variant: _v, width, height, sx, style }) => (
+	<div
+		style={{
+			width: width || "100%",
+			height: height || 20,
+			backgroundColor: "var(--color-border, rgba(56, 57, 46, 0.1))",
+			...resolveSx(sx),
+			...style,
+		}}
+	/>
+);
+
+export const Switch = ({ checked, onChange, name, id }) => (
+	<input
+		type="checkbox"
+		id={id}
+		name={name}
+		checked={checked}
+		onChange={onChange}
+		style={{ width: "auto", cursor: "pointer" }}
+	/>
+);
+export const FormControlLabel = ({ control, label }) => (
+	<label
+		htmlFor={control?.props?.id}
+		style={{
+			display: "inline-flex",
+			alignItems: "center",
+			gap: "0.5rem",
+			cursor: "pointer",
+			fontSize: "0.85rem",
+		}}
+	>
+		{control}
+		<span>{label}</span>
+	</label>
+);
+
+export const Tooltip = ({ title: _t, children }) => <>{children}</>;
+export const Snackbar = ({ open, children }) =>
+	open ? (
+		<div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 1100 }}>
+			{children}
+		</div>
+	) : null;
+export const Alert = ({
+	severity: _s,
 	children,
 	sx,
 	style,
+	className = "",
 	...props
 }) => (
 	<div
+		className={`surface-card ${className}`.trim()}
 		style={{
-			display: "flex",
-			flexDirection: direction,
-			gap: typeof spacing === "number" ? `${spacing * 8}px` : spacing,
+			borderLeft: "4px solid var(--color-accent, #7d5d53)",
 			...resolveSx(sx),
 			...style,
 		}}
@@ -1264,238 +770,111 @@ export const Stack = ({
 	</div>
 );
 
-export const FormControlLabel = ({ control, label, sx, style, ...props }) => (
+export const Tabs = ({ value: _v, onChange: _oc, children }) => (
+	<div className="flex gap-2 mb-4">{children}</div>
+);
+export const Tab = ({ label, onClick, ...props }) => (
+	<button type="button" onClick={onClick} className="chip" {...props}>
+		{label}
+	</button>
+);
+export const Badge = ({ badgeContent: _bc, children, sx: _sx }) => (
+	<span className="badge">{children}</span>
+);
+export const Avatar = ({ children, sx, style, className = "", ...props }) => (
 	<span
-		style={{
-			display: "inline-flex",
-			alignItems: "center",
-			gap: "8px",
-			cursor: "pointer",
-			fontFamily: "var(--font-family-body, 'Noto Serif', serif)",
-			fontSize: "0.875rem",
-			...resolveSx(sx),
-			...style,
-		}}
+		className={`avatar ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
 		{...props}
 	>
-		{control}
-		<span>{label}</span>
+		{children}
 	</span>
 );
 
-export const Avatar = ({ children, src, alt, sx, style, ...props }) => (
-	<div
-		style={{
-			width: 40,
-			height: 40,
-			borderRadius: "50%",
-			background: "var(--color-border, rgba(56, 57, 46, 0.10))",
-			display: "flex",
-			alignItems: "center",
-			justifyContent: "center",
-			overflow: "hidden",
-			flexShrink: 0,
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{src ? (
-			<img
-				src={src}
-				alt={alt || ""}
-				style={{ width: "100%", height: "100%", objectFit: "cover" }}
-			/>
-		) : (
-			children
-		)}
-	</div>
-);
-
-export const List = ({
-	children,
-	disablePadding,
-	dense,
-	sx,
-	style,
-	...props
-}) => (
+export const List = ({ children, sx, style, className = "", ...props }) => (
 	<ul
-		style={{
-			listStyle: "none",
-			margin: 0,
-			padding: disablePadding ? 0 : dense ? "4px 0" : "8px 0",
-			...resolveSx(sx),
-			...style,
-		}}
+		className={`list-unstyled ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
 		{...props}
 	>
 		{children}
 	</ul>
 );
-
 export const ListItem = ({
 	children,
-	disablePadding,
-	dense,
-	alignItems,
+	alignItems: _ai,
 	sx,
 	style,
+	className = "",
 	...props
 }) => (
 	<li
-		style={{
-			display: "flex",
-			alignItems: alignItems === "flex-start" ? "flex-start" : "center",
-			padding: disablePadding ? 0 : dense ? "4px 0" : "8px 0",
-			...resolveSx(sx),
-			...style,
-		}}
+		className={`flex gap-3 items-center py-2 ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
 		{...props}
 	>
 		{children}
 	</li>
 );
-
-export const ListItemText = ({
-	primary,
-	secondary,
-	children,
-	sx,
-	style,
-	...props
-}) => (
-	<div
-		style={{
-			display: "flex",
-			flexDirection: "column",
-			gap: "2px",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{primary && (
-			<span
-				style={{
-					fontFamily: "var(--font-family-heading, 'Newsreader', serif)",
-					fontWeight: 600,
-					fontSize: "1rem",
-					color: "var(--color-text-primary, #38392e)",
-				}}
-			>
-				{primary}
-			</span>
-		)}
+export const ListItemAvatar = ({ children }) => (
+	<div style={{ flexShrink: 0 }}>{children}</div>
+);
+export const ListItemIcon = ({ children }) => (
+	<div style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>
+		{children}
+	</div>
+);
+export const ListItemText = ({ primary, secondary }) => (
+	<div className="flex-1">
+		{primary && <div>{primary}</div>}
 		{secondary && (
-			<span
-				style={{
-					fontFamily: "var(--font-family-body, 'Noto Serif', serif)",
-					fontSize: "0.875rem",
-					color: "var(--color-text-secondary, #7d5d53)",
-				}}
-			>
+			<div className="text-secondary" style={{ fontSize: "0.85rem" }}>
 				{secondary}
-			</span>
+			</div>
 		)}
-		{children}
 	</div>
 );
-
-export const ListItemAvatar = ({ children, sx, style, ...props }) => (
-	<div
-		style={{
-			marginRight: "12px",
-			display: "flex",
-			alignItems: "center",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</div>
+export const ListItemSecondaryAction = ({ children }) => (
+	<div style={{ marginLeft: "auto" }}>{children}</div>
 );
 
-export const Table = ({ children, sx, style, ...props }) => (
-	<table
-		style={{
-			width: "100%",
-			borderCollapse: "collapse",
-			fontFamily: "var(--font-family-body, 'Noto Serif', serif)",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</table>
-);
-
-export const TableHead = ({ children, sx, style, ...props }) => (
-	<thead
-		style={{
-			borderBottom: "2px solid var(--color-border, rgba(56, 57, 46, 0.20))",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</thead>
-);
-
-export const TableBody = ({ children, sx, style, ...props }) => (
-	<tbody style={{ ...resolveSx(sx), ...style }} {...props}>
-		{children}
-	</tbody>
-);
-
-export const TableRow = ({ children, sx, style, hover, ...props }) => (
-	<tr
-		style={{
-			borderBottom: "1px solid var(--color-border, rgba(56, 57, 46, 0.10))",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</tr>
-);
-
-export const TableCell = ({
+export const Stack = ({
+	spacing = 2,
+	direction = "column",
 	children,
-	align = "left",
 	sx,
 	style,
+	className = "",
 	...props
 }) => (
-	<td
-		style={{
-			padding: "10px 14px",
-			textAlign: align,
-			fontSize: "0.875rem",
-			color: "var(--color-text-primary, #38392e)",
-			...resolveSx(sx),
-			...style,
-		}}
-		{...props}
-	>
-		{children}
-	</td>
-);
-
-export const TableContainer = ({ children, sx, style, ...props }) => (
 	<div
-		style={{
-			width: "100%",
-			overflowX: "auto",
-			...resolveSx(sx),
-			...style,
-		}}
+		className={`flex ${direction === "column" ? "flex-col" : "flex-row"} gap-${spacing} ${className}`.trim()}
+		style={{ ...resolveSx(sx), ...style }}
 		{...props}
 	>
 		{children}
 	</div>
+);
+export const Grid = ({
+	container: _c,
+	item: _i,
+	xs: _xs,
+	md: _md,
+	children,
+	sx,
+	style,
+	className = "",
+	...props
+}) => (
+	<div className={className} style={{ ...resolveSx(sx), ...style }} {...props}>
+		{children}
+	</div>
+);
+export const Breadcrumbs = ({ children }) => (
+	<nav className="flex gap-2 items-center caption">{children}</nav>
+);
+export const Link = ({ children, href, to, ...props }) => (
+	<a href={href || to} {...props}>
+		{children}
+	</a>
 );
