@@ -1,7 +1,4 @@
-const ENV_PASSWORD_HASH =
-	import.meta.env.VITE_ADMIN_PASSWORD_HASH ??
-	import.meta.env.VITE_ADMIN_PASSWORD_HAS ??
-	"";
+const ENV_PASSWORD_HASH = import.meta.env.VITE_ADMIN_PASSWORD_HASH ?? "";
 const SESSION_KEY = "editorial_admin_session";
 
 async function hashPassword(text) {
