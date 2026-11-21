@@ -1,12 +1,20 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import radarData from "@/content/techRadar.json";
 import TechRadar from "../TechRadar";
 
 const renderWithRouter = (ui) => render(<BrowserRouter>{ui}</BrowserRouter>);
 
 describe("TechRadar Component", () => {
+	beforeEach(() => {
+		sessionStorage.clear();
+	});
+
+	afterEach(() => {
+		sessionStorage.clear();
+	});
+
 	it("renders a label for every configured quadrant and does not show add button when not editable", () => {
 		renderWithRouter(<TechRadar />);
 
@@ -42,7 +50,8 @@ describe("TechRadar Component", () => {
 		).not.toBeInTheDocument();
 	});
 
-	it("opens the dynamic form when Add Technology is clicked and allows creating a blip when editable", () => {
+	it("opens the dynamic form when Add Technology is clicked and allows creating a blip when editable and authenticated", () => {
+		sessionStorage.setItem("editorial_admin_session", "true");
 		renderWithRouter(<TechRadar editable />);
 
 		const addBtn = screen.getByRole("button", { name: /Add Technology/i });
@@ -64,5 +73,13 @@ describe("TechRadar Component", () => {
 		// Form should close and new technology blip should be in document
 		expect(screen.queryByTestId("tech-radar-form")).not.toBeInTheDocument();
 		expect(screen.getByText("GraphQL")).toBeInTheDocument();
+	});
+
+	it("does not show add button even if editable is true when not authenticated", () => {
+		renderWithRouter(<TechRadar editable />);
+
+		expect(
+			screen.queryByRole("button", { name: /Add Technology/i }),
+		).not.toBeInTheDocument();
 	});
 });

@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import TechRadarForm from "@/components/TechRadarForm";
 import { githubRepoUrl } from "@/config/site";
 import useTechRadarData from "@/hooks/useTechRadarData";
+import { isAuthenticated } from "@/utils/authUtils";
 
 const RADAR_SIZE = 800;
 const CENTER = RADAR_SIZE / 2;
@@ -32,6 +33,7 @@ export default function TechRadar({
 }) {
 	const location = useLocation();
 	const isStandalone = showAppBar || location?.pathname === "/radar";
+	const canEdit = Boolean(editable && isAuthenticated());
 
 	const {
 		rings: rawRings,
@@ -196,7 +198,7 @@ export default function TechRadar({
 					))}
 				</div>
 
-				{editable ? (
+				{canEdit ? (
 					<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
 						{customBlipsCount > 0 && (
 							<button
@@ -375,7 +377,7 @@ export default function TechRadar({
 										)}
 									</div>
 								</div>
-								{editable && (
+								{canEdit && (
 									<button
 										type="button"
 										onClick={() => handleOpenEditForm(activeBlip)}
@@ -452,7 +454,7 @@ export default function TechRadar({
 				</div>
 			</div>
 
-			{editable && (
+			{canEdit && (
 				<TechRadarForm
 					isOpen={isFormOpen}
 					onClose={() => setIsFormOpen(false)}

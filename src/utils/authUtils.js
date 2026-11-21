@@ -1,4 +1,7 @@
-const ENV_PASSWORD_HASH = import.meta.env.VITE_ADMIN_PASSWORD_HASH ?? "";
+const ENV_PASSWORD_HASH =
+	import.meta.env.VITE_ADMIN_PASSWORD_HASH ??
+	import.meta.env.VITE_ADMIN_PASSWORD_HAS ??
+	"";
 const SESSION_KEY = "editorial_admin_session";
 
 async function hashPassword(text) {
@@ -15,10 +18,10 @@ export function isPasswordSet() {
 
 export async function verifyPassword(password) {
 	if (!ENV_PASSWORD_HASH) {
-		// No hash configured: allow any non-empty password so local dev works smoothly
-		return Boolean(password?.trim());
+		// No hash configured: allow entering development mode freely
+		return true;
 	}
-	const inputHash = await hashPassword(password.trim());
+	const inputHash = await hashPassword(password?.trim() || "");
 	return inputHash === ENV_PASSWORD_HASH;
 }
 

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "@/config/storage";
 import radarData from "@/content/techRadar.json";
 import useProjectsData from "@/hooks/useProjectsData";
+import { isAuthenticated } from "@/utils/authUtils";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -170,6 +171,7 @@ export default function useTechRadarData() {
 	}, [customBlips, availableLanguages, projectsByLanguage, projects]);
 
 	const addOrUpdateBlip = useCallback((blipData) => {
+		if (!isAuthenticated()) return;
 		setCustomBlips((prev) => {
 			const id = blipData.id || `custom-${Date.now()}`;
 			const normalized = {
@@ -199,6 +201,7 @@ export default function useTechRadarData() {
 	}, []);
 
 	const deleteBlip = useCallback((blipId) => {
+		if (!isAuthenticated()) return;
 		setCustomBlips((prev) => {
 			const next = prev.filter((b) => b.id !== blipId);
 			writeCustomBlips(next);
@@ -207,6 +210,7 @@ export default function useTechRadarData() {
 	}, []);
 
 	const resetToDefault = useCallback(() => {
+		if (!isAuthenticated()) return;
 		setCustomBlips([]);
 		try {
 			localStorage.removeItem(STORAGE_KEYS.radarCustomBlips);

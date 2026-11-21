@@ -10,11 +10,11 @@ export default function AdminLogin({ onAuthenticated }) {
 	const [submitting, setSubmitting] = useState(false);
 
 	const handleLogin = async (e) => {
-		e.preventDefault();
+		e?.preventDefault();
 		setError("");
 
-		if (!password.trim()) {
-			setError("Please enter a passkey.");
+		if (hasMasterPassword && !password.trim()) {
+			setError("Please enter your master passkey.");
 			return;
 		}
 
@@ -125,7 +125,11 @@ export default function AdminLogin({ onAuthenticated }) {
 						className="btn btn-primary"
 						style={{ marginTop: "0.5rem", width: "100%" }}
 					>
-						{submitting ? "Verifying..." : "Unlock Curator Console"}
+						{submitting
+							? "Verifying..."
+							: hasMasterPassword
+								? "Unlock Curator Console"
+								: "Unlock Curator Console (Dev Mode)"}
 					</button>
 				</form>
 			</div>
