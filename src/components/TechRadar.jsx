@@ -2,7 +2,6 @@ import { Edit3, Plus, RotateCcw } from "lucide-react";
 import PropTypes from "prop-types";
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import ColophonFooter from "@/components/ColophonFooter";
 import Header from "@/components/Header";
 import TechRadarForm from "@/components/TechRadarForm";
 import { githubRepoUrl } from "@/config/site";
@@ -504,7 +503,6 @@ export default function TechRadar({
 					</div>
 					{content}
 				</main>
-				<ColophonFooter />
 			</div>
 		);
 	}

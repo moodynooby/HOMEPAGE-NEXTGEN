@@ -1,7 +1,6 @@
 import { useReducedMotion } from "motion/react";
 import { lazy, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ColophonFooter from "@/components/ColophonFooter";
 import FeaturedWork from "@/components/FeaturedWork";
 import Header from "@/components/Header";
 import LandingHero from "@/components/LandingHero";
@@ -73,8 +72,6 @@ export default function LandingPage() {
 					<Gallery limit={4} showAppBar={false} />
 				</LandingSection>
 			</main>
-
-			<ColophonFooter />
 		</div>
 	);
 }

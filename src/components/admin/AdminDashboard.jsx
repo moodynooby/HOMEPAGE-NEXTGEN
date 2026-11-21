@@ -16,7 +16,6 @@ import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminLogin from "@/components/admin/AdminLogin";
-import ColophonFooter from "@/components/ColophonFooter";
 import Header from "@/components/Header";
 import TechRadar from "@/components/TechRadar";
 import TechRadarForm from "@/components/TechRadarForm";
@@ -1175,8 +1174,6 @@ export default function AdminDashboard({ showAppBar = true }) {
 				quadrants={quadrants}
 				rings={rings}
 			/>
-
-			<ColophonFooter />
 		</div>
 	);
 }
