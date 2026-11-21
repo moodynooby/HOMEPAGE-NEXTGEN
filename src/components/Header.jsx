@@ -3,30 +3,28 @@ import { Menu, Search, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
-import socialLinks from "@/content/socialLinks.json";
+import { SITE_TITLE } from "@/config/site";
+import { socialEntries } from "@/content/socialLinks";
 import useIsMobile from "@/hooks/useIsMobile";
-import { NAV_ITEMS } from "@/nav";
-import { socialIcons } from "@/utils/socialIcons";
+import { NAV_ITEMS } from "@/routes";
 
 function SocialLinks() {
 	return (
 		<div className="social-links">
-			{socialLinks.map((social) => {
-				const IconComponent = socialIcons[social.alt];
-				if (!IconComponent) return null;
-				return (
+			{socialEntries.map(({ alt, link, Icon }) =>
+				Icon ? (
 					<a
-						key={social.alt}
-						href={social.link}
+						key={alt}
+						href={link}
 						target="_blank"
 						rel="noopener noreferrer"
-						aria-label={`Open ${social.alt} in a new tab`}
+						aria-label={`Open ${alt} in a new tab`}
 						className="social-link-btn"
 					>
-						<IconComponent size={16} strokeWidth={1.5} />
+						<Icon size={16} strokeWidth={1.5} />
 					</a>
-				);
-			})}
+				) : null,
+			)}
 		</div>
 	);
 }
@@ -52,11 +50,11 @@ export default function Header() {
 			</a>
 			<div className="masthead">
 				<Link to="/" className="masthead-title">
-					MANAS DOSHI TIMES
+					{SITE_TITLE.toUpperCase()} TIMES
 				</Link>
 
 				<div className="masthead-sub">
-					<span>Manas Doshi</span>
+					<span>{SITE_TITLE}</span>
 					<span>{isMobile ? "Personal Archive" : currentDate}</span>
 					<span>Est. MMXXIV</span>
 				</div>
@@ -66,7 +64,7 @@ export default function Header() {
 				<div className="nav-inner">
 					{!isMobile &&
 						NAV_ITEMS.map((item) => (
-							<Link key={item.to} to={item.to} className="nav-link">
+							<Link key={item.path} to={item.path} className="nav-link">
 								{item.label}
 							</Link>
 						))}
@@ -114,8 +112,8 @@ export default function Header() {
 					<div className="mobile-menu-drawer">
 						{NAV_ITEMS.map((item) => (
 							<Link
-								key={item.to}
-								to={item.to}
+								key={item.path}
+								to={item.path}
 								onClick={() => setIsMobileMenuOpen(false)}
 								className="nav-link"
 							>

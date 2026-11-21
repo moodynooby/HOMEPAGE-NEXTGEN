@@ -16,7 +16,7 @@ To keep the site from reading as AI-generated, every UI change must pass the [DE
 | --- | --- |
 | `pnpm dev` | Generate palette CSS, then start Vite (port **5173**, strict, opens browser) |
 | `pnpm build` | Generate palette CSS, then build to `dist/` (must pass before finishing) |
-| `pnpm generate:palette` | Regenerate `src/theme/palette.generated.css` from `palette.js` |
+| `pnpm generate:palette` | Regenerate `src/theme/palette.generated.css` and `public/theme-bootstrap.js` from `palette.js` |
 | `pnpm lint` | Biome: auto-fix lint + format |
 | `pnpm biome check <files>` | Check specific files without modifying them |
 | `pnpm test` | Vitest suite |
@@ -46,8 +46,11 @@ Run `pnpm biome check` on changed files and `pnpm build` to verify any non-trivi
 src/
 ├── components/     Orchestrators (Projects, ProjectDetail, LandingPage,
 │                   ProjectTimeline, CommandPalette) + focused presentational pieces
-├── content/        projects.json, gallery.json, socialLinks.json,
-│                   techRadar.json, timelineMilestones.json  ← edit content here
+├── config/         site, storage, ledger, sections, shortcuts, commands
+├── content/        projects.json, socialLinks.json, techRadar.json,
+│                   timelineMilestones.json  ← edit content here
+│                   (socialLinks.js / timelineMilestones.js derive icons and
+│                   formatted fields from the JSON)
 ├── contexts/       ThemeContext, BookmarksContext
 ├── hooks/          useProjectsData, useProjectFilters, useProjectHealth,
 │                    useProjectDetail, useLandingStats, useTimelineFilters,
@@ -56,9 +59,9 @@ src/
 │                    astryxTheme.js, palette.generated.css (generated)
 ├── utils/          githubUtils.js, socialIcons.js, cache.js, projects.js, ...
 ├── index.css       Global editorial styles (consumes palette tokens)
-└── main.jsx        Entry: generated palette CSS, fonts, Theme, router, kbar
+└── main.jsx        Entry: fonts, Theme, router, kbar (palette CSS comes via index.css)
 scripts/
-└── generate-palette-css.js  Emits palette.generated.css before dev/build
+└── generate-palette-css.js  Emits palette.generated.css + theme-bootstrap.js before dev/build
 ```
 
 ### Data flow
@@ -84,19 +87,19 @@ Each entry is an object with these fields:
 
 Guidelines: the tagline is the most-scanned text on the page — write it for someone skimming. When the project has a product name distinct from the repo name (e.g. `modern-darkreader` → "Lean Dark+"), mention it in the tagline.
 
-### Gallery — `src/content/gallery.json`
+### Gallery — Cloudinary
 
-Cloudinary API export (`resources[]`). Images/videos can carry captions in `context.custom`. Regenerate via the Cloudinary console rather than hand-editing.
+Media is fetched by the `gallery` tag from Cloudinary at runtime (`utils/cloudinary.js`), not from a local JSON file. "Resource List" must be enabled in Cloudinary Security settings. URL construction lives in `utils/cloudinary.js` so the grid and lightbox stay in sync.
 
 ### Social links — `src/content/socialLinks.json`
 
-Array of `{ "link", "alt" }` rendered in the header/footer and `/links`.
+Array of `{ "link", "alt", "id" }` rendered in the header/footer and `/links`. `id` is the stable key (`github`, `linkedin`, `instagram`, `addons`, `email`) that selects the icon and drives command-palette entries — don't derive it from `alt`.
 
 ## Design System
 
 Full documentation: [DESIGN.md](./DESIGN.md). Quick reference:
 
-- **Colors** are authored only in `src/theme/palette.js`. `scripts/generate-palette-css.js` emits `palette.generated.css` before dev/build, and `astryxTheme.js` derives the Astryx tokens from the same map via `paletteTokens.js`. Styles consume CSS custom properties (`--color-text-primary`, `--color-background-body`, `--color-border`, …) — never hard-code hex.
+- **Colors** are authored only in `src/theme/palette.js`. `scripts/generate-palette-css.js` emits both `palette.generated.css` (imported by `index.css`) and `public/theme-bootstrap.js` (included by `index.html`) before dev/build, and `astryxTheme.js` derives the Astryx tokens from the same map via `paletteTokens.js`. Styles consume CSS custom properties (`--color-text-primary`, `--color-background-body`, `--color-border`, …) — never hard-code hex.
 - **Typography**: Newsreader (headlines, 600–800), Noto Serif (body), Work Sans Variable (labels/buttons/meta, uppercase with letter-spacing).
 - **Borders**: hairline rules only, via the `--color-border` token. No heavy borders, 0px rounded corners, no heavy drop shadows.
 

@@ -1,3 +1,5 @@
+import { SITE_TITLE } from "@/config/site";
+
 export default function ColophonFooter() {
 	return (
 		<footer
@@ -9,7 +11,7 @@ export default function ColophonFooter() {
 		>
 			<div className="editorial-container flex justify-between flex-wrap gap-2">
 				<p className="editorial-meta">
-					© {new Date().getFullYear()} Manas Doshi
+					© {new Date().getFullYear()} {SITE_TITLE}
 				</p>
 				<p className="editorial-meta">Set in Newsreader &amp; Noto Serif</p>
 			</div>

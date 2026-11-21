@@ -1,3 +1,5 @@
+@import "./theme/palette.generated.css";
+
 /* Palette tokens are published on :root by palette.generated.css, generated
    from src/theme/palette.js. Only document defaults live here. */
 :root {

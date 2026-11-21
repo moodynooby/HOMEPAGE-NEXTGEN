@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
 import ProjectCard from "@/components/ProjectCard";
+import { FILTER_BOOKMARKED } from "@/config/ledger";
 
 export default function ProjectsLedger({
 	filteredProjects,
@@ -24,7 +25,7 @@ export default function ProjectsLedger({
 						color: "var(--color-text-secondary)",
 					}}
 				>
-					{activeCategory === "Bookmarked"
+					{activeCategory === FILTER_BOOKMARKED
 						? "No bookmarked projects yet. Click the bookmark icon on any project to save it here."
 						: "Nothing filed under this heading yet."}
 				</p>

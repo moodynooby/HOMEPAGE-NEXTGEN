@@ -33,3 +33,4 @@ yarn.lock
 
 # Generated from src/theme/palette.js by scripts/generate-palette-css.js
 src/theme/palette.generated.css
+public/theme-bootstrap.js

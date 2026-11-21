@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 import MilestoneCard from "@/components/MilestoneCard";
 import MilestoneChangelogDrawer from "@/components/MilestoneChangelogDrawer";
 import TimelineToolbar from "@/components/TimelineToolbar";
-import useTimelineFilters, {
+import { FILTER_ALL } from "@/config/ledger";
+import {
 	PROJECT_CONFIG,
 	TIMELINE_MILESTONES,
-} from "@/hooks/useTimelineFilters";
-
-export { PROJECT_CONFIG, TIMELINE_MILESTONES };
+} from "@/content/timelineMilestones";
+import useTimelineFilters from "@/hooks/useTimelineFilters";
 
 export default function ProjectTimeline({ limit = null }) {
 	const {
@@ -24,8 +24,7 @@ export default function ProjectTimeline({ limit = null }) {
 		projectFilterOptions,
 		filteredMilestones,
 		resetFilters,
-		openDrawer,
-		closeDrawer,
+		setActiveMilestone,
 	} = useTimelineFilters(limit);
 
 	return (
@@ -49,6 +48,7 @@ export default function ProjectTimeline({ limit = null }) {
 				searchQuery={searchQuery}
 				setSearchQuery={setSearchQuery}
 				projectFilterOptions={projectFilterOptions}
+				totalProjects={Object.keys(PROJECT_CONFIG).length}
 			/>
 
 			<hr className="editorial-divider mb-6" />
@@ -57,7 +57,7 @@ export default function ProjectTimeline({ limit = null }) {
 				<span className="editorial-meta">
 					Showing {filteredMilestones.length} of {TIMELINE_MILESTONES.length}{" "}
 					milestones
-					{selectedProject !== "All" && ` in ${selectedProject}`}
+					{selectedProject !== FILTER_ALL && ` in ${selectedProject}`}
 					{searchQuery && ` matching "${searchQuery}"`}
 				</span>
 				<span className="editorial-meta italic">
@@ -109,7 +109,7 @@ export default function ProjectTimeline({ limit = null }) {
 								key={milestone.id}
 								milestone={milestone}
 								proj={PROJECT_CONFIG[milestone.project] || {}}
-								onOpen={openDrawer}
+								onOpen={setActiveMilestone}
 							/>
 						))}
 					</div>
@@ -124,7 +124,7 @@ export default function ProjectTimeline({ limit = null }) {
 						>
 							<button
 								type="button"
-								onClick={() => setVisibleCount((prev) => prev + (limit || 6))}
+								onClick={() => setVisibleCount((prev) => prev + limit)}
 								className="btn btn-outlined btn-sm"
 								style={{
 									fontFamily: "var(--font-family-code)",
@@ -142,7 +142,7 @@ export default function ProjectTimeline({ limit = null }) {
 
 			<MilestoneChangelogDrawer
 				activeMilestone={activeMilestone}
-				onClose={closeDrawer}
+				onClose={() => setActiveMilestone(null)}
 				projectConfig={PROJECT_CONFIG}
 			/>
 		</div>

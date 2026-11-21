@@ -1,22 +1,27 @@
 [
 	{
 		"link": "https://github.com/moodynooby",
-		"alt": "GitHub"
+		"alt": "GitHub",
+		"id": "github"
 	},
 	{
 		"link": "https://www.linkedin.com/in/manas-doshi-644751363",
-		"alt": "LinkedIn"
+		"alt": "LinkedIn",
+		"id": "linkedin"
 	},
 	{
 		"link": "https://www.instagram.com/doshimanas__/",
-		"alt": "Instagram"
+		"alt": "Instagram",
+		"id": "instagram"
 	},
 	{
 		"link": "https://addons.mozilla.org/en-US/firefox/user/17859963/",
-		"alt": "Addons Profile"
+		"alt": "Addons Profile",
+		"id": "addons"
 	},
 	{
 		"link": "mailto:doshimanas27@gmail.com",
-		"alt": "Email"
+		"alt": "Email",
+		"id": "email"
 	}
 ]

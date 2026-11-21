@@ -1,5 +1,8 @@
 import { defineTheme } from "@astryxdesign/core/theme";
-import { defaultThemeSlug, themes } from "@/astryx-themes";
+import { neutralTheme } from "@astryxdesign/theme-neutral/built";
+import "@astryxdesign/theme-neutral/theme.css";
+import "@astryxdesign/theme-neutral/fonts.css";
+
 import { DARK_PALETTE, LIGHT_PALETTE } from "./palette";
 import { PALETTE_TOKEN_MAP } from "./paletteTokens";
 
@@ -19,7 +22,7 @@ const darkPaletteTokens = Object.fromEntries(
 
 export const editorialTheme = defineTheme({
 	name: "editorial-monograph",
-	extends: themes[defaultThemeSlug],
+	extends: neutralTheme,
 	tokens: {
 		"--radius-none": "0px",
 		"--radius-inner": "0px",

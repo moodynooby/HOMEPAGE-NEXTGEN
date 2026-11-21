@@ -1,30 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
-import { byRecencyDesc } from "@/hooks/useProjectsData";
+import {
+	DEFAULT_SORT,
+	FILTER_ALL,
+	FILTER_BOOKMARKED,
+	groupsByYear,
+	SORT,
+} from "@/config/ledger";
 import { orderCategories } from "@/utils/projectCategories";
-import { groupProjectsByYear } from "@/utils/projects";
-
-export const SORT_OPTIONS = [
-	"Recently Updated",
-	"Most Stars",
-	"Name (A-Z)",
-	"Name (Z-A)",
-	"Year (Newest)",
-	"Year (Oldest)",
-];
+import {
+	byRecencyDesc,
+	groupProjectsByYear,
+	UNKNOWN_YEAR,
+} from "@/utils/projects";
 
 const queryParamFromLocation = ({ search }) =>
 	new URLSearchParams(search).get("q");
 
-/**
- * Owns the ledger's filter/sort state and all derived views. Presentation
- * components consume the returned values without knowing how they are derived.
- */
 export default function useProjectFilters(projects, isBookmarked, location) {
-	const [activeCategory, setActiveCategory] = useState("All");
+	const [activeCategory, setActiveCategory] = useState(FILTER_ALL);
 	const [searchQuery, setSearchQuery] = useState(
 		() => queryParamFromLocation(location) || "",
 	);
-	const [sortBy, setSortBy] = useState("Recently Updated");
+	const [sortBy, setSortBy] = useState(DEFAULT_SORT);
 	const [selectedLanguages, setSelectedLanguages] = useState([]);
 
 	useEffect(() => {
@@ -33,13 +30,9 @@ export default function useProjectFilters(projects, isBookmarked, location) {
 	}, [location]);
 
 	const allLanguages = useMemo(() => {
-		const langs = new Set();
-		for (const project of projects) {
-			if (project.language) langs.add(project.language);
-			if (Array.isArray(project.tags)) {
-				for (const tag of project.tags) langs.add(tag);
-			}
-		}
+		const langs = new Set(
+			projects.map((project) => project.language).filter(Boolean),
+		);
 		return [...langs].sort();
 	}, [projects]);
 
@@ -52,8 +45,8 @@ export default function useProjectFilters(projects, isBookmarked, location) {
 			...new Set(projects.map((project) => project.category).filter(Boolean)),
 		];
 		const categories = [
-			"All",
-			"Bookmarked",
+			FILTER_ALL,
+			FILTER_BOOKMARKED,
 			...orderCategories(dataCategories),
 		];
 
@@ -67,9 +60,8 @@ export default function useProjectFilters(projects, isBookmarked, location) {
 		const filteredProjects = projects.filter((project) => {
 			const matchesTech =
 				selectedLanguages.length === 0 ||
-				(project.language && selectedLanguages.includes(project.language)) ||
-				project.tags?.some((tag) => selectedLanguages.includes(tag));
-			if (activeCategory === "Bookmarked") {
+				(project.language && selectedLanguages.includes(project.language));
+			if (activeCategory === FILTER_BOOKMARKED) {
 				return (
 					isBookmarked(project.githubName) &&
 					matchesQuery(project) &&
@@ -77,34 +69,29 @@ export default function useProjectFilters(projects, isBookmarked, location) {
 				);
 			}
 			return (
-				(activeCategory === "All" || project.category === activeCategory) &&
+				(activeCategory === FILTER_ALL ||
+					project.category === activeCategory) &&
 				matchesQuery(project) &&
 				matchesTech
 			);
 		});
 
 		const sortedFilteredProjects = [...filteredProjects].sort((a, b) => {
-			switch (sortBy) {
-				case "Most Stars":
-					return (b.stars || 0) - (a.stars || 0);
-				case "Name (A-Z)":
-					return a.githubName.localeCompare(b.githubName);
-				case "Name (Z-A)":
-					return b.githubName.localeCompare(a.githubName);
-				case "Year (Newest)":
-					return (b.year || 0) - (a.year || 0);
-				case "Year (Oldest)":
-					return (a.year || 0) - (b.year || 0);
-				default:
-					return byRecencyDesc(a, b);
-			}
+			if (sortBy === SORT.STARS) return (b.stars || 0) - (a.stars || 0);
+			if (sortBy === SORT.NAME_ASC)
+				return a.githubName.localeCompare(b.githubName);
+			if (sortBy === SORT.NAME_DESC)
+				return b.githubName.localeCompare(a.githubName);
+			if (sortBy === SORT.YEAR_NEWEST) return (b.year || 0) - (a.year || 0);
+			if (sortBy === SORT.YEAR_OLDEST) return (a.year || 0) - (b.year || 0);
+			return byRecencyDesc(a, b);
 		});
 
 		const groupedProjects = groupProjectsByYear(sortedFilteredProjects);
 		const years = Object.keys(groupedProjects).sort((a, b) => {
-			if (a === "Unknown") return 1;
-			if (b === "Unknown") return -1;
-			if (sortBy === "Year (Oldest)") return Number(a) - Number(b);
+			if (a === UNKNOWN_YEAR) return 1;
+			if (b === UNKNOWN_YEAR) return -1;
+			if (sortBy === SORT.YEAR_OLDEST) return Number(a) - Number(b);
 			return Number(b) - Number(a);
 		});
 
@@ -113,15 +100,12 @@ export default function useProjectFilters(projects, isBookmarked, location) {
 		);
 
 		const activeFiltersCount =
-			(activeCategory !== "All" ? 1 : 0) +
+			(activeCategory !== FILTER_ALL ? 1 : 0) +
 			(searchQuery.trim() !== "" ? 1 : 0) +
 			selectedLanguages.length +
-			(sortBy !== "Recently Updated" ? 1 : 0);
+			(sortBy !== DEFAULT_SORT ? 1 : 0);
 
-		const isGroupedByYear =
-			sortBy === "Recently Updated" ||
-			sortBy === "Year (Newest)" ||
-			sortBy === "Year (Oldest)";
+		const isGroupedByYear = groupsByYear(sortBy);
 
 		return {
 			categoryCounts,
@@ -137,9 +121,9 @@ export default function useProjectFilters(projects, isBookmarked, location) {
 	})();
 
 	const handleResetFilters = () => {
-		setActiveCategory("All");
+		setActiveCategory(FILTER_ALL);
 		setSearchQuery("");
-		setSortBy("Recently Updated");
+		setSortBy(DEFAULT_SORT);
 		setSelectedLanguages([]);
 	};
 

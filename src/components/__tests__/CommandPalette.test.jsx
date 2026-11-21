@@ -5,27 +5,11 @@ import CommandPalette from "@/components/CommandPalette";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
 
 describe("CommandPalette", () => {
-	it("renders children correctly", () => {
-		render(
-			<MemoryRouter>
-				<ThemeContextProvider>
-					<CommandPalette>
-						<div data-testid="child-element">Child content</div>
-					</CommandPalette>
-				</ThemeContextProvider>
-			</MemoryRouter>,
-		);
-
-		expect(screen.getByTestId("child-element")).toBeInTheDocument();
-	});
-
 	it("opens shortcuts modal on pressing '?'", async () => {
 		render(
 			<MemoryRouter>
 				<ThemeContextProvider>
-					<CommandPalette>
-						<div data-testid="test-child">Child content</div>
-					</CommandPalette>
+					<CommandPalette />
 				</ThemeContextProvider>
 			</MemoryRouter>,
 		);

@@ -4,42 +4,28 @@ import { Link } from "react-router-dom";
 import { githubRepoUrl } from "@/config/site";
 import radarData from "@/content/techRadar.json";
 
-export const RINGS = [
-	{ name: "Adopt", radius: 110, color: "var(--color-chart-adopt)" },
-	{ name: "Trial", radius: 190, color: "var(--color-chart-trial)" },
-	{ name: "Assess", radius: 270, color: "var(--color-chart-assess)" },
-	{ name: "Hold", radius: 350, color: "var(--color-chart-hold)" },
-];
-
-export const QUADRANTS = [
-	{
-		name: "Languages",
-		angle: -Math.PI / 4,
-		startAngle: -Math.PI / 2,
-		endAngle: 0,
-	},
-	{
-		name: "Frontend/UI",
-		angle: Math.PI / 4,
-		startAngle: 0,
-		endAngle: Math.PI / 2,
-	},
-	{
-		name: "Backend/Data",
-		angle: (3 * Math.PI) / 4,
-		startAngle: Math.PI / 2,
-		endAngle: Math.PI,
-	},
-	{
-		name: "DevOps/Cloud",
-		angle: -(3 * Math.PI) / 4,
-		startAngle: -Math.PI,
-		endAngle: -Math.PI / 2,
-	},
-];
-
 const RADAR_SIZE = 800;
 const CENTER = RADAR_SIZE / 2;
+
+const RINGS = radarData.rings.map((name, index) => ({
+	name,
+	...[
+		{ radius: 110, color: "var(--color-chart-adopt)" },
+		{ radius: 190, color: "var(--color-chart-trial)" },
+		{ radius: 270, color: "var(--color-chart-assess)" },
+		{ radius: 350, color: "var(--color-chart-hold)" },
+	][index],
+}));
+
+const QUADRANTS = radarData.quadrants.map((name, index) => ({
+	name,
+	...[
+		{ angle: -Math.PI / 4, startAngle: -Math.PI / 2, endAngle: 0 },
+		{ angle: Math.PI / 4, startAngle: 0, endAngle: Math.PI / 2 },
+		{ angle: (3 * Math.PI) / 4, startAngle: Math.PI / 2, endAngle: Math.PI },
+		{ angle: -(3 * Math.PI) / 4, startAngle: -Math.PI, endAngle: -Math.PI / 2 },
+	][index],
+}));
 
 export default function TechRadar({ onActiveBlipChange }) {
 	const [activeBlip, setActiveBlip] = useState(null);
@@ -53,8 +39,14 @@ export default function TechRadar({ onActiveBlipChange }) {
 		}
 
 		return radarData.blips.map((blip) => {
-			const qIndex = QUADRANTS.findIndex((q) => q.name === blip.quadrant);
-			const rIndex = RINGS.findIndex((r) => r.name === blip.ring);
+			const qIndex = Math.max(
+				0,
+				QUADRANTS.findIndex((q) => q.name === blip.quadrant),
+			);
+			const rIndex = Math.max(
+				0,
+				RINGS.findIndex((r) => r.name === blip.ring),
+			);
 			const quad = QUADRANTS[qIndex !== -1 ? qIndex : 0];
 			const innerR = rIndex === 0 ? 30 : RINGS[rIndex - 1].radius + 15;
 			const outerR = RINGS[rIndex].radius - 15;
@@ -98,14 +90,12 @@ export default function TechRadar({ onActiveBlipChange }) {
 
 	return (
 		<div className="flex flex-col md:flex-row gap-6 items-center w-full">
-			{/* SVG Radar */}
 			<div className="flex-1 radar-wrapper">
 				<svg
 					viewBox={`0 0 ${RADAR_SIZE} ${RADAR_SIZE}`}
 					className="radar-svg"
 					aria-label="Interactive Technology Radar"
 				>
-					{/* Rings */}
 					{RINGS.map((ring) => (
 						<circle
 							key={ring.name}
@@ -119,7 +109,6 @@ export default function TechRadar({ onActiveBlipChange }) {
 						/>
 					))}
 
-					{/* Quadrant Lines */}
 					<line
 						x1={CENTER}
 						y1={0}
@@ -137,7 +126,6 @@ export default function TechRadar({ onActiveBlipChange }) {
 						strokeWidth="1.5"
 					/>
 
-					{/* Quadrant Labels */}
 					{QUADRANTS.map((quad) => {
 						const dist = 380;
 						const x = CENTER + dist * Math.cos(quad.angle);
@@ -160,7 +148,6 @@ export default function TechRadar({ onActiveBlipChange }) {
 						);
 					})}
 
-					{/* Ring Labels */}
 					{RINGS.map((ring) => (
 						<text
 							key={ring.name}
@@ -177,7 +164,6 @@ export default function TechRadar({ onActiveBlipChange }) {
 						</text>
 					))}
 
-					{/* Blips */}
 					{blips.map((blip) => {
 						const isActive = activeBlip && activeBlip.id === blip.id;
 
@@ -223,7 +209,6 @@ export default function TechRadar({ onActiveBlipChange }) {
 				</svg>
 			</div>
 
-			{/* Details Panel */}
 			<div className="surface-card flex-1 radar-details">
 				{activeBlip ? (
 					<div>

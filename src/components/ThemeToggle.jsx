@@ -1,6 +1,7 @@
-import { Contrast, Monitor, Moon, Sun } from "lucide-react";
+import { Contrast } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { THEME_MODE_ICONS, THEME_MODES } from "@/theme/themeConfig";
 
 export default function ThemeToggle() {
 	const { mode, setMode, highContrast, toggleHighContrast } = useThemeContext();
@@ -22,33 +23,21 @@ export default function ThemeToggle() {
 	return (
 		<div className="theme-toggle">
 			<div role="group" className="theme-toggle-group">
-				<button
-					type="button"
-					aria-label="Use light theme"
-					aria-pressed={mode === "light"}
-					onClick={() => setMode("light")}
-					className="theme-toggle-btn"
-				>
-					<Sun size={15} strokeWidth={1.5} />
-				</button>
-				<button
-					type="button"
-					aria-label="Use system theme"
-					aria-pressed={mode === "system"}
-					onClick={() => setMode("system")}
-					className="theme-toggle-btn"
-				>
-					<Monitor size={15} strokeWidth={1.5} />
-				</button>
-				<button
-					type="button"
-					aria-label="Use dark theme"
-					aria-pressed={mode === "dark"}
-					onClick={() => setMode("dark")}
-					className="theme-toggle-btn"
-				>
-					<Moon size={15} strokeWidth={1.5} />
-				</button>
+				{THEME_MODES.map((themeMode) => {
+					const ModeIcon = THEME_MODE_ICONS[themeMode];
+					return (
+						<button
+							key={themeMode}
+							type="button"
+							aria-label={`Use ${themeMode} theme`}
+							aria-pressed={mode === themeMode}
+							onClick={() => setMode(themeMode)}
+							className="theme-toggle-btn"
+						>
+							<ModeIcon size={15} strokeWidth={1.5} />
+						</button>
+					);
+				})}
 			</div>
 
 			<div ref={menuRef} className="relative">

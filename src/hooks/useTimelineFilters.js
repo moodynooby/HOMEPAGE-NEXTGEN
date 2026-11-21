@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import timelineData from "@/content/timelineMilestones.json";
+import { FILTER_ALL } from "@/config/ledger";
+import {
+	PROJECT_CONFIG,
+	TIMELINE_MILESTONES,
+} from "@/content/timelineMilestones";
 
-export const PROJECT_CONFIG = timelineData.projectConfig;
-export const TIMELINE_MILESTONES = timelineData.milestones;
-
-/** Owns the timeline's filter, sort, pagination and drawer state. */
 export default function useTimelineFilters(limit = null) {
-	const [selectedProject, setSelectedProject] = useState("All");
+	const [selectedProject, setSelectedProject] = useState(FILTER_ALL);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortDesc, setSortDesc] = useState(true);
 	const [activeMilestone, setActiveMilestone] = useState(null);
@@ -14,14 +14,18 @@ export default function useTimelineFilters(limit = null) {
 
 	const projectFilterOptions = useMemo(() => {
 		const projects = Object.keys(PROJECT_CONFIG);
-		const counts = { All: TIMELINE_MILESTONES.length };
+		const counts = { [FILTER_ALL]: TIMELINE_MILESTONES.length };
 		for (const project of projects) {
 			counts[project] = TIMELINE_MILESTONES.filter(
 				(milestone) => milestone.project === project,
 			).length;
 		}
 		return [
-			{ id: "All", label: "All Repositories", count: counts.All },
+			{
+				id: FILTER_ALL,
+				label: "All Repositories",
+				count: counts[FILTER_ALL],
+			},
 			...projects.map((project) => ({
 				id: project,
 				label: PROJECT_CONFIG[project].shortName || project,
@@ -35,7 +39,7 @@ export default function useTimelineFilters(limit = null) {
 		const query = searchQuery.trim().toLowerCase();
 		return TIMELINE_MILESTONES.filter((milestone) => {
 			const matchesProject =
-				selectedProject === "All" || milestone.project === selectedProject;
+				selectedProject === FILTER_ALL || milestone.project === selectedProject;
 			if (!matchesProject) return false;
 			if (!query) return true;
 
@@ -67,15 +71,14 @@ export default function useTimelineFilters(limit = null) {
 		sortDesc,
 		setSortDesc,
 		activeMilestone,
+		setActiveMilestone,
 		visibleCount,
 		setVisibleCount,
 		projectFilterOptions,
 		filteredMilestones,
 		resetFilters: () => {
-			setSelectedProject("All");
+			setSelectedProject(FILTER_ALL);
 			setSearchQuery("");
 		},
-		openDrawer: setActiveMilestone,
-		closeDrawer: () => setActiveMilestone(null),
 	};
 }

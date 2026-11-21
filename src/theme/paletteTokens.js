@@ -1,4 +1,3 @@
-/** Maps palette keys to the CSS custom properties consumed by styles. */
 export const PALETTE_TOKEN_MAP = {
 	textPrimary: "--color-text-primary",
 	textSecondary: "--color-text-secondary",

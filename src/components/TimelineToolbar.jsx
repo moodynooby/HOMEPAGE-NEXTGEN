@@ -1,5 +1,6 @@
 import { ArrowUpDown, Filter, RotateCcw, Search, X } from "lucide-react";
 import PropTypes from "prop-types";
+import { FILTER_ALL } from "@/config/ledger";
 
 export default function TimelineToolbar({
 	sortDesc,
@@ -10,6 +11,7 @@ export default function TimelineToolbar({
 	searchQuery,
 	setSearchQuery,
 	projectFilterOptions,
+	totalProjects,
 }) {
 	return (
 		<div className="mb-6">
@@ -38,8 +40,8 @@ export default function TimelineToolbar({
 							color: "var(--color-text-secondary)",
 						}}
 					>
-						Chronological evolution and release changelog across the 5 ecosystem
-						applications.
+						Chronological evolution and release changelog across the{" "}
+						{totalProjects} ecosystem applications.
 					</p>
 				</div>
 
@@ -54,7 +56,7 @@ export default function TimelineToolbar({
 						<span>{sortDesc ? "Newest first" : "Oldest first"}</span>
 					</button>
 
-					{(selectedProject !== "All" || searchQuery) && (
+					{(selectedProject !== FILTER_ALL || searchQuery) && (
 						<button
 							type="button"
 							onClick={handleResetFilters}
@@ -143,7 +145,7 @@ export default function TimelineToolbar({
 								gap: "6px",
 							}}
 						>
-							{opt.id !== "All" && (
+							{opt.id !== FILTER_ALL && (
 								<span
 									style={{
 										width: 8,
@@ -174,4 +176,5 @@ TimelineToolbar.propTypes = {
 	searchQuery: PropTypes.string.isRequired,
 	setSearchQuery: PropTypes.func.isRequired,
 	projectFilterOptions: PropTypes.array.isRequired,
+	totalProjects: PropTypes.number.isRequired,
 };

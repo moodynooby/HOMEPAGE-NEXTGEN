@@ -1,18 +1,17 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { SECTION_IDS } from "@/config/sections";
 import projectsData from "@/content/projects.json";
+import { formatNumber } from "@/utils/format";
+import { selectFeaturedProjects } from "@/utils/projects";
 
-const featuredProjects = projectsData.filter((project) => project.featured);
+const featuredProjects = selectFeaturedProjects(projectsData);
 
-export default function FeaturedWork({
-	featuredMeta,
-	activeRadarProjects,
-	formatNumber,
-}) {
+export default function FeaturedWork({ featuredMeta, activeRadarProjects }) {
 	return (
 		<section
 			className="editorial-container"
-			id="projects-section"
+			id={SECTION_IDS.projects}
 			style={{ marginTop: "4rem" }}
 		>
 			<div
@@ -105,5 +104,4 @@ export default function FeaturedWork({
 FeaturedWork.propTypes = {
 	featuredMeta: PropTypes.object.isRequired,
 	activeRadarProjects: PropTypes.arrayOf(PropTypes.string).isRequired,
-	formatNumber: PropTypes.func.isRequired,
 };

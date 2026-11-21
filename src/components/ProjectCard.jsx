@@ -13,30 +13,28 @@ import { Link as RouterLink } from "react-router-dom";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import useProjectHealth from "@/hooks/useProjectHealth";
 
+const ACTIVE_PROJECT_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
 export default function ProjectCard({
 	project,
 	entryNumber,
 	isMobile,
 	shouldReduceMotion,
 	year,
-	initialHealth = null,
 }) {
 	const { isBookmarked, toggleBookmark } = useBookmarksContext();
-	const { data: health } = useProjectHealth(
-		project.githubName,
-		initialHealth || project.health || null,
-	);
+	const bookmarked = isBookmarked(project.githubName);
+	const label = bookmarked ? "Remove bookmark" : "Bookmark project";
+	const { data: health } = useProjectHealth(project.githubName);
 
 	const isRecent =
 		health?.pushed_at &&
 		Date.now() - new Date(health.pushed_at).getTime() <
-			30 * 24 * 60 * 60 * 1000;
+			ACTIVE_PROJECT_WINDOW_MS;
 	const statusColor = isRecent
 		? "var(--color-status-active)"
 		: "var(--color-status-maintenance)";
 	const statusLabel = isRecent ? "Active" : "Maintenance";
-	const bookmarked = isBookmarked(project.githubName);
-
 	return (
 		<motion.div
 			initial={shouldReduceMotion ? false : { y: 16, opacity: 0 }}
@@ -128,7 +126,7 @@ export default function ProjectCard({
 						e.preventDefault();
 						toggleBookmark(project.githubName);
 					}}
-					aria-label={bookmarked ? "Remove bookmark" : "Bookmark project"}
+					aria-label={label}
 					className={`ledger-bookmark-btn ${bookmarked ? "active" : ""}`}
 				>
 					<Bookmark
@@ -149,7 +147,6 @@ export default function ProjectCard({
 ProjectCard.propTypes = {
 	project: PropTypes.object.isRequired,
 	entryNumber: PropTypes.number,
-	initialHealth: PropTypes.object,
 	isMobile: PropTypes.bool,
 	shouldReduceMotion: PropTypes.bool,
 	year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

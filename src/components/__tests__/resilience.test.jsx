@@ -1,11 +1,27 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { useState } from "react";
+import { describe, expect, it, vi } from "vitest";
 
 import ErrorBoundary from "@/components/ErrorBoundary";
 import RouteLoader from "@/components/RouteLoader";
 
-function ThrowingChild() {
-	throw new Error("test render failure");
+function ThrowingChild({ fail }) {
+	if (fail) throw new Error("test render failure");
+	return <div>Recovered content</div>;
+}
+
+function BoundaryHarness() {
+	const [fail, setFail] = useState(true);
+	return (
+		<>
+			<button type="button" onClick={() => setFail(false)}>
+				Fix child
+			</button>
+			<ErrorBoundary>
+				<ThrowingChild fail={fail} />
+			</ErrorBoundary>
+		</>
+	);
 }
 
 describe("resilience UI", () => {
@@ -18,28 +34,23 @@ describe("resilience UI", () => {
 		expect(screen.getByText("Loading page…")).toBeInTheDocument();
 	});
 
-	it("shows recovery actions after a render failure", () => {
+	it("recovers when the underlying failure is fixed and retry is clicked", () => {
 		const consoleError = vi
 			.spyOn(console, "error")
 			.mockImplementation(() => {});
 
-		render(
-			<ErrorBoundary>
-				<ThrowingChild />
-			</ErrorBoundary>,
-		);
-
+		render(<BoundaryHarness />);
 		expect(
 			screen.getByText("Something went wrong while loading this page."),
 		).toBeInTheDocument();
-		expect(
-			screen.getByRole("button", { name: "Try again" }),
-		).toBeInTheDocument();
 
+		fireEvent.click(screen.getByRole("button", { name: "Fix child" }));
 		fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+
+		expect(screen.getByText("Recovered content")).toBeInTheDocument();
 		expect(
-			screen.getByText("Something went wrong while loading this page."),
-		).toBeInTheDocument();
+			screen.queryByText("Something went wrong while loading this page."),
+		).not.toBeInTheDocument();
 
 		consoleError.mockRestore();
 	});

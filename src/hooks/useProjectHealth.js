@@ -3,7 +3,6 @@ import { fetchProjectHealth } from "@/utils/githubUtils";
 
 const EMPTY = Object.freeze({ status: "idle", data: null });
 
-/** repoName -> frozen { status, data } entry. One canonical slot per repo. */
 const healthByRepo = new Map();
 const listeners = new Set();
 
@@ -18,18 +17,9 @@ const subscribe = (listener) => {
 
 const getSnapshot = (repoName) => healthByRepo.get(repoName) || EMPTY;
 
-const ensureHealth = (repoName, initialData) => {
+const ensureHealth = (repoName) => {
 	const current = healthByRepo.get(repoName);
 	if (current && current.status !== "error") return;
-
-	if (initialData) {
-		healthByRepo.set(
-			repoName,
-			Object.freeze({ status: "done", data: initialData }),
-		);
-		notify();
-		return;
-	}
 
 	healthByRepo.set(repoName, Object.freeze({ status: "loading", data: null }));
 	notify();
@@ -51,27 +41,14 @@ const ensureHealth = (repoName, initialData) => {
 		});
 };
 
-/** Test-only helper: clears the module store between isolated renders. */
-export function resetProjectHealthStore() {
-	healthByRepo.clear();
-	notify();
-}
-
-/**
- * Subscribe to the single health entry for a repo. Fetching is deduped here as
- * well as in `fetchProjectHealth`, so every card shares one state transition
- * instead of owning a private `useState` + `useEffect`.
- */
-export default function useProjectHealth(repoName, initialData = null) {
+export default function useProjectHealth(repoName) {
 	useEffect(() => {
-		if (repoName) ensureHealth(repoName, initialData);
-	}, [repoName, initialData]);
+		if (repoName) ensureHealth(repoName);
+	}, [repoName]);
 
-	const entry = useSyncExternalStore(
+	return useSyncExternalStore(
 		subscribe,
 		() => getSnapshot(repoName),
 		() => EMPTY,
 	);
-
-	return { ...entry, data: entry.data || initialData || null };
 }

@@ -5,11 +5,7 @@ export default function MilestoneCard({ milestone, proj, onOpen }) {
 	const projectColor = proj.color || "var(--color-text-secondary)";
 
 	return (
-		<div
-			key={milestone.id}
-			data-testid={`milestone-item-${milestone.id}`}
-			className="relative"
-		>
+		<div data-testid={`milestone-item-${milestone.id}`} className="relative">
 			<span
 				style={{
 					position: "absolute",

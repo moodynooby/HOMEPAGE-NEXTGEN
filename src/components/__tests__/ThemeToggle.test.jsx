@@ -16,31 +16,31 @@ describe("ThemeToggle", () => {
 		vi.clearAllMocks();
 	});
 
-	it("renders with light mode selected", () => {
+	it("marks the active mode as pressed", () => {
 		useThemeContext.mockReturnValue({
 			mode: "light",
 			setMode: mockSetMode,
 			highContrast: false,
 			toggleHighContrast: mockToggleHighContrast,
 		});
-
-		render(<ThemeToggle />);
+		const { rerender } = render(<ThemeToggle />);
 
 		expect(screen.getByLabelText("Use light theme")).toHaveAttribute(
 			"aria-pressed",
 			"true",
 		);
-	});
+		expect(screen.getByLabelText("Use dark theme")).toHaveAttribute(
+			"aria-pressed",
+			"false",
+		);
 
-	it("renders with dark mode selected", () => {
 		useThemeContext.mockReturnValue({
 			mode: "dark",
 			setMode: mockSetMode,
 			highContrast: false,
 			toggleHighContrast: mockToggleHighContrast,
 		});
-
-		render(<ThemeToggle />);
+		rerender(<ThemeToggle />);
 
 		expect(screen.getByLabelText("Use dark theme")).toHaveAttribute(
 			"aria-pressed",
@@ -57,7 +57,6 @@ describe("ThemeToggle", () => {
 		});
 
 		render(<ThemeToggle />);
-
 		fireEvent.click(screen.getByLabelText("Use dark theme"));
 
 		expect(mockSetMode).toHaveBeenCalledWith("dark");
@@ -72,7 +71,6 @@ describe("ThemeToggle", () => {
 		});
 
 		render(<ThemeToggle />);
-
 		fireEvent.click(screen.getByLabelText("Theme settings"));
 		fireEvent.click(screen.getByText("High Contrast"));
 

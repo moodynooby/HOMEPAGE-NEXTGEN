@@ -1,43 +1,39 @@
 import PropTypes from "prop-types";
 import { createContext, useContext, useEffect, useState } from "react";
+import { STORAGE_KEYS } from "@/config/storage";
 import { META_THEME_COLORS } from "@/theme/palette";
+import { DARK_MEDIA_QUERY, DEFAULT_THEME_MODE } from "@/theme/themeConfig";
 
 const ThemeContext = createContext();
 
 const getSystemPreference = () =>
-	window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+	window.matchMedia(DARK_MEDIA_QUERY).matches ? "dark" : "light";
 
 export const useThemeContext = () => {
 	const context = useContext(ThemeContext);
 	if (!context) {
-		return {
-			mode: "system",
-			setMode: () => {},
-			toggleColorMode: () => {},
-			highContrast: false,
-			toggleHighContrast: () => {},
-			effectiveMode: "light",
-		};
+		throw new Error(
+			"useThemeContext must be used within a ThemeContextProvider",
+		);
 	}
 	return context;
 };
 
 export const ThemeContextProvider = ({ children }) => {
-	const [mode, setMode] = useState(() => {
-		const savedMode = localStorage.getItem("themeMode");
-		return savedMode || "system";
-	});
+	const [mode, setMode] = useState(
+		() => localStorage.getItem(STORAGE_KEYS.themeMode) || DEFAULT_THEME_MODE,
+	);
 	const [highContrast, setHighContrast] = useState(
-		() => localStorage.getItem("highContrast") === "true",
+		() => localStorage.getItem(STORAGE_KEYS.highContrast) === "true",
 	);
 	const [systemMode, setSystemMode] = useState(() => getSystemPreference());
 
 	useEffect(() => {
-		localStorage.setItem("themeMode", mode);
+		localStorage.setItem(STORAGE_KEYS.themeMode, mode);
 	}, [mode]);
 
 	useEffect(() => {
-		localStorage.setItem("highContrast", highContrast);
+		localStorage.setItem(STORAGE_KEYS.highContrast, highContrast);
 		if (highContrast) {
 			document.documentElement.setAttribute("data-high-contrast", "true");
 		} else {
@@ -46,7 +42,7 @@ export const ThemeContextProvider = ({ children }) => {
 	}, [highContrast]);
 
 	useEffect(() => {
-		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+		const mediaQuery = window.matchMedia(DARK_MEDIA_QUERY);
 		const handleChange = (event) =>
 			setSystemMode(event.matches ? "dark" : "light");
 		mediaQuery.addEventListener("change", handleChange);

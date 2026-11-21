@@ -1,4 +1,4 @@
-export const PROJECT_CATEGORIES = [
+const PROJECT_CATEGORIES = [
 	"Web App",
 	"Browser Extension",
 	"Game",

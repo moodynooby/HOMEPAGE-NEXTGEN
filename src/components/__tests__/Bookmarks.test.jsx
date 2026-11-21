@@ -148,7 +148,7 @@ describe("Bookmarks Feature", () => {
 			JSON.stringify(["test-project-1"]),
 		);
 
-		renderWithProviders(<Projects limit={null} showAppBar={false} />);
+		renderWithProviders(<Projects showAppBar={false} />);
 
 		await waitFor(() => {
 			expect(
@@ -167,7 +167,7 @@ describe("Bookmarks Feature", () => {
 	});
 
 	test("Projects component shows empty state message for empty bookmarks", async () => {
-		renderWithProviders(<Projects limit={null} showAppBar={false} />);
+		renderWithProviders(<Projects showAppBar={false} />);
 
 		await waitFor(() => {
 			expect(

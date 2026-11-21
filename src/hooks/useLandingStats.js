@@ -1,28 +1,20 @@
 import { useEffect, useState } from "react";
 import { SITE_OWNER } from "@/config/site";
 import projectsData from "@/content/projects.json";
+import { formatCompact, formatNumber } from "@/utils/format";
 import {
 	fetchAddonMetadata,
 	fetchRepoMetadata,
 	fetchUserStats,
 } from "@/utils/githubUtils";
+import { selectFeaturedProjects } from "@/utils/projects";
 
 const addonIds = projectsData
 	.filter((project) => project.addonId)
 	.map((project) => project.addonId);
 
-const featuredProjects = projectsData.filter((project) => project.featured);
+const featuredProjects = selectFeaturedProjects(projectsData);
 
-const formatCompact = (value) =>
-	new Intl.NumberFormat("en", {
-		notation: "compact",
-		maximumFractionDigits: 1,
-	}).format(value || 0);
-
-export const formatNumber = (value) =>
-	new Intl.NumberFormat("en").format(value || 0);
-
-/** Loads the classifieds-strip metrics and featured-card metadata once. */
 export default function useLandingStats() {
 	const [githubStats, setGithubStats] = useState(null);
 	const [addonStats, setAddonStats] = useState({
@@ -35,18 +27,20 @@ export default function useLandingStats() {
 	useEffect(() => {
 		let mounted = true;
 
-		Promise.all([
-			fetchUserStats(SITE_OWNER),
-			...addonIds.map((addonId) => fetchAddonMetadata(addonId)),
-			...featuredProjects.map((project) =>
-				fetchRepoMetadata(project.githubName),
+		Promise.all({
+			stats: fetchUserStats(SITE_OWNER),
+			addons: Promise.all(
+				addonIds.map((addonId) => fetchAddonMetadata(addonId)),
 			),
-		]).then(([stats, ...rest]) => {
+			repos: Promise.all(
+				featuredProjects.map((project) =>
+					fetchRepoMetadata(project.githubName),
+				),
+			),
+		}).then(({ stats, addons, repos }) => {
 			if (!mounted) return;
 			setGithubStats(stats);
 
-			const addons = rest.slice(0, addonIds.length);
-			const repos = rest.slice(addonIds.length);
 			const addonById = new Map(
 				addonIds.map((addonId, index) => [addonId, addons[index]]),
 			);
@@ -101,5 +95,5 @@ export default function useLandingStats() {
 		},
 	].filter(Boolean);
 
-	return { ledgerEntries, featuredMeta, formatNumber };
+	return { ledgerEntries, featuredMeta };
 }

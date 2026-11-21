@@ -20,8 +20,10 @@ import useProjectDetail from "@/hooks/useProjectDetail";
 export default function ProjectDetail() {
 	const { projectName } = useParams();
 	const shouldReduceMotion = useReducedMotion();
-	const { mode } = useThemeContext();
+	const { effectiveMode } = useThemeContext();
 	const { isBookmarked, toggleBookmark } = useBookmarksContext();
+	const bookmarked = isBookmarked(projectName);
+	const label = bookmarked ? "Remove bookmark" : "Bookmark project";
 
 	const projectIndex = projects.findIndex((p) => p.githubName === projectName);
 	const project = projectIndex === -1 ? null : projects[projectIndex];
@@ -41,8 +43,6 @@ export default function ProjectDetail() {
 		projectIndex > -1 && projectIndex < projects.length - 1
 			? projects[projectIndex + 1]
 			: null;
-	const bookmarked = isBookmarked(project.githubName);
-
 	return (
 		<div style={{ minHeight: "100vh" }}>
 			<Header />
@@ -93,10 +93,10 @@ export default function ProjectDetail() {
 							</button>
 							<button
 								type="button"
-								onClick={() => toggleBookmark(project.githubName)}
-								aria-label={bookmarked ? "Remove bookmark" : "Bookmark project"}
+								onClick={() => toggleBookmark(projectName)}
+								aria-label={label}
 								className="icon-btn"
-								title={bookmarked ? "Remove bookmark" : "Bookmark project"}
+								title={label}
 								style={{
 									color: bookmarked ? "var(--color-accent)" : "inherit",
 								}}
@@ -148,7 +148,7 @@ export default function ProjectDetail() {
 					)}
 
 					{project.chromeStatsId && !loading && (
-						<UsageTrends project={project} mode={mode} />
+						<UsageTrends project={project} effectiveMode={effectiveMode} />
 					)}
 				</main>
 

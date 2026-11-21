@@ -1,30 +1,35 @@
+import { Filter, Keyboard, Link, Mail } from "lucide-react";
+import { JUMP_SECTIONS } from "@/config/sections";
+import { HELP_SHORTCUT } from "@/config/shortcuts";
+import { emailLink, socialCommands } from "@/content/socialLinks";
+import { NAV_ITEMS } from "@/routes";
 import {
-	Filter,
-	FolderGit2,
-	Globe,
-	Image,
-	Info,
-	Keyboard,
-	Link,
-	Mail,
-	Monitor,
-	Moon,
-	Sun,
-} from "lucide-react";
-import socialLinks from "@/content/socialLinks.json";
-import { NAV_ITEMS } from "@/nav";
-import { socialIcons } from "@/utils/socialIcons";
+	THEME_MODE_ICONS,
+	THEME_MODE_LABELS,
+	THEME_MODE_SHORTCUTS,
+	THEME_MODES,
+} from "@/theme/themeConfig";
 
-const socialByAlt = Object.fromEntries(
-	socialLinks.map((entry) => [entry.alt, entry]),
-);
-const socialEmail = socialByAlt.Email?.link.replace(/^mailto:/, "");
-const socialGithub = socialByAlt.GitHub?.link;
-const socialLinkedIn = socialByAlt.LinkedIn?.link;
-const socialAddons = socialByAlt["Addons Profile"]?.link;
+const SEARCH_PRESETS = [
+	{ id: "react", name: "React", keywords: "react", query: "React" },
+	{ id: "python", name: "Python", keywords: "python", query: "Python" },
+	{
+		id: "ml",
+		name: "Machine Learning",
+		keywords: "machine learning ml",
+		query: "Machine Learning",
+	},
+	{
+		id: "web3",
+		name: "Web3",
+		keywords: "web3 crypto blockchain",
+		query: "Web3",
+	},
+	{ id: "rust", name: "Rust", keywords: "rust", query: "Rust" },
+];
 
-const GitHubIcon = socialIcons.GitHub;
-const LinkedInIcon = socialIcons.LinkedIn;
+const icon = (Icon, size = 16) =>
+	Icon ? <Icon size={size} strokeWidth={1.5} /> : null;
 
 export function buildCommandActions({
 	navigate,
@@ -33,145 +38,78 @@ export function buildCommandActions({
 	handleJumpToSection,
 	copyToClipboard,
 }) {
-	const navActions = NAV_ITEMS.map((item) => {
-		const Icon = item.icon;
-		return {
-			id: `nav-${item.to}`,
-			name: item.label,
-			shortcut: item.shortcut ? [item.shortcut] : [],
-			keywords: item.keywords,
-			perform: () => navigate(item.to),
-			icon: <Icon size={16} strokeWidth={1.5} />,
-		};
-	});
+	const navActions = NAV_ITEMS.map((item) => ({
+		id: `nav-${item.path}`,
+		name: item.label,
+		description: `Go to ${item.label}`,
+		shortcut: item.shortcut ? [item.shortcut] : [],
+		keywords: item.keywords,
+		perform: () => navigate(item.path),
+		icon: icon(item.icon),
+	}));
+
+	const themeActions = THEME_MODES.map((mode) => ({
+		id: `theme-${mode}`,
+		name: `Theme: ${THEME_MODE_LABELS[mode]}`,
+		shortcut: THEME_MODE_SHORTCUTS[mode],
+		keywords: `theme-${mode}-mode`,
+		perform: () => setMode(mode),
+		icon: icon(THEME_MODE_ICONS[mode]),
+	}));
+
+	const searchActions = SEARCH_PRESETS.map((preset) => ({
+		id: `filter-${preset.id}`,
+		name: `Filter Projects: ${preset.name}`,
+		keywords: preset.keywords,
+		perform: () => navigate(`/projects?q=${preset.query}`),
+		icon: icon(Filter),
+	}));
+
+	const jumpActions = JUMP_SECTIONS.map((section) => ({
+		id: `jump-${section.id}`,
+		name: section.name,
+		keywords: section.keywords,
+		perform: () => handleJumpToSection(section.id),
+		icon: icon(section.Icon),
+	}));
+
+	const socialActions = socialCommands.map((entry) => ({
+		id: entry.key,
+		name: entry.name,
+		shortcut: entry.shortcut,
+		keywords: entry.keywords,
+		perform: () => window.open(entry.link, "_blank", "noopener"),
+		icon: icon(entry.Icon),
+	}));
 
 	return [
 		...navActions,
-		{
-			id: "theme-light",
-			name: "Theme: Light",
-			shortcut: ["t", "l"],
-			keywords: "theme-light-mode",
-			perform: () => setMode("light"),
-			icon: <Sun size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "theme-dark",
-			name: "Theme: Dark",
-			shortcut: ["t", "d"],
-			keywords: "theme-dark-mode",
-			perform: () => setMode("dark"),
-			icon: <Moon size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "theme-system",
-			name: "Theme: System",
-			shortcut: ["t", "s"],
-			keywords: "theme-system-auto",
-			perform: () => setMode("system"),
-			icon: <Monitor size={16} strokeWidth={1.5} />,
-		},
+		...themeActions,
 		{
 			id: "shortcuts",
 			name: "Keyboard Shortcuts",
-			shortcut: ["?"],
+			description: "Toggle this cheatsheet",
+			shortcut: [HELP_SHORTCUT],
 			keywords: "shortcuts cheatsheet help",
 			perform: () => setShortcutsOpen(true),
-			icon: <Keyboard size={16} strokeWidth={1.5} />,
+			icon: icon(Keyboard),
 		},
-		{
-			id: "filter-react",
-			name: "Filter Projects: React",
-			keywords: "react",
-			perform: () => navigate("/projects?q=React"),
-			icon: <Filter size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "filter-python",
-			name: "Filter Projects: Python",
-			keywords: "python",
-			perform: () => navigate("/projects?q=Python"),
-			icon: <Filter size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "filter-ml",
-			name: "Filter Projects: Machine Learning",
-			keywords: "machine learning ml",
-			perform: () => navigate("/projects?q=Machine Learning"),
-			icon: <Filter size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "filter-web3",
-			name: "Filter Projects: Web3",
-			keywords: "web3 crypto blockchain",
-			perform: () => navigate("/projects?q=Web3"),
-			icon: <Filter size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "filter-rust",
-			name: "Filter Projects: Rust",
-			keywords: "rust",
-			perform: () => navigate("/projects?q=Rust"),
-			icon: <Filter size={16} strokeWidth={1.5} />,
-		},
+		...searchActions,
 		{
 			id: "copy-link",
 			name: "Copy Portfolio Link",
 			keywords: "copy link url share",
 			perform: () => copyToClipboard(window.location.origin),
-			icon: <Link size={16} strokeWidth={1.5} />,
+			icon: icon(Link),
 		},
 		{
 			id: "copy-email",
 			name: "Copy Email",
 			keywords: "copy email contact",
-			perform: () => copyToClipboard(socialEmail),
-			icon: <Mail size={16} strokeWidth={1.5} />,
+			perform: () => copyToClipboard(emailLink),
+			icon: icon(Mail),
 		},
-		{
-			id: "jump-projects",
-			name: "Jump to Section: Projects",
-			keywords: "jump navigate section projects featured",
-			perform: () => handleJumpToSection("projects-section"),
-			icon: <FolderGit2 size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "jump-experience",
-			name: "Jump to Section: Experience",
-			keywords: "jump navigate section experience visual archive",
-			perform: () => handleJumpToSection("experience-section"),
-			icon: <Image size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "jump-about",
-			name: "Jump to Section: About",
-			keywords: "jump navigate section about intro",
-			perform: () => handleJumpToSection("about-section"),
-			icon: <Info size={16} strokeWidth={1.5} />,
-		},
-		{
-			id: "github",
-			name: "GitHub Profile",
-			shortcut: ["g"],
-			keywords: "external-github",
-			perform: () => window.open(socialGithub, "_blank", "noopener"),
-			icon: GitHubIcon ? <GitHubIcon size={16} /> : null,
-		},
-		{
-			id: "linkedin",
-			name: "LinkedIn Profile",
-			shortcut: ["i"],
-			keywords: "external-linkedin",
-			perform: () => window.open(socialLinkedIn, "_blank", "noopener"),
-			icon: LinkedInIcon ? <LinkedInIcon size={16} /> : null,
-		},
-		{
-			id: "addons",
-			name: "Mozilla Add-ons Profile",
-			shortcut: ["a"],
-			keywords: "external-mozilla-addons",
-			perform: () => window.open(socialAddons, "_blank", "noopener"),
-			icon: <Globe size={16} strokeWidth={1.5} />,
-		},
+		...jumpActions,
+		...socialActions,
 	];
 }

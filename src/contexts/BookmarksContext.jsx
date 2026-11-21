@@ -6,13 +6,14 @@ import {
 	useEffect,
 	useState,
 } from "react";
+import { STORAGE_KEYS } from "@/config/storage";
 
 const BookmarksContext = createContext();
 
 export const BookmarksContextProvider = ({ children }) => {
 	const [bookmarks, setBookmarks] = useState(() => {
 		try {
-			const saved = localStorage.getItem("bookmarked_projects");
+			const saved = localStorage.getItem(STORAGE_KEYS.bookmarks);
 			return saved ? JSON.parse(saved) : [];
 		} catch (_error) {
 			return [];
@@ -21,7 +22,7 @@ export const BookmarksContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		try {
-			localStorage.setItem("bookmarked_projects", JSON.stringify(bookmarks));
+			localStorage.setItem(STORAGE_KEYS.bookmarks, JSON.stringify(bookmarks));
 		} catch (_error) {
 			// Storage may be unavailable.
 		}

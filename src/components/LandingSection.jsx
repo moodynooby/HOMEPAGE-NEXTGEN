@@ -1,13 +1,11 @@
 import PropTypes from "prop-types";
 import { Suspense } from "react";
 
-/** The shared editorial section frame used by the radar, timeline and gallery. */
 export default function LandingSection({
 	id,
 	title,
 	description,
 	loadingLabel,
-	fallbackPadding = "2rem",
 	children,
 }) {
 	return (
@@ -34,7 +32,7 @@ export default function LandingSection({
 						style={{
 							display: "flex",
 							justifyContent: "center",
-							padding: fallbackPadding,
+							padding: "4rem 0",
 						}}
 						role="status"
 						aria-label={loadingLabel}
@@ -54,6 +52,5 @@ LandingSection.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	loadingLabel: PropTypes.string.isRequired,
-	fallbackPadding: PropTypes.string,
 	children: PropTypes.node.isRequired,
 };

@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { SITE_TITLE } from "@/config/site";
+import { CACHE_ENTRIES } from "@/config/storage";
 import { readCacheEntry, writeCacheEntry } from "@/utils/cache";
 import { fetchAddonMetadata, fetchRepoMetadata } from "@/utils/githubUtils";
 
-const README_TTL = 24 * 60 * 60 * 1000;
+const SNACKBAR_DURATION_MS = 3000;
 
-/** Owns the article's document title, README fetch, repo stats and share toast. */
 export default function useProjectDetail(project) {
 	const navigate = useNavigate();
 	const abortControllerRef = useRef(null);
+	const snackbarTimerRef = useRef(null);
 
 	const [markdown, setMarkdown] = useState("");
 	const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export default function useProjectDetail(project) {
 	useEffect(() => {
 		if (!project) return undefined;
 		const previousTitle = document.title;
-		document.title = `${project.githubName} — Manas Doshi`;
+		document.title = `${project.githubName} — ${SITE_TITLE}`;
 		return () => {
 			document.title = previousTitle;
 		};
@@ -36,8 +38,10 @@ export default function useProjectDetail(project) {
 		abortControllerRef.current = controller;
 		const { signal } = controller;
 
-		const cacheKey = `readme_${project.githubName}`;
-		const cachedContent = readCacheEntry(cacheKey, README_TTL);
+		const { key: cacheKey, ttl: readmeTtl } = CACHE_ENTRIES.readme(
+			project.githubName,
+		);
+		const cachedContent = readCacheEntry(cacheKey, readmeTtl);
 
 		if (cachedContent) {
 			setMarkdown(cachedContent);
@@ -64,22 +68,26 @@ export default function useProjectDetail(project) {
 		Promise.all([
 			fetchRepoMetadata(project.githubName),
 			project.addonId ? fetchAddonMetadata(project.addonId) : null,
-		])
-			.then(([stats, addonMetadata]) => {
-				if (!signal.aborted) {
-					setRepoStats(stats);
-					setAddonStats(addonMetadata);
-				}
-			})
-			.catch(() => {});
+		]).then(([stats, addonMetadata]) => {
+			if (!signal.aborted) {
+				setRepoStats(stats);
+				setAddonStats(addonMetadata);
+			}
+		});
 
 		return () => controller.abort();
 	}, [project, navigate]);
 
+	useEffect(() => () => clearTimeout(snackbarTimerRef.current), []);
+
 	const handleShare = () => {
 		navigator.clipboard?.writeText(window.location.href);
 		setSnackbarOpen(true);
-		setTimeout(() => setSnackbarOpen(false), 3000);
+		clearTimeout(snackbarTimerRef.current);
+		snackbarTimerRef.current = setTimeout(
+			() => setSnackbarOpen(false),
+			SNACKBAR_DURATION_MS,
+		);
 	};
 
 	return {

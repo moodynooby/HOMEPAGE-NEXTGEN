@@ -3,12 +3,9 @@ import { motion, useReducedMotion } from "motion/react";
 import PropTypes from "prop-types";
 
 import Header from "@/components/Header";
-import socialLinks from "@/content/socialLinks.json";
-import { socialIcons } from "@/utils/socialIcons";
+import { socialEntries } from "@/content/socialLinks";
 
-function LinkRow({ link, alt }) {
-	const IconComponent = socialIcons[alt];
-
+function LinkRow({ link, alt, Icon }) {
 	return (
 		<a
 			href={link}
@@ -18,7 +15,7 @@ function LinkRow({ link, alt }) {
 			className="link-tree-row"
 		>
 			<span className="flex text-secondary">
-				{IconComponent && <IconComponent size={20} strokeWidth={1.5} />}
+				{Icon && <Icon size={20} strokeWidth={1.5} />}
 			</span>
 			<span className="link-tree-label">{alt}</span>
 			<ArrowUpRight size={18} strokeWidth={1.5} className="directory-arrow" />
@@ -29,6 +26,7 @@ function LinkRow({ link, alt }) {
 LinkRow.propTypes = {
 	link: PropTypes.string.isRequired,
 	alt: PropTypes.string.isRequired,
+	Icon: PropTypes.elementType,
 };
 
 export default function LinkTree() {
@@ -52,7 +50,7 @@ export default function LinkTree() {
 					</p>
 
 					<div>
-						{socialLinks.map((social, index) => (
+						{socialEntries.map((social, index) => (
 							<motion.div
 								key={social.alt}
 								initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
@@ -63,7 +61,11 @@ export default function LinkTree() {
 										: { delay: index * 0.06, duration: 0.45 }
 								}
 							>
-								<LinkRow link={social.link} alt={social.alt} />
+								<LinkRow
+									link={social.link}
+									alt={social.alt}
+									Icon={social.Icon}
+								/>
 							</motion.div>
 						))}
 						<hr className="editorial-divider" />

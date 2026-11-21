@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
+import { FORM_TAGS, HELP_SHORTCUT } from "@/config/shortcuts";
 
-/** Listens for "?" outside form fields and owns the cheatsheet's open state. */
 export default function useShortcutsModal() {
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
 	useEffect(() => {
 		const handleKeyDown = (event) => {
 			if (
-				event.key === "?" &&
-				!["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)
+				event.key === HELP_SHORTCUT &&
+				!FORM_TAGS.includes(event.target.tagName)
 			) {
 				event.preventDefault();
 				setShortcutsOpen(true);

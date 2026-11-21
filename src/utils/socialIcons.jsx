@@ -60,9 +60,9 @@ const EmailIcon = (props) => <Mail size={20} strokeWidth={1.5} {...props} />;
 const WebIcon = (props) => <Globe size={20} strokeWidth={1.5} {...props} />;
 
 export const socialIcons = {
-	LinkedIn: LinkedInIcon,
-	GitHub: GitHubIcon,
-	Email: EmailIcon,
-	Instagram: InstagramIcon,
-	"Addons Profile": WebIcon,
+	linkedin: LinkedInIcon,
+	github: GitHubIcon,
+	email: EmailIcon,
+	instagram: InstagramIcon,
+	addons: WebIcon,
 };

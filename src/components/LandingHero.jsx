@@ -1,13 +1,14 @@
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { SITE_RESUME_URL } from "@/config/site";
+import { SECTION_IDS } from "@/config/sections";
+import { SITE_RESUME_URL, SITE_TITLE } from "@/config/site";
 
 export default function LandingHero({ shouldReduceMotion, ledgerEntries }) {
 	return (
 		<div
 			className="editorial-container"
-			id="about-section"
+			id={SECTION_IDS.about}
 			style={{ marginTop: "3rem" }}
 		>
 			<motion.div
@@ -15,7 +16,7 @@ export default function LandingHero({ shouldReduceMotion, ledgerEntries }) {
 				animate={{ opacity: 1, y: 0 }}
 				transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7 }}
 			>
-				<p className="editorial-meta">Manas Doshi · Student · Engineer</p>
+				<p className="editorial-meta">{SITE_TITLE} · Student · Engineer</p>
 				<h1
 					className="editorial-headline"
 					style={{
@@ -54,7 +55,7 @@ export default function LandingHero({ shouldReduceMotion, ledgerEntries }) {
 						View Projects
 					</Link>
 					<a
-						href="#timeline-section"
+						href={`#${SECTION_IDS.timeline}`}
 						className="btn btn-outlined"
 						aria-label="View interactive project timeline and release milestones"
 					>

@@ -1,7 +1,4 @@
 import { AdvancedImage, AdvancedVideo } from "@cloudinary/react";
-import { dpr, format, quality } from "@cloudinary/url-gen/actions/delivery";
-import { fill } from "@cloudinary/url-gen/actions/resize";
-import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -11,41 +8,36 @@ import Video from "yet-another-react-lightbox/plugins/video";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Header from "@/components/Header";
-import { cld, fetchAllMediaByTag } from "@/utils/cloudinary";
+import {
+	cld,
+	fetchAllMediaByTag,
+	fullImageUrl,
+	thumbnailImage,
+	videoUrl,
+} from "@/utils/cloudinary";
 
-export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
+const GALLERY_TAG = "gallery";
+
+export default function Gallery({ limit, showAppBar = true }) {
 	const [media, setMedia] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [lightboxOpen, setLightboxOpen] = useState(false);
 	const [lightboxIndex, setLightboxIndex] = useState(0);
 
-	const slides = media.map((item) => {
-		if (item.resource_type === "image") {
-			return {
-				src: cld
-					.image(item.public_id)
-					.resize(fill().width(1920).height(1080))
-					.delivery(format("auto"))
-					.delivery(quality("auto"))
-					.toURL(),
-			};
-		}
-		return {
-			type: "video",
-			sources: [
-				{
-					src: cld.video(item.public_id).delivery(format("mp4")).toURL(),
-					type: "video/mp4",
+	const slides = media.map((item) =>
+		item.resource_type === "image"
+			? { src: fullImageUrl(item.public_id) }
+			: {
+					type: "video",
+					sources: [
+						{
+							src: videoUrl(item.public_id),
+							type: "video/mp4",
+						},
+					],
+					poster: fullImageUrl(`${item.public_id}.jpg`),
 				},
-			],
-			poster: cld
-				.image(`${item.public_id}.jpg`)
-				.resize(fill().width(1920).height(1080))
-				.delivery(format("auto"))
-				.delivery(quality("auto"))
-				.toURL(),
-		};
-	});
+	);
 
 	const handleMediaClick = (index) => {
 		setLightboxIndex(index);
@@ -54,12 +46,12 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 
 	useEffect(() => {
 		async function loadMedia() {
-			const data = await fetchAllMediaByTag(tag);
+			const data = await fetchAllMediaByTag(GALLERY_TAG);
 			setMedia(limit ? data.slice(0, limit) : data);
 			setLoading(false);
 		}
 		loadMedia();
-	}, [tag, limit]);
+	}, [limit]);
 
 	if (loading) {
 		return (
@@ -97,17 +89,11 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 							const imageWidth = isLarge ? 800 : 400;
 							const imageHeight = isTall ? 800 : isLarge ? 600 : 400;
 
-							const cldMedia = cld
-								.image(item.public_id)
-								.resize(
-									fill()
-										.width(imageWidth)
-										.height(imageHeight)
-										.gravity(autoGravity()),
-								)
-								.delivery(format("auto"))
-								.delivery(quality("auto:good"))
-								.delivery(dpr("auto"));
+							const cldMedia = thumbnailImage(
+								item.public_id,
+								imageWidth,
+								imageHeight,
+							);
 
 							return (
 								<motion.div
@@ -173,5 +159,4 @@ export default function Gallery({ limit, showAppBar = true, tag = "gallery" }) {
 Gallery.propTypes = {
 	limit: PropTypes.number,
 	showAppBar: PropTypes.bool,
-	tag: PropTypes.string,
 };

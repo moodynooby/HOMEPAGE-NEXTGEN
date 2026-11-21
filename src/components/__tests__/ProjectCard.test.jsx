@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ProjectCard from "@/components/ProjectCard";
-import { BookmarksProvider } from "@/contexts/BookmarksContext";
+import { BookmarksContextProvider } from "@/contexts/BookmarksContext";
 import * as githubUtils from "@/utils/githubUtils";
 
 vi.mock("@/contexts/BookmarksContext", () => ({
@@ -10,7 +10,7 @@ vi.mock("@/contexts/BookmarksContext", () => ({
 		isBookmarked: vi.fn(),
 		toggleBookmark: vi.fn(),
 	}),
-	BookmarksProvider: ({ children }) => <>{children}</>,
+	BookmarksContextProvider: ({ children }) => <>{children}</>,
 }));
 
 vi.mock("@/utils/githubUtils", async (importOriginal) => {
@@ -30,10 +30,16 @@ const mockProject = {
 	stars: 42,
 };
 
+let projectCounter = 0;
+const nextProject = () => ({
+	...mockProject,
+	githubName: `TestProject-${++projectCounter}`,
+});
+
 const renderWithContext = (ui) => {
 	return render(
 		<BrowserRouter>
-			<BookmarksProvider>{ui}</BookmarksProvider>
+			<BookmarksContextProvider>{ui}</BookmarksContextProvider>
 		</BrowserRouter>,
 	);
 };
@@ -48,7 +54,7 @@ describe("ProjectCard", () => {
 
 		renderWithContext(
 			<ProjectCard
-				project={mockProject}
+				project={nextProject()}
 				entryNumber={1}
 				isMobile={false}
 				shouldReduceMotion={true}
@@ -56,7 +62,7 @@ describe("ProjectCard", () => {
 			/>,
 		);
 
-		expect(screen.getByText("TestProject")).toBeInTheDocument();
+		expect(screen.getByText(/TestProject/)).toBeInTheDocument();
 		expect(screen.getByText("A test project")).toBeInTheDocument();
 		expect(screen.getByText("Web App")).toBeInTheDocument();
 		expect(screen.getByText("42")).toBeInTheDocument();
@@ -72,7 +78,7 @@ describe("ProjectCard", () => {
 
 		renderWithContext(
 			<ProjectCard
-				project={mockProject}
+				project={nextProject()}
 				entryNumber={1}
 				isMobile={false}
 				shouldReduceMotion={true}
@@ -97,7 +103,7 @@ describe("ProjectCard", () => {
 
 		renderWithContext(
 			<ProjectCard
-				project={mockProject}
+				project={nextProject()}
 				entryNumber={1}
 				isMobile={false}
 				shouldReduceMotion={true}
@@ -120,7 +126,7 @@ describe("ProjectCard", () => {
 
 		const { container } = renderWithContext(
 			<ProjectCard
-				project={mockProject}
+				project={nextProject()}
 				entryNumber={1}
 				isMobile={false}
 				shouldReduceMotion={true}
@@ -144,7 +150,7 @@ describe("ProjectCard", () => {
 
 		const { container } = renderWithContext(
 			<ProjectCard
-				project={mockProject}
+				project={nextProject()}
 				entryNumber={1}
 				isMobile={false}
 				shouldReduceMotion={true}

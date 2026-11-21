@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { chromeStatsTrendsUrl } from "@/config/site";
 
-export default function UsageTrends({ project, mode }) {
+export default function UsageTrends({ project, effectiveMode }) {
 	return (
 		<div
 			style={{
@@ -23,7 +23,7 @@ export default function UsageTrends({ project, mode }) {
 				}}
 			>
 				<iframe
-					src={chromeStatsTrendsUrl(project.chromeStatsId, mode)}
+					src={chromeStatsTrendsUrl(project.chromeStatsId, effectiveMode)}
 					title={`${project.githubName} usage trends`}
 					style={{
 						position: "absolute",
@@ -47,5 +47,5 @@ export default function UsageTrends({ project, mode }) {
 
 UsageTrends.propTypes = {
 	project: PropTypes.object.isRequired,
-	mode: PropTypes.string,
+	effectiveMode: PropTypes.string,
 };

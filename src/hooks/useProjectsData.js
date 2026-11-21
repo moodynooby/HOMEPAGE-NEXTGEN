@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import projectsData from "@/content/projects.json";
 import { fetchAddonMetadata, fetchRepoMetadata } from "@/utils/githubUtils";
-
-export const byRecencyDesc = (a, b) => {
-	const dateB = b.pushed_at ? new Date(b.pushed_at) : new Date(b.year, 0, 1);
-	const dateA = a.pushed_at ? new Date(a.pushed_at) : new Date(a.year, 0, 1);
-	return dateB - dateA;
-};
+import { byRecencyDesc, withProjectMetadata } from "@/utils/projects";
 
 export default function useProjectsData() {
 	const [projects, setProjects] = useState([]);
@@ -24,16 +19,7 @@ export default function useProjectsData() {
 							fetchRepoMetadata(project.githubName),
 							project.addonId ? fetchAddonMetadata(project.addonId) : null,
 						]);
-						return {
-							...project,
-							year: metadata?.year || new Date().getFullYear(),
-							date: metadata?.created_at || "",
-							pushed_at: metadata?.pushed_at || "",
-							language: metadata?.language || "",
-							stars: metadata?.stars || 0,
-							forks: metadata?.forks || 0,
-							addonMetadata,
-						};
+						return withProjectMetadata(project, metadata, addonMetadata);
 					}),
 				);
 				const sortedProjects = projectsWithMetadata.sort(byRecencyDesc);

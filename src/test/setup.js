@@ -59,10 +59,3 @@ const ensureStorage = (name) => {
 
 ensureStorage("localStorage");
 ensureStorage("sessionStorage");
-
-// The health store is module-scoped by design; reset it so isolated renders in
-// one test file cannot observe the previous test's cached health entry.
-beforeEach(async () => {
-	const { resetProjectHealthStore } = await import("@/hooks/useProjectHealth");
-	resetProjectHealthStore();
-});

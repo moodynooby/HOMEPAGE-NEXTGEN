@@ -1,6 +1,6 @@
 import { RotateCcw as RestartAlt, Search } from "lucide-react";
 import PropTypes from "prop-types";
-import { SORT_OPTIONS } from "@/hooks/useProjectFilters";
+import { FILTER_ALL, FILTER_BOOKMARKED, SORT_OPTIONS } from "@/config/ledger";
 
 export default function ProjectsToolbar({
 	activeCategory,
@@ -156,15 +156,15 @@ export default function ProjectsToolbar({
 				<div className="flex flex-wrap gap-2">
 					{categories.map((category) => {
 						let count = 0;
-						if (category === "All") {
+						if (category === FILTER_ALL) {
 							count = totalProjects;
-						} else if (category === "Bookmarked") {
+						} else if (category === FILTER_BOOKMARKED) {
 							count = bookmarks.length;
 						} else {
 							count = categoryCounts[category] || 0;
 						}
 						const label =
-							category === "Bookmarked"
+							category === FILTER_BOOKMARKED
 								? `Saved (${count})`
 								: `${category} · ${count}`;
 						const isActive = activeCategory === category;

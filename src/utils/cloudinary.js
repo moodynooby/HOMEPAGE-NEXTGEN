@@ -1,18 +1,35 @@
 import { Cloudinary } from "@cloudinary/url-gen";
+import { dpr, format, quality } from "@cloudinary/url-gen/actions/delivery";
+import { fill } from "@cloudinary/url-gen/actions/resize";
+import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 
-export const cloudName = "dirxi2gqz";
+const cloudName = "dirxi2gqz";
 
 export const cld = new Cloudinary({
-	cloud: { cloudName: cloudName },
+	cloud: { cloudName },
 });
 
-/**
- * Fetches a list of resources from Cloudinary by tag.
- * Note: "Resource List" must be enabled in Cloudinary Security settings.
- * @param {string} tag - The tag to fetch resources for.
- * @param {string} resourceType - 'image' or 'video'.
- * @returns {Promise<Array>} - List of resource objects.
- */
+export const fullImage = (publicId) =>
+	cld
+		.image(publicId)
+		.resize(fill().width(1920).height(1080))
+		.delivery(format("auto"))
+		.delivery(quality("auto"));
+
+export const fullImageUrl = (publicId) => fullImage(publicId).toURL();
+
+export const thumbnailImage = (publicId, width, height) =>
+	cld
+		.image(publicId)
+		.resize(fill().width(width).height(height).gravity(autoGravity()))
+		.delivery(format("auto"))
+		.delivery(quality("auto:good"))
+		.delivery(dpr("auto"));
+
+export const videoUrl = (publicId) =>
+	cld.video(publicId).delivery(format("mp4")).toURL();
+
+// Requires "Resource List" to be enabled in Cloudinary Security settings.
 export async function fetchResourcesByTag(tag, resourceType = "image") {
 	try {
 		const response = await fetch(
@@ -34,11 +51,6 @@ export async function fetchResourcesByTag(tag, resourceType = "image") {
 	}
 }
 
-/**
- * Fetches both images and videos for a given tag and merges them.
- * @param {string} tag
- * @returns {Promise<Array>}
- */
 export async function fetchAllMediaByTag(tag) {
 	const [images, videos] = await Promise.all([
 		fetchResourcesByTag(tag, "image"),

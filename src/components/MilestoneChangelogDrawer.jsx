@@ -1,9 +1,9 @@
 import { Calendar, ExternalLink, GitCommit, X } from "lucide-react";
 import PropTypes from "prop-types";
 import { SITE_GITHUB_PROFILE } from "@/config/site";
-import { socialIcons } from "@/utils/socialIcons";
+import { getSocialEntry } from "@/content/socialLinks";
 
-const GitHubIcon = socialIcons.github;
+const GitHubIcon = getSocialEntry("github")?.Icon;
 
 export default function MilestoneChangelogDrawer({
 	activeMilestone,
