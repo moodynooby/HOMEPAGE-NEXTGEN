@@ -111,5 +111,11 @@ export function buildCommandActions({
 		},
 		...jumpActions,
 		...socialActions,
+		{
+			id: "nav-admin",
+			name: "Curator Admin Console",
+			keywords: "admin console cms json manage radar",
+			perform: () => navigate("/admin"),
+		},
 	];
 }

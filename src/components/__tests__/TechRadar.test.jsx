@@ -11,7 +11,7 @@ describe("TechRadar Component", () => {
 		renderWithRouter(<TechRadar />);
 
 		for (const quadrant of radarData.quadrants) {
-			expect(screen.getByText(quadrant)).toBeInTheDocument();
+			expect(screen.getAllByText(quadrant)[0]).toBeInTheDocument();
 		}
 		expect(
 			screen.getByText("Hover or click a blip to see details"),
@@ -34,5 +34,29 @@ describe("TechRadar Component", () => {
 		for (const repo of blip.keyRepos) {
 			expect(screen.getAllByText(repo).length).toBeGreaterThan(0);
 		}
+	});
+
+	it("opens the dynamic form when Add Technology is clicked and allows creating a blip", () => {
+		renderWithRouter(<TechRadar />);
+
+		const addBtn = screen.getByRole("button", { name: /Add Technology/i });
+		expect(addBtn).toBeInTheDocument();
+
+		fireEvent.click(addBtn);
+
+		// Form dialog should be visible
+		expect(screen.getByTestId("tech-radar-form")).toBeInTheDocument();
+		expect(screen.getByText("Add Radar Technology")).toBeInTheDocument();
+
+		// Fill in dynamic form fields
+		const nameInput = screen.getByPlaceholderText(/e\.g\. TypeScript/i);
+		fireEvent.change(nameInput, { target: { value: "GraphQL" } });
+
+		const saveBtn = screen.getByRole("button", { name: /Save Technology/i });
+		fireEvent.click(saveBtn);
+
+		// Form should close and new technology blip should be in document
+		expect(screen.queryByTestId("tech-radar-form")).not.toBeInTheDocument();
+		expect(screen.getByText("GraphQL")).toBeInTheDocument();
 	});
 });

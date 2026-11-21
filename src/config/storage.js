@@ -2,6 +2,7 @@ export const STORAGE_KEYS = {
 	themeMode: "themeMode",
 	highContrast: "highContrast",
 	bookmarks: "bookmarked_projects",
+	radarCustomBlips: "radar_custom_blips",
 };
 
 const DAY = 24 * 60 * 60 * 1000;

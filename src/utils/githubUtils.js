@@ -43,6 +43,7 @@ export async function fetchRepoMetadata(repoName) {
 				stars: data.stargazers_count || 0,
 				forks: data.forks_count || 0,
 				watchers: data.watchers_count || 0,
+				topics: Array.isArray(data.topics) ? data.topics : [],
 			};
 
 			write(entry, metadata);

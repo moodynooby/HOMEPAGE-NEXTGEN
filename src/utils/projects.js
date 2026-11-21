@@ -8,6 +8,7 @@ export const emptyRepoMetadata = () => ({
 	stars: 0,
 	forks: 0,
 	watchers: 0,
+	topics: [],
 });
 
 export const withProjectMetadata = (project, metadata, addonMetadata) => {
@@ -20,6 +21,7 @@ export const withProjectMetadata = (project, metadata, addonMetadata) => {
 		language: metadata?.language || "",
 		stars: metadata?.stars || 0,
 		forks: metadata?.forks || 0,
+		topics: metadata?.topics || fallback.topics,
 		addonMetadata,
 	};
 };
