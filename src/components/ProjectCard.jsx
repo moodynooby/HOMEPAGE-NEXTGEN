@@ -9,10 +9,9 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
-import { fetchProjectHealth } from "@/utils/githubUtils";
+import useProjectHealth from "@/hooks/useProjectHealth";
 
 export default function ProjectCard({
 	project,
@@ -23,28 +22,18 @@ export default function ProjectCard({
 	initialHealth = null,
 }) {
 	const { isBookmarked, toggleBookmark } = useBookmarksContext();
-	const [health, setHealth] = useState(
-		() => initialHealth || project.health || null,
+	const { data: health } = useProjectHealth(
+		project.githubName,
+		initialHealth || project.health || null,
 	);
-
-	useEffect(() => {
-		if (initialHealth || project.health) return;
-		let isMounted = true;
-		async function getHealth() {
-			const data = await fetchProjectHealth(project.githubName);
-			if (isMounted) setHealth(data);
-		}
-		getHealth();
-		return () => {
-			isMounted = false;
-		};
-	}, [project.githubName, project.health, initialHealth]);
 
 	const isRecent =
 		health?.pushed_at &&
 		Date.now() - new Date(health.pushed_at).getTime() <
 			30 * 24 * 60 * 60 * 1000;
-	const statusColor = isRecent ? "#4caf50" : "#ff9800";
+	const statusColor = isRecent
+		? "var(--color-status-active)"
+		: "var(--color-status-maintenance)";
 	const statusLabel = isRecent ? "Active" : "Maintenance";
 	const bookmarked = isBookmarked(project.githubName);
 

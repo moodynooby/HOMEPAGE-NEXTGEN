@@ -20,6 +20,7 @@ import { BookmarksContextProvider } from "@/contexts/BookmarksContext";
 import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
 import { APP_ROUTES } from "@/routes";
 import { editorialTheme } from "@/theme/astryxTheme";
+import { injectPaletteStyles } from "@/theme/injectPalette";
 
 const AppContent = () => (
 	<BrowserRouter>
@@ -51,6 +52,8 @@ const AppWithTheme = () => {
 		</Theme>
 	);
 };
+
+injectPaletteStyles();
 
 const root = createRoot(document.getElementById("root"));
 

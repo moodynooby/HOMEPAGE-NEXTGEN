@@ -5,10 +5,10 @@ import { githubRepoUrl } from "@/config/site";
 import radarData from "@/content/techRadar.json";
 
 export const RINGS = [
-	{ name: "Adopt", radius: 110, color: "#93c47d" },
-	{ name: "Trial", radius: 190, color: "#93d2c6" },
-	{ name: "Assess", radius: 270, color: "#fbcd73" },
-	{ name: "Hold", radius: 350, color: "#e06666" },
+	{ name: "Adopt", radius: 110, color: "var(--color-chart-adopt)" },
+	{ name: "Trial", radius: 190, color: "var(--color-chart-trial)" },
+	{ name: "Assess", radius: 270, color: "var(--color-chart-assess)" },
+	{ name: "Hold", radius: 350, color: "var(--color-chart-hold)" },
 ];
 
 export const QUADRANTS = [
@@ -113,7 +113,7 @@ export default function TechRadar({ onActiveBlipChange }) {
 							cy={CENTER}
 							r={ring.radius}
 							fill="none"
-							stroke="var(--color-border, var(--hairline-rule))"
+							stroke="var(--color-border)"
 							strokeWidth="1"
 							strokeDasharray="4 4"
 						/>
@@ -125,7 +125,7 @@ export default function TechRadar({ onActiveBlipChange }) {
 						y1={0}
 						x2={CENTER}
 						y2={RADAR_SIZE}
-						stroke="var(--color-border, var(--hairline-rule))"
+						stroke="var(--color-border)"
 						strokeWidth="1.5"
 					/>
 					<line
@@ -133,7 +133,7 @@ export default function TechRadar({ onActiveBlipChange }) {
 						y1={CENTER}
 						x2={RADAR_SIZE}
 						y2={CENTER}
-						stroke="var(--color-border, var(--hairline-rule))"
+						stroke="var(--color-border)"
 						strokeWidth="1.5"
 					/>
 
@@ -149,7 +149,7 @@ export default function TechRadar({ onActiveBlipChange }) {
 								y={y}
 								textAnchor="middle"
 								dominantBaseline="central"
-								fill="var(--color-text-secondary, #7d5d53)"
+								fill="var(--color-text-secondary)"
 								fontSize="14"
 								fontWeight="600"
 								letterSpacing="0.08em"
@@ -166,7 +166,7 @@ export default function TechRadar({ onActiveBlipChange }) {
 							key={ring.name}
 							x={CENTER + 6}
 							y={CENTER - ring.radius + 16}
-							fill="var(--color-text-secondary, #7d5d53)"
+							fill="var(--color-text-secondary)"
 							fontSize="10"
 							fontWeight="600"
 							letterSpacing="0.1em"
@@ -200,8 +200,8 @@ export default function TechRadar({ onActiveBlipChange }) {
 							>
 								<circle
 									r={isActive ? 12 : 8}
-									fill={RINGS[blip.rIndex]?.color || "#93c47d"}
-									stroke="#fff"
+									fill={RINGS[blip.rIndex]?.color || "var(--color-chart-adopt)"}
+									stroke="var(--color-background-surface)"
 									strokeWidth={2}
 								/>
 								<text
@@ -210,8 +210,8 @@ export default function TechRadar({ onActiveBlipChange }) {
 									fontSize="12"
 									fill={
 										isActive
-											? "var(--color-text-primary, #38392e)"
-											: "var(--color-text-secondary, #7d5d53)"
+											? "var(--color-text-primary)"
+											: "var(--color-text-secondary)"
 									}
 									fontWeight={isActive ? "bold" : "normal"}
 								>

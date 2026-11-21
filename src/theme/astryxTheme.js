@@ -41,6 +41,21 @@ export const editorialTheme = defineTheme({
 			LIGHT_PALETTE.overlayPressed,
 			DARK_PALETTE.overlayPressed,
 		],
+		"--color-status-active": [
+			LIGHT_PALETTE.statusActive,
+			DARK_PALETTE.statusActive,
+		],
+		"--color-status-maintenance": [
+			LIGHT_PALETTE.statusMaintenance,
+			DARK_PALETTE.statusMaintenance,
+		],
+		"--color-chart-adopt": [LIGHT_PALETTE.chartAdopt, DARK_PALETTE.chartAdopt],
+		"--color-chart-trial": [LIGHT_PALETTE.chartTrial, DARK_PALETTE.chartTrial],
+		"--color-chart-assess": [
+			LIGHT_PALETTE.chartAssess,
+			DARK_PALETTE.chartAssess,
+		],
+		"--color-chart-hold": [LIGHT_PALETTE.chartHold, DARK_PALETTE.chartHold],
 	},
 	onDark: {
 		tokens: {
@@ -52,6 +67,12 @@ export const editorialTheme = defineTheme({
 			"--color-border": DARK_PALETTE.border,
 			"--color-overlay-hover": DARK_PALETTE.overlayHover,
 			"--color-overlay-pressed": DARK_PALETTE.overlayPressed,
+			"--color-status-active": DARK_PALETTE.statusActive,
+			"--color-status-maintenance": DARK_PALETTE.statusMaintenance,
+			"--color-chart-adopt": DARK_PALETTE.chartAdopt,
+			"--color-chart-trial": DARK_PALETTE.chartTrial,
+			"--color-chart-assess": DARK_PALETTE.chartAssess,
+			"--color-chart-hold": DARK_PALETTE.chartHold,
 		},
 	},
 });

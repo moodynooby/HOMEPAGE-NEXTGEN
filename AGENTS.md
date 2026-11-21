@@ -112,3 +112,28 @@ Full documentation: [DESIGN.md](./DESIGN.md). Quick reference:
 
 - `src/components/CommandPalette.jsx` — imports not organized per biome.
 - `src/components/ProjectDetail.jsx` — some formatting/indentation drift.
+
+## Refactor backlog (Nov 2026)
+
+The four items below were deliberately deferred by the earlier refactor passes. They
+are recorded here with their rationale so a future pass does not have to re-derive it.
+
+| Item | Why it was deferred | Leverage point |
+| --- | --- | --- |
+| Large multi-responsibility components (`Projects`, `ProjectDetail`, `LandingPage`, `ProjectTimeline`, `CommandPalette`) | Decomposition is higher-risk without a single clear seam; presentational churn would obscure behavior changes. | Extract state/logic into hooks and presentational sections into local components, one file at a time. |
+| Theme/token duplication (`index.css` ↔ `astryxTheme.js` ↔ Astryx sources) | `palette.js` is already the runtime source of truth; a full CSS↔theme pipeline unification is a broader design change. | `palette.js` is now the only authored palette; `injectPalette.js` publishes it on `:root`, and `index.css` plus all components consume tokens without hard-coded fallbacks. |
+| Per-card health fetching in `ProjectCard` | `fetchProjectHealth` already dedupes in-flight requests and caches for 24h, so only per-instance state remained. | Shared external-store hook (`useProjectHealth`) so every card subscribes to one canonical entry. |
+| Broad CSS surface in `index.css` | Removing rules without a usage audit risks deleting library-generated or dynamically-built selectors. | Audit class usage across `src/` first; delete only confirmed-dead rules. |
+
+### Staged plan (this pass)
+
+1. [x] Document the deferred items and plan (this section).
+2. [x] Dedupe project health state behind `useProjectHealth`.
+3. [x] Unify theme tokens: `palette.js` is the only palette source; `index.css` consumes tokens.
+4. [x] Decompose the five large components into hooks + presentational pieces.
+5. [x] Prune confirmed-unused CSS from `index.css`.
+6. [x] Re-run `pnpm biome check`, `pnpm test`, `pnpm build`; update this checklist.
+
+Each stage must keep the public behavior and the existing tests green. Prefer the
+smallest change that creates a single leverage point — "cut and slash" where a rule
+or helper is provably dead, not where it is merely awkward.

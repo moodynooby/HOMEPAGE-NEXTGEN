@@ -8,7 +8,6 @@ const GitHubIcon = socialIcons.github;
 export default function MilestoneChangelogDrawer({
 	activeMilestone,
 	onClose,
-	isDark,
 	projectConfig = {},
 }) {
 	if (!activeMilestone) return null;
@@ -44,12 +43,10 @@ export default function MilestoneChangelogDrawer({
 					width: "100%",
 					maxWidth: "540px",
 					height: "100%",
-					background: isDark ? "#282a21" : "#fdffda",
-					color: "var(--color-text-primary, #38392e)",
+					background: "var(--color-background-surface)",
+					color: "var(--color-text-primary)",
 					padding: "1.5rem",
-					boxShadow: isDark
-						? "-4px 0 24px rgba(0,0,0,0.7)"
-						: "-4px 0 24px rgba(56,57,46,0.15)",
+					borderLeft: "1px solid var(--color-border)",
 					display: "flex",
 					flexDirection: "column",
 					overflowY: "auto",
@@ -61,21 +58,15 @@ export default function MilestoneChangelogDrawer({
 						alignItems: "center",
 						justifyContent: "space-between",
 						paddingBottom: "1rem",
-						borderBottom: "1px solid var(--color-border, var(--hairline-rule))",
+						borderBottom: "1px solid var(--color-border)",
 					}}
 				>
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "0.5rem",
-						}}
-					>
+					<div className="flex items-center gap-2">
 						<span
 							className="chip chip-sm"
 							style={{
-								backgroundColor: `${config.color || "#888"}20`,
-								color: config.color || "#888",
+								backgroundColor: `color-mix(in srgb, ${config.color || "var(--color-text-secondary)"} 12%, transparent)`,
+								color: config.color || "var(--color-text-secondary)",
 								fontWeight: 600,
 							}}
 						>
@@ -120,35 +111,14 @@ export default function MilestoneChangelogDrawer({
 						{activeMilestone.title}
 					</h3>
 
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "1rem",
-							flexWrap: "wrap",
-							color: "var(--color-text-secondary, #7d5d53)",
-							marginBottom: "1.5rem",
-						}}
-					>
-						<div
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "4px",
-							}}
-						>
+					<div className="flex items-center gap-4 flex-wrap text-secondary mb-6">
+						<div className="flex items-center gap-1">
 							<Calendar size={14} />
 							<span className="editorial-meta">
 								{activeMilestone.displayDate}
 							</span>
 						</div>
-						<div
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "4px",
-							}}
-						>
+						<div className="flex items-center gap-1">
 							{GitHubIcon && <GitHubIcon size={14} />}
 							<span
 								className="editorial-meta"
@@ -163,27 +133,17 @@ export default function MilestoneChangelogDrawer({
 						style={{
 							padding: "1rem",
 							marginBottom: "1.5rem",
-							border: "1px solid var(--color-border, var(--hairline-rule))",
-							background: isDark
-								? "rgba(40, 42, 33, 0.6)"
-								: "rgba(255, 255, 255, 0.8)",
+							border: "1px solid var(--color-border)",
+							background:
+								"color-mix(in srgb, var(--color-background-surface) 70%, transparent)",
 							display: "flex",
 							alignItems: "center",
 							justifyContent: "space-between",
 							gap: "0.5rem",
 						}}
 					>
-						<div
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "0.5rem",
-							}}
-						>
-							<GitCommit
-								size={18}
-								style={{ color: "var(--color-text-secondary, #7d5d53)" }}
-							/>
+						<div className="flex items-center gap-2">
+							<GitCommit size={18} className="text-secondary" />
 							<div>
 								<span className="editorial-meta" style={{ display: "block" }}>
 									Verified Commit
@@ -206,12 +166,7 @@ export default function MilestoneChangelogDrawer({
 							rel="noopener noreferrer"
 							data-testid="drawer-commit-link"
 							aria-label="View commit on GitHub"
-							className="btn btn-outlined btn-sm"
-							style={{
-								display: "inline-flex",
-								alignItems: "center",
-								gap: "4px",
-							}}
+							className="btn btn-outlined btn-sm inline-flex items-center gap-1"
 						>
 							<span>View on GitHub</span>
 							<ExternalLink size={13} />
@@ -229,7 +184,7 @@ export default function MilestoneChangelogDrawer({
 						style={{
 							marginBottom: "1.5rem",
 							lineHeight: 1.6,
-							color: "var(--color-text-secondary, #7d5d53)",
+							color: "var(--color-text-secondary)",
 						}}
 					>
 						{activeMilestone.summary}
@@ -241,14 +196,7 @@ export default function MilestoneChangelogDrawer({
 					>
 						Key Deliverables &amp; Changes
 					</p>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							gap: "0.5rem",
-							marginBottom: "1.5rem",
-						}}
-					>
+					<div className="flex flex-col gap-2 mb-6">
 						{(activeMilestone.details || []).map((detail) => (
 							<div
 								key={detail}
@@ -263,8 +211,7 @@ export default function MilestoneChangelogDrawer({
 										width: 6,
 										height: 6,
 										borderRadius: "50%",
-										backgroundColor:
-											config.color || "var(--color-accent, #7d5d53)",
+										backgroundColor: config.color || "var(--color-accent)",
 										marginTop: "7px",
 										flexShrink: 0,
 										display: "inline-block",
@@ -274,7 +221,7 @@ export default function MilestoneChangelogDrawer({
 									style={{
 										fontSize: "0.875rem",
 										lineHeight: 1.5,
-										fontFamily: "var(--font-family-body, serif)",
+										fontFamily: "var(--font-family-body)",
 									}}
 								>
 									{detail}
@@ -288,20 +235,18 @@ export default function MilestoneChangelogDrawer({
 							style={{
 								padding: "1rem",
 								marginBottom: "1.5rem",
-								border: "1px solid #f59e0b",
-								background: isDark
-									? "rgba(245, 158, 11, 0.1)"
-									: "rgba(245, 158, 11, 0.08)",
+								border: "1px solid var(--color-status-maintenance)",
+								background:
+									"color-mix(in srgb, var(--color-status-maintenance) 10%, transparent)",
 							}}
 						>
 							<span
 								style={{
 									fontWeight: 700,
-									color: "#d97706",
+									color: "var(--color-status-maintenance)",
 									display: "block",
 									marginBottom: "0.25rem",
-									fontFamily:
-										"var(--font-family-code, 'Work Sans', sans-serif)",
+									fontFamily: "var(--font-family-code)",
 									fontSize: "0.75rem",
 									textTransform: "uppercase",
 								}}
@@ -338,7 +283,7 @@ export default function MilestoneChangelogDrawer({
 				<div
 					style={{
 						paddingTop: "1rem",
-						borderTop: "1px solid var(--color-border, var(--hairline-rule))",
+						borderTop: "1px solid var(--color-border)",
 						display: "flex",
 						justifyContent: "space-between",
 						alignItems: "center",
@@ -374,6 +319,5 @@ export default function MilestoneChangelogDrawer({
 MilestoneChangelogDrawer.propTypes = {
 	activeMilestone: PropTypes.object,
 	onClose: PropTypes.func.isRequired,
-	isDark: PropTypes.bool,
 	projectConfig: PropTypes.object,
 };

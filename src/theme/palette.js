@@ -13,6 +13,12 @@ export const LIGHT_PALETTE = {
 	border: "rgba(56, 57, 46, 0.10)",
 	overlayHover: "rgba(56, 57, 46, 0.05)",
 	overlayPressed: "rgba(56, 57, 46, 0.10)",
+	statusActive: "#4caf50",
+	statusMaintenance: "#ff9800",
+	chartAdopt: "#93c47d",
+	chartTrial: "#93d2c6",
+	chartAssess: "#fbcd73",
+	chartHold: "#e06666",
 };
 
 export const DARK_PALETTE = {
@@ -24,6 +30,12 @@ export const DARK_PALETTE = {
 	border: "rgba(253, 255, 218, 0.15)",
 	overlayHover: "rgba(253, 255, 218, 0.06)",
 	overlayPressed: "rgba(253, 255, 218, 0.10)",
+	statusActive: "#4caf50",
+	statusMaintenance: "#ff9800",
+	chartAdopt: "#93c47d",
+	chartTrial: "#93d2c6",
+	chartAssess: "#fbcd73",
+	chartHold: "#e06666",
 };
 
 export const META_THEME_COLORS = {

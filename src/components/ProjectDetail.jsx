@@ -4,117 +4,43 @@ import {
 	Share2 as Share,
 } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
+import { Link as RouterLink, useParams } from "react-router-dom";
 import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
-import {
-	amoAddonUrl,
-	chromeStatsTrendsUrl,
-	githubRepoUrl,
-} from "@/config/site";
+import ProjectByline from "@/components/ProjectByline";
+import ProjectPager from "@/components/ProjectPager";
+import ReadmeSkeleton from "@/components/ReadmeSkeleton";
+import UsageTrends from "@/components/UsageTrends";
 import projects from "@/content/projects.json";
 import { useBookmarksContext } from "@/contexts/BookmarksContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { readCacheEntry, writeCacheEntry } from "@/utils/cache";
-import { fetchAddonMetadata, fetchRepoMetadata } from "@/utils/githubUtils";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 export default function ProjectDetail() {
 	const { projectName } = useParams();
-	const navigate = useNavigate();
-	const abortControllerRef = useRef(null);
 	const shouldReduceMotion = useReducedMotion();
 	const { mode } = useThemeContext();
+	const { isBookmarked, toggleBookmark } = useBookmarksContext();
 
 	const projectIndex = projects.findIndex((p) => p.githubName === projectName);
 	const project = projectIndex === -1 ? null : projects[projectIndex];
-
-	const [markdown, setMarkdown] = useState("");
-	const [loading, setLoading] = useState(true);
-	const [repoStats, setRepoStats] = useState(null);
-	const [addonStats, setAddonStats] = useState(null);
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
-
-	const { isBookmarked, toggleBookmark } = useBookmarksContext();
-
-	useEffect(() => {
-		if (project) {
-			const prevTitle = document.title;
-			document.title = `${project.githubName} — Manas Doshi`;
-			return () => {
-				document.title = prevTitle;
-			};
-		}
-	}, [project]);
-
-	useEffect(() => {
-		if (!project) {
-			navigate("/projects");
-			return undefined;
-		}
-
-		abortControllerRef.current?.abort();
-		const controller = new AbortController();
-		abortControllerRef.current = controller;
-		const { signal } = controller;
-
-		const cacheKey = `readme_${project.githubName}`;
-		const cachedContent = readCacheEntry(cacheKey, 24 * 60 * 60 * 1000);
-
-		if (cachedContent) {
-			setMarkdown(cachedContent);
-			setLoading(false);
-		} else {
-			setLoading(true);
-			fetch(project.githubContentPath, { signal })
-				.then((res) => res.text())
-				.then((content) => {
-					if (!signal.aborted) {
-						setMarkdown(content);
-						writeCacheEntry(cacheKey, content);
-						setLoading(false);
-					}
-				})
-				.catch((err) => {
-					if (err.name !== "AbortError") {
-						setMarkdown("Failed to load content.");
-						setLoading(false);
-					}
-				});
-		}
-
-		Promise.all([
-			fetchRepoMetadata(project.githubName),
-			project.addonId ? fetchAddonMetadata(project.addonId) : null,
-		])
-			.then(([stats, addonStatsResult]) => {
-				if (!signal.aborted) {
-					setRepoStats(stats);
-					setAddonStats(addonStatsResult);
-				}
-			})
-			.catch(() => {});
-
-		return () => {
-			controller.abort();
-		};
-	}, [project, navigate]);
+	const {
+		markdown,
+		loading,
+		repoStats,
+		addonStats,
+		snackbarOpen,
+		handleShare,
+	} = useProjectDetail(project);
 
 	if (!project) return null;
-
-	const handleShare = () => {
-		navigator.clipboard?.writeText(window.location.href);
-		setSnackbarOpen(true);
-		setTimeout(() => setSnackbarOpen(false), 3000);
-	};
 
 	const prevProject = projectIndex > 0 ? projects[projectIndex - 1] : null;
 	const nextProject =
 		projectIndex > -1 && projectIndex < projects.length - 1
 			? projects[projectIndex + 1]
 			: null;
-
 	const bookmarked = isBookmarked(project.githubName);
 
 	return (
@@ -155,7 +81,7 @@ export default function ProjectDetail() {
 							<ArrowBack size={14} />
 							<span>Project Ledger</span>
 						</RouterLink>
-						<div style={{ display: "flex", gap: "0.5rem" }}>
+						<div className="flex gap-2">
 							<button
 								type="button"
 								onClick={handleShare}
@@ -172,9 +98,7 @@ export default function ProjectDetail() {
 								className="icon-btn"
 								title={bookmarked ? "Remove bookmark" : "Bookmark project"}
 								style={{
-									color: bookmarked
-										? "var(--color-accent, #7d5d53)"
-										: "inherit",
+									color: bookmarked ? "var(--color-accent)" : "inherit",
 								}}
 							>
 								<Bookmark
@@ -185,12 +109,7 @@ export default function ProjectDetail() {
 						</div>
 					</div>
 
-					<p
-						className="editorial-meta"
-						style={{ color: "var(--color-accent, #7d5d53)" }}
-					>
-						{project.category}
-					</p>
+					<p className="editorial-meta text-accent">{project.category}</p>
 					<h1
 						className="editorial-headline"
 						style={{
@@ -212,101 +131,14 @@ export default function ProjectDetail() {
 						{project.tagline}
 					</p>
 
-					<div
-						style={{
-							display: "flex",
-							flexWrap: "wrap",
-							alignItems: "center",
-							columnGap: "1.5rem",
-							rowGap: "0.5rem",
-							borderTop: "1px solid var(--color-border, var(--hairline-rule))",
-							borderBottom:
-								"1px solid var(--color-border, var(--hairline-rule))",
-							padding: "1rem 0",
-							marginBottom: "2rem",
-						}}
-					>
-						{repoStats?.year && (
-							<span className="editorial-meta">{repoStats.year}</span>
-						)}
-						{repoStats?.language && (
-							<span className="editorial-meta">{repoStats.language}</span>
-						)}
-						{repoStats?.stars > 0 && (
-							<span className="editorial-meta">
-								{repoStats.stars.toLocaleString()} stars
-							</span>
-						)}
-						{addonStats?.averageDailyUsers > 0 && (
-							<span className="editorial-meta">
-								{addonStats.averageDailyUsers.toLocaleString()} daily users
-							</span>
-						)}
-
-						<div
-							style={{
-								marginLeft: "auto",
-								display: "flex",
-								gap: "0.75rem",
-								flexWrap: "wrap",
-							}}
-						>
-							<a
-								href={githubRepoUrl(project.githubName)}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="btn btn-outlined btn-sm"
-							>
-								Source
-							</a>
-							{project.addonId && (
-								<a
-									href={amoAddonUrl(project.addonId)}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="btn btn-outlined btn-sm"
-								>
-									Add-on
-								</a>
-							)}
-						</div>
-					</div>
+					<ProjectByline
+						project={project}
+						repoStats={repoStats}
+						addonStats={addonStats}
+					/>
 
 					{loading ? (
-						<div
-							style={{ padding: "1rem 0" }}
-							role="status"
-							aria-label="Loading project documentation"
-						>
-							<div
-								className="skeleton"
-								style={{ height: "40px", width: "50%", marginBottom: "1rem" }}
-							/>
-							<div
-								className="skeleton"
-								style={{ height: "18px", marginBottom: "0.5rem" }}
-							/>
-							<div
-								className="skeleton"
-								style={{ height: "18px", marginBottom: "0.5rem" }}
-							/>
-							<div
-								className="skeleton"
-								style={{ height: "18px", width: "70%", marginBottom: "2rem" }}
-							/>
-							<div
-								className="skeleton"
-								style={{ height: "30px", width: "40%", marginBottom: "1rem" }}
-							/>
-							<div
-								className="skeleton"
-								style={{ height: "18px", marginBottom: "0.5rem" }}
-							/>
-							<div
-								className="skeleton"
-								style={{ height: "18px", width: "85%" }}
-							/>
-						</div>
+						<ReadmeSkeleton />
 					) : (
 						<div className="readme-content">
 							<ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -316,110 +148,13 @@ export default function ProjectDetail() {
 					)}
 
 					{project.chromeStatsId && !loading && (
-						<div
-							style={{
-								marginTop: "3.5rem",
-								paddingTop: "2rem",
-								borderTop:
-									"1px solid var(--color-border, var(--hairline-rule))",
-							}}
-						>
-							<h2
-								className="editorial-subheading"
-								style={{ marginBottom: "1rem" }}
-							>
-								Usage Trends
-							</h2>
-							<div
-								style={{
-									width: "100%",
-									maxWidth: "640px",
-									border: "1px solid var(--color-border, var(--hairline-rule))",
-									background: "var(--color-background-surface, #fdffda)",
-									position: "relative",
-									paddingBottom: "75%",
-									height: 0,
-								}}
-							>
-								<iframe
-									src={chromeStatsTrendsUrl(project.chromeStatsId, mode)}
-									title={`${project.githubName} usage trends`}
-									style={{
-										position: "absolute",
-										top: 0,
-										left: 0,
-										width: "100%",
-										height: "100%",
-										border: "none",
-									}}
-								/>
-							</div>
-							<p
-								className="editorial-meta"
-								style={{ marginTop: "0.75rem", display: "block" }}
-							>
-								Live usage and rating data provided by Chrome-Stats.
-							</p>
-						</div>
+						<UsageTrends project={project} mode={mode} />
 					)}
 				</main>
 
 				<hr className="editorial-divider" />
 
-				<div className="editorial-container" style={{ maxWidth: "800px" }}>
-					<div style={{ display: "flex", flexWrap: "wrap" }}>
-						{prevProject ? (
-							<RouterLink
-								to={`/projects/${prevProject.githubName}`}
-								className="btn btn-outlined"
-								style={{
-									flex: "1 1 280px",
-									justifyContent: "flex-start",
-									textAlign: "left",
-									padding: "1.75rem 1rem",
-									borderRight:
-										"1px solid var(--color-border, var(--hairline-rule))",
-								}}
-							>
-								<div>
-									<span className="editorial-meta" style={{ display: "block" }}>
-										Previous entry
-									</span>
-									{prevProject.githubName}
-								</div>
-							</RouterLink>
-						) : (
-							<div
-								style={{
-									flex: "1 1 280px",
-									borderRight:
-										"1px solid var(--color-border, var(--hairline-rule))",
-								}}
-							/>
-						)}
-						{nextProject ? (
-							<RouterLink
-								to={`/projects/${nextProject.githubName}`}
-								className="btn btn-outlined"
-								style={{
-									flex: "1 1 280px",
-									justifyContent: "flex-end",
-									textAlign: "right",
-									padding: "1.75rem 1rem",
-								}}
-							>
-								<div>
-									<span className="editorial-meta" style={{ display: "block" }}>
-										Next entry
-									</span>
-									{nextProject.githubName}
-								</div>
-							</RouterLink>
-						) : (
-							<div style={{ flex: "1 1 280px" }} />
-						)}
-					</div>
-				</div>
+				<ProjectPager prevProject={prevProject} nextProject={nextProject} />
 			</motion.div>
 
 			{snackbarOpen && (
@@ -428,14 +163,13 @@ export default function ProjectDetail() {
 						position: "fixed",
 						bottom: "24px",
 						right: "24px",
-						background: "var(--color-primary, #38392e)",
-						color: "var(--color-background-body, #fdffda)",
+						background: "var(--color-text-primary)",
+						color: "var(--color-background-body)",
 						padding: "10px 16px",
 						fontSize: "0.85rem",
-						fontFamily: "var(--font-family-code, 'Work Sans', sans-serif)",
+						fontFamily: "var(--font-family-code)",
 						letterSpacing: "0.05em",
 						zIndex: 9999,
-						boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
 					}}
 				>
 					Project link copied to clipboard!
