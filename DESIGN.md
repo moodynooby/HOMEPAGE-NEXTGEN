@@ -17,7 +17,7 @@ Every interaction should feel like an act of curation: authoritative, human, and
 
 ## 3. Design Tokens (Astryx Theme)
 
-Tokens are configured via `defineTheme` in `src/theme/astryxTheme.js` (extending `@astryxdesign/theme-neutral`) and rendered into the document by `<Theme>` as CSS variables. **Use CSS variables in styles; never hard-code hex.**
+Palette values are authored once in `src/theme/palette.js`. `scripts/generate-palette-css.js` emits `src/theme/palette.generated.css` before dev/build, which publishes the palette on `:root`; `src/theme/astryxTheme.js` derives the Astryx tokens from the same map and `<Theme>` applies them to its subtree. **Use CSS variables in styles; never hard-code hex outside `src/theme/`.**
 
 | Astryx Token | Light | Dark | Usage |
 | --- | --- | --- | --- |
@@ -138,4 +138,4 @@ The design only shines if the content is curated. Follow the content model in [A
 - **Icons standing in for headings** (a pin before "Featured Projects") and **emoji as icon substitutes**. Hierarchy is type; icons are functional only.
 - **Filler metadata** — meaningless badges ("DEV"), fake coordinates, decorative status dots. Every label must inform.
 - **Hover-only content that can never fire** — verify selectors actually match (no invented class names like `.motion-box`); captions must be reachable by real hover/focus states.
-- **Hard-coded hex outside theme files / index.css.** Components read tokens and CSS variables only; scrims behind modals are the sole exception.
+- **Hard-coded hex outside `src/theme/`.** Components read tokens and CSS variables only; scrims behind modals are the sole exception.

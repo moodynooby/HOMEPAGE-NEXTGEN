@@ -30,3 +30,6 @@ yarn.lock
 .env
 # Local Netlify folder
 .netlify
+
+# Generated from src/theme/palette.js by scripts/generate-palette-css.js
+src/theme/palette.generated.css

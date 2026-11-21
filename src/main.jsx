@@ -12,6 +12,7 @@ import "@fontsource/noto-serif/400.css";
 import "@fontsource/noto-serif/700.css";
 import "@fontsource-variable/work-sans";
 
+import "@/theme/palette.generated.css";
 import "./index.css";
 import CommandPalette from "@/components/CommandPalette";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -20,7 +21,6 @@ import { BookmarksContextProvider } from "@/contexts/BookmarksContext";
 import { ThemeContextProvider, useThemeContext } from "@/contexts/ThemeContext";
 import { APP_ROUTES } from "@/routes";
 import { editorialTheme } from "@/theme/astryxTheme";
-import { injectPaletteStyles } from "@/theme/injectPalette";
 
 const AppContent = () => (
 	<BrowserRouter>
@@ -52,8 +52,6 @@ const AppWithTheme = () => {
 		</Theme>
 	);
 };
-
-injectPaletteStyles();
 
 const root = createRoot(document.getElementById("root"));
 

@@ -8,19 +8,22 @@ The site is **content-driven**: all portfolio data (projects, gallery, social li
 
 The visual language is documented in [DESIGN.md](./DESIGN.md) — read it before making any UI change. Its rules are non-negotiable: **0px corner radius, no pure black (`#38392e` is the ink), serif display type (Newsreader), and Work Sans for labels/meta.**
 
-To keep the site from reading as AI-generated, every UI change must pass the [DESIGN.md §10 "Never" ban list](./DESIGN.md) before finishing — no scrolling metric tickers, glassmorphism on gradients, floating action buttons, full-screen gradient backgrounds, icons standing in for headings, filler metadata, or hard-coded hex outside `theme.js`/`index.css`.
+To keep the site from reading as AI-generated, every UI change must pass the [DESIGN.md §10 "Never" ban list](./DESIGN.md) before finishing — no scrolling metric tickers, glassmorphism on gradients, floating action buttons, full-screen gradient backgrounds, icons standing in for headings, filler metadata, or hard-coded hex outside `src/theme/`.
 
 ## Commands
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm dev` | Start Vite dev server (port **5173**, strict, opens browser) |
-| `pnpm build` | Production build to `dist/` (must pass before finishing) |
+| `pnpm dev` | Generate palette CSS, then start Vite (port **5173**, strict, opens browser) |
+| `pnpm build` | Generate palette CSS, then build to `dist/` (must pass before finishing) |
+| `pnpm generate:palette` | Regenerate `src/theme/palette.generated.css` from `palette.js` |
 | `pnpm lint` | Biome: auto-fix lint + format |
 | `pnpm biome check <files>` | Check specific files without modifying them |
+| `pnpm test` | Vitest suite |
+| `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm run preview` | Serve the built output |
 
-Run `pnpm biome check` on changed files and `pnpm build` to verify any non-trivial change.
+Run `pnpm biome check` on changed files and `pnpm build` to verify any non-trivial change. The pre-commit hook runs lint, typecheck and tests.
 
 ## Architecture
 
@@ -41,20 +44,28 @@ Run `pnpm biome check` on changed files and `pnpm build` to verify any non-trivi
 
 ```
 src/
-├── components/     CommandPalette, Gallery, Header, LandingPage,
-│                   LinkTree, ProjectDetail, Projects, RouteLoader
+├── components/     Orchestrators (Projects, ProjectDetail, LandingPage,
+│                   ProjectTimeline, CommandPalette) + focused presentational pieces
 ├── content/        projects.json, gallery.json, socialLinks.json,
-│                   architectureNodes.json, timelineMilestones.json  ← edit content here
-├── contexts/       ThemeContext (light / dark / system)
-├── utils/          githubUtils.js, socialIcons.js, authUtils.js, cache.js
-├── index.css       Global editorial design tokens & styles
-└── main.jsx        Entry: fonts, Theme, router, kbar
+│                   techRadar.json, timelineMilestones.json  ← edit content here
+├── contexts/       ThemeContext, BookmarksContext
+├── hooks/          useProjectsData, useProjectFilters, useProjectHealth,
+│                    useProjectDetail, useLandingStats, useTimelineFilters,
+│                    useShortcutsModal, useIsMobile
+├── theme/          palette.js (only authored palette), paletteTokens.js,
+│                    astryxTheme.js, palette.generated.css (generated)
+├── utils/          githubUtils.js, socialIcons.js, cache.js, projects.js, ...
+├── index.css       Global editorial styles (consumes palette tokens)
+└── main.jsx        Entry: generated palette CSS, fonts, Theme, router, kbar
+scripts/
+└── generate-palette-css.js  Emits palette.generated.css before dev/build
 ```
 
 ### Data flow
 
-- **`Projects`** enriches `projects.json` with GitHub metadata (`fetchRepoMetadata`: creation year, primary language) via the GitHub API, cached in `localStorage` for 7 days. Cache keys are versioned (`github_meta_v2_*`) — bump the version when the shape of cached data changes.
-- **`ProjectDetail`** fetches the README from the repo's default branch (`githubContentPath`), cached 24h, with an `AbortController` to cancel stale requests.
+- **`useProjectsData`** enriches `projects.json` with GitHub metadata (`fetchRepoMetadata`: creation year, primary language) via the GitHub API, cached in `localStorage` for 7 days. Cache keys are versioned (`github_meta_v3_*`) — bump the version when the shape of cached data changes.
+- **`useProjectFilters`** owns the ledger's search/category/language/sort state and derived grouping. **`ProjectCard`** subscribes to `useProjectHealth`, a shared external store that dedupes health fetches and state across every row.
+- **`useProjectDetail`** fetches the README from the repo's default branch (`githubContentPath`), cached 24h, with an `AbortController` to cancel stale requests.
 
 ## Content Model (Portfolio)
 
@@ -85,20 +96,20 @@ Array of `{ "link", "alt" }` rendered in the header/footer and `/links`.
 
 Full documentation: [DESIGN.md](./DESIGN.md). Quick reference:
 
-- **Colors** are exposed as Astryx design tokens and CSS custom properties (`--color-text-primary`, `--color-text-secondary`, `--color-background-body`, `--color-background-surface`, `--color-border`) — use tokens and semantic classes, never hard-coded hex, so light/dark theming stays consistent.
+- **Colors** are authored only in `src/theme/palette.js`. `scripts/generate-palette-css.js` emits `palette.generated.css` before dev/build, and `astryxTheme.js` derives the Astryx tokens from the same map via `paletteTokens.js`. Styles consume CSS custom properties (`--color-text-primary`, `--color-background-body`, `--color-border`, …) — never hard-code hex.
 - **Typography**: Newsreader (headlines, 600–800), Noto Serif (body), Work Sans Variable (labels/buttons/meta, uppercase with letter-spacing).
 - **Borders**: hairline rules only, via the `--color-border` token. No heavy borders, 0px rounded corners, no heavy drop shadows.
 
 ## Code Conventions
 
 - **Language:** ES2024, JSX. Files use tabs (2-space visual indent).
-- **Imports:** organized builtin → external → internal; single quotes; the `@/` alias for internal paths.
+- **Imports:** organized builtin → external → internal; double quotes; the `@/` alias for internal paths.
 - **Exports:** each component file has a single default export (PascalCase). Keep named exports for utilities (`githubUtils.js`).
 - **Naming:** PascalCase components, camelCase functions/variables.
 - **PropTypes:** required on every component (`react/prop-types: error`).
 - **Unused vars:** error (arguments starting with `_` are exempt).
 - **Spacing/style:** spaces inside object braces and around arrows; semicolons always.
-- **Hooks:** biome enforces Rules of Hooks; `exhaustive-deps` is a warning — honor it where reasonable.
+- **Hooks:** biome enforces Rules of Hooks; `exhaustive-deps` is a warning — honor it where reasonable. Keep data/state logic in `src/hooks/` and components focused on presentation.
 - **Console:** warn-level — remove debug logs before finishing.
 - **React Refresh:** component files should export components/constants so HMR keeps working.
 
@@ -106,34 +117,5 @@ Full documentation: [DESIGN.md](./DESIGN.md). Quick reference:
 
 1. `pnpm biome check <changed files>` — no errors (lint + format + organize imports).
 2. `pnpm build` — completes successfully.
-3. No `console.log` left behind; no hard-coded colors that bypass theme tokens.
-
-### Known pre-existing issues (do not expand scope to fix unless asked)
-
-- `src/components/CommandPalette.jsx` — imports not organized per biome.
-- `src/components/ProjectDetail.jsx` — some formatting/indentation drift.
-
-## Refactor backlog (Nov 2026)
-
-The four items below were deliberately deferred by the earlier refactor passes. They
-are recorded here with their rationale so a future pass does not have to re-derive it.
-
-| Item | Why it was deferred | Leverage point |
-| --- | --- | --- |
-| Large multi-responsibility components (`Projects`, `ProjectDetail`, `LandingPage`, `ProjectTimeline`, `CommandPalette`) | Decomposition is higher-risk without a single clear seam; presentational churn would obscure behavior changes. | Extract state/logic into hooks and presentational sections into local components, one file at a time. |
-| Theme/token duplication (`index.css` ↔ `astryxTheme.js` ↔ Astryx sources) | `palette.js` is already the runtime source of truth; a full CSS↔theme pipeline unification is a broader design change. | `palette.js` is now the only authored palette; `injectPalette.js` publishes it on `:root`, and `index.css` plus all components consume tokens without hard-coded fallbacks. |
-| Per-card health fetching in `ProjectCard` | `fetchProjectHealth` already dedupes in-flight requests and caches for 24h, so only per-instance state remained. | Shared external-store hook (`useProjectHealth`) so every card subscribes to one canonical entry. |
-| Broad CSS surface in `index.css` | Removing rules without a usage audit risks deleting library-generated or dynamically-built selectors. | Audit class usage across `src/` first; delete only confirmed-dead rules. |
-
-### Staged plan (this pass)
-
-1. [x] Document the deferred items and plan (this section).
-2. [x] Dedupe project health state behind `useProjectHealth`.
-3. [x] Unify theme tokens: `palette.js` is the only palette source; `index.css` consumes tokens.
-4. [x] Decompose the five large components into hooks + presentational pieces.
-5. [x] Prune confirmed-unused CSS from `index.css`.
-6. [x] Re-run `pnpm biome check`, `pnpm test`, `pnpm build`; update this checklist.
-
-Each stage must keep the public behavior and the existing tests green. Prefer the
-smallest change that creates a single leverage point — "cut and slash" where a rule
-or helper is provably dead, not where it is merely awkward.
+3. `pnpm test` and `pnpm typecheck` — green (also enforced by the pre-commit hook).
+4. No `console.log` left behind; no hard-coded colors that bypass theme tokens.

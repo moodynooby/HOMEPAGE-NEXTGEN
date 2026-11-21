@@ -1,5 +1,5 @@
-/* Palette tokens are published on :root by src/theme/injectPalette.js, sourced
-   solely from src/theme/palette.js. Only document defaults live here. */
+/* Palette tokens are published on :root by palette.generated.css, generated
+   from src/theme/palette.js. Only document defaults live here. */
 :root {
 	color-scheme: light dark;
 	font-family:

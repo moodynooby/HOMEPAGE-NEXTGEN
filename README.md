@@ -1,12 +1,42 @@
-# React + Vite
+# Manas Doshi — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some biome rules.
+An editorial "living archive" of browser extensions, web apps, games and experiments. Built with React 19, Vite 8 and the Astryx design system.
 
-Currently, two official plugins are available:
+## Getting started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+pnpm install
+pnpm dev
+```
 
-## Expanding the biome configuration
+`pnpm dev` regenerates `src/theme/palette.generated.css` from `src/theme/palette.js`, then starts Vite on port 5173.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-biome`](https://typescript-biome.io) in your project.
+## Commands
+
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Dev server (port 5173) |
+| `pnpm build` | Production build to `dist/` (regenerates palette CSS first) |
+| `pnpm run preview` | Serve the built output |
+| `pnpm generate:palette` | Regenerate the palette CSS only |
+| `pnpm test` | Vitest suite |
+| `pnpm lint` | Biome lint + format (auto-fix) |
+| `pnpm typecheck` | `tsc --noEmit` |
+
+The pre-commit hook runs lint, typecheck and tests.
+
+## Routes
+
+| Path | Page |
+| --- | --- |
+| `/` | Landing page — hero, featured work, tech radar, timeline, gallery |
+| `/projects` | The Project Ledger — filterable, sortable, year-grouped |
+| `/projects/:projectName` | Article page with the repo's README |
+| `/links` | Social and contact links |
+| `/gallery` | Cloudinary media with lightbox |
+
+## Where things live
+
+- **Portfolio content** — `src/content/*.json`. Add projects to `projects.json`; the UI is a thin layer over this data. See [AGENTS.md](./AGENTS.md) for the content model.
+- **Design rules** — [DESIGN.md](./DESIGN.md). Palette values are authored once in `src/theme/palette.js`; a build step emits CSS custom properties, and the Astryx theme is derived from the same map.
+- **Data/state logic** — `src/hooks/`. Components in `src/components/` are mostly presentation; page-level components orchestrate hooks and presentational pieces.
