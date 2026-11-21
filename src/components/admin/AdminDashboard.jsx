@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import AdminLogin from "@/components/admin/AdminLogin";
 import ColophonFooter from "@/components/ColophonFooter";
 import Header from "@/components/Header";
+import TechRadar from "@/components/TechRadar";
 import TechRadarForm from "@/components/TechRadarForm";
 import defaultProjects from "@/content/projects.json";
 import useTechRadarData from "@/hooks/useTechRadarData";
@@ -684,6 +685,18 @@ export default function AdminDashboard({ showAppBar = true }) {
 				{/* TAB 2: TECH STACK RADAR */}
 				{activeTab === "radar" && (
 					<div>
+						{/* Live Interactive Editable Radar */}
+						<div
+							style={{
+								marginBottom: "2.5rem",
+								padding: "1.5rem",
+								border: "1px solid var(--color-border)",
+								background: "var(--color-background-surface)",
+							}}
+						>
+							<TechRadar editable={true} />
+						</div>
+
 						{/* Actions Bar */}
 						<div
 							style={{

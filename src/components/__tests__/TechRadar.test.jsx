@@ -7,7 +7,7 @@ import TechRadar from "../TechRadar";
 const renderWithRouter = (ui) => render(<BrowserRouter>{ui}</BrowserRouter>);
 
 describe("TechRadar Component", () => {
-	it("renders a label for every configured quadrant and an empty detail panel", () => {
+	it("renders a label for every configured quadrant and does not show add button when not editable", () => {
 		renderWithRouter(<TechRadar />);
 
 		for (const quadrant of radarData.quadrants) {
@@ -16,6 +16,9 @@ describe("TechRadar Component", () => {
 		expect(
 			screen.getByText("Hover or click a blip to see details"),
 		).toBeInTheDocument();
+		expect(
+			screen.queryByRole("button", { name: /Add Technology/i }),
+		).not.toBeInTheDocument();
 	});
 
 	it("shows the hovered blip's details from the content", () => {
@@ -34,10 +37,13 @@ describe("TechRadar Component", () => {
 		for (const repo of blip.keyRepos) {
 			expect(screen.getAllByText(repo).length).toBeGreaterThan(0);
 		}
+		expect(
+			screen.queryByRole("button", { name: /Edit/i }),
+		).not.toBeInTheDocument();
 	});
 
-	it("opens the dynamic form when Add Technology is clicked and allows creating a blip", () => {
-		renderWithRouter(<TechRadar />);
+	it("opens the dynamic form when Add Technology is clicked and allows creating a blip when editable", () => {
+		renderWithRouter(<TechRadar editable />);
 
 		const addBtn = screen.getByRole("button", { name: /Add Technology/i });
 		expect(addBtn).toBeInTheDocument();

@@ -59,9 +59,9 @@ describe("AdminDashboard Component", () => {
 		fireEvent.click(radarTabBtn);
 
 		// Radar controls should now be visible
-		expect(screen.getByText("All Quadrants")).toBeInTheDocument();
+		expect(screen.getAllByText("All Quadrants")[0]).toBeInTheDocument();
 		expect(
-			screen.getByRole("button", { name: /Add Technology/i }),
+			screen.getAllByRole("button", { name: /Add Technology/i })[0],
 		).toBeInTheDocument();
 	});
 

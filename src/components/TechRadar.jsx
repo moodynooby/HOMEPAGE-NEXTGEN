@@ -25,7 +25,11 @@ const QUAD_ANGLES = [
 	{ angle: -(3 * Math.PI) / 4, startAngle: -Math.PI, endAngle: -Math.PI / 2 },
 ];
 
-export default function TechRadar({ onActiveBlipChange, showAppBar = false }) {
+export default function TechRadar({
+	onActiveBlipChange,
+	showAppBar = false,
+	editable = false,
+}) {
 	const location = useLocation();
 	const isStandalone = showAppBar || location?.pathname === "/radar";
 
@@ -192,27 +196,33 @@ export default function TechRadar({ onActiveBlipChange, showAppBar = false }) {
 					))}
 				</div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-					{customBlipsCount > 0 && (
+				{editable ? (
+					<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+						{customBlipsCount > 0 && (
+							<button
+								type="button"
+								onClick={resetToDefault}
+								className="btn btn-outline btn-sm flex items-center gap-1"
+								title="Reset custom blips to default"
+							>
+								<RotateCcw size={13} />
+								<span>Reset ({customBlipsCount})</span>
+							</button>
+						)}
 						<button
 							type="button"
-							onClick={resetToDefault}
-							className="btn btn-outline btn-sm flex items-center gap-1"
-							title="Reset custom blips to default"
+							onClick={handleOpenAddForm}
+							className="btn btn-primary btn-sm flex items-center gap-1"
 						>
-							<RotateCcw size={13} />
-							<span>Reset ({customBlipsCount})</span>
+							<Plus size={14} />
+							<span>Add Technology</span>
 						</button>
-					)}
-					<button
-						type="button"
-						onClick={handleOpenAddForm}
-						className="btn btn-primary btn-sm flex items-center gap-1"
-					>
-						<Plus size={14} />
-						<span>Add Technology</span>
-					</button>
-				</div>
+					</div>
+				) : (
+					<span className="editorial-meta text-secondary">
+						{visibleBlips.length} Technologies
+					</span>
+				)}
 			</div>
 
 			<div className="flex flex-col md:flex-row gap-6 items-center w-full">
@@ -365,15 +375,17 @@ export default function TechRadar({ onActiveBlipChange, showAppBar = false }) {
 										)}
 									</div>
 								</div>
-								<button
-									type="button"
-									onClick={() => handleOpenEditForm(activeBlip)}
-									className="btn btn-outline btn-sm flex items-center gap-1"
-									title="Edit this technology in form"
-								>
-									<Edit3 size={13} />
-									<span>Edit</span>
-								</button>
+								{editable && (
+									<button
+										type="button"
+										onClick={() => handleOpenEditForm(activeBlip)}
+										className="btn btn-outline btn-sm flex items-center gap-1"
+										title="Edit this technology in form"
+									>
+										<Edit3 size={13} />
+										<span>Edit</span>
+									</button>
+								)}
 							</div>
 
 							<p className="caption text-secondary mb-3">
@@ -440,17 +452,19 @@ export default function TechRadar({ onActiveBlipChange, showAppBar = false }) {
 				</div>
 			</div>
 
-			<TechRadarForm
-				isOpen={isFormOpen}
-				onClose={() => setIsFormOpen(false)}
-				onSave={addOrUpdateBlip}
-				onDelete={deleteBlip}
-				initialBlip={editingBlip}
-				availableLanguages={availableLanguages}
-				allProjects={allProjects}
-				quadrants={rawQuadrants}
-				rings={rawRings}
-			/>
+			{editable && (
+				<TechRadarForm
+					isOpen={isFormOpen}
+					onClose={() => setIsFormOpen(false)}
+					onSave={addOrUpdateBlip}
+					onDelete={deleteBlip}
+					initialBlip={editingBlip}
+					availableLanguages={availableLanguages}
+					allProjects={allProjects}
+					quadrants={rawQuadrants}
+					rings={rawRings}
+				/>
+			)}
 		</div>
 	);
 
@@ -499,4 +513,5 @@ export default function TechRadar({ onActiveBlipChange, showAppBar = false }) {
 TechRadar.propTypes = {
 	onActiveBlipChange: PropTypes.func,
 	showAppBar: PropTypes.bool,
+	editable: PropTypes.bool,
 };
