@@ -7,7 +7,6 @@ const ProjectDetail = lazy(() => import("@/components/ProjectDetail"));
 const LinkTree = lazy(() => import("@/components/LinkTree"));
 const Gallery = lazy(() => import("@/components/Gallery"));
 const TechRadar = lazy(() => import("@/components/TechRadar"));
-const AdminDashboard = lazy(() => import("@/components/admin/AdminDashboard"));
 
 export const APP_ROUTES = [
 	{
@@ -55,11 +54,6 @@ export const APP_ROUTES = [
 		path: "/radar",
 		label: "Tech Stack Radar",
 		component: TechRadar,
-	},
-	{
-		path: "/admin",
-		label: "Curator Admin",
-		component: AdminDashboard,
 	},
 ];
 

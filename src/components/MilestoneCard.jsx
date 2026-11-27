@@ -13,10 +13,10 @@ export default function MilestoneCard({ milestone, proj, onOpen }) {
 					top: 20,
 					width: 14,
 					height: 14,
-					borderRadius: "50%",
+					borderRadius: 0,
 					backgroundColor: projectColor,
 					border: "2px solid var(--color-background-surface)",
-					boxShadow: `0 0 0 2px ${projectColor}44`,
+					boxShadow: `0 0 0 2px color-mix(in srgb, ${projectColor} 28%, transparent)`,
 					zIndex: 1,
 					display: "inline-block",
 				}}
@@ -51,10 +51,10 @@ export default function MilestoneCard({ milestone, proj, onOpen }) {
 							<span
 								className="chip chip-sm"
 								style={{
-									backgroundColor: `${projectColor}20`,
+									backgroundColor: `color-mix(in srgb, ${projectColor} 12%, transparent)`,
 									color: projectColor,
 									fontWeight: 600,
-									border: `1px solid ${projectColor}40`,
+									border: `1px solid color-mix(in srgb, ${projectColor} 28%, transparent)`,
 								}}
 							>
 								{proj.shortName || milestone.project}
@@ -62,7 +62,7 @@ export default function MilestoneCard({ milestone, proj, onOpen }) {
 							<span
 								className="chip chip-sm"
 								style={{
-									fontFamily: "monospace",
+									fontFamily: "var(--font-family-code)",
 									fontWeight: 600,
 								}}
 							>
@@ -139,7 +139,7 @@ export default function MilestoneCard({ milestone, proj, onOpen }) {
 								alignItems: "center",
 								gap: "4px",
 								color: "var(--color-text-secondary)",
-								fontFamily: "monospace",
+								fontFamily: "var(--font-family-code)",
 								fontSize: "0.75rem",
 							}}
 						>

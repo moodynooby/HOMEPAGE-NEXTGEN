@@ -177,3 +177,42 @@ export async function fetchProjectHealth(repoName) {
 		}
 	});
 }
+
+export async function fetchRepoReleases(repoName) {
+	const entry = CACHE_ENTRIES.repoReleases(repoName);
+	const cached = readFresh(entry);
+	if (cached) return cached;
+
+	return dedupe(entry.key, async () => {
+		try {
+			const response = await fetch(
+				`${GITHUB_API_BASE}/repos/${SITE_OWNER}/${repoName}/releases?per_page=10`,
+			);
+			if (!response.ok) {
+				if (!isExpectedMiss(response.status)) {
+					console.warn(`GitHub API releases error: ${response.statusText}`);
+				}
+				return readStale(entry) || [];
+			}
+
+			const data = await response.json();
+			const releases = Array.isArray(data)
+				? data.map((release) => ({
+						id: release.id,
+						tag_name: release.tag_name || "",
+						name: release.name || release.tag_name || "Release",
+						body: release.body || "",
+						published_at: release.published_at || release.created_at || "",
+						prerelease: Boolean(release.prerelease),
+						html_url: release.html_url || "",
+						author: release.author?.login || SITE_OWNER,
+					}))
+				: [];
+
+			write(entry, releases);
+			return releases;
+		} catch (_error) {
+			return readStale(entry) || [];
+		}
+	});
+}

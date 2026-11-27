@@ -74,7 +74,7 @@ export default function MilestoneChangelogDrawer({
 						</span>
 						<span
 							className="chip chip-sm"
-							style={{ fontFamily: "monospace", fontWeight: 700 }}
+							style={{ fontFamily: "var(--font-family-code)", fontWeight: 700 }}
 						>
 							{activeMilestone.version}
 						</span>
@@ -122,7 +122,7 @@ export default function MilestoneChangelogDrawer({
 							{GitHubIcon && <GitHubIcon size={14} />}
 							<span
 								className="editorial-meta"
-								style={{ fontFamily: "monospace" }}
+								style={{ fontFamily: "var(--font-family-code)" }}
 							>
 								{config.repo || activeMilestone.project}
 							</span>
@@ -150,7 +150,7 @@ export default function MilestoneChangelogDrawer({
 								</span>
 								<span
 									style={{
-										fontFamily: "monospace",
+										fontFamily: "var(--font-family-code)",
 										fontWeight: 700,
 										fontSize: "0.875rem",
 									}}

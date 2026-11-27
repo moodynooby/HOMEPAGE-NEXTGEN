@@ -1,12 +1,9 @@
-import { Edit3, Plus, RotateCcw } from "lucide-react";
 import PropTypes from "prop-types";
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
-import TechRadarForm from "@/components/TechRadarForm";
 import { githubRepoUrl } from "@/config/site";
 import useTechRadarData from "@/hooks/useTechRadarData";
-import { isAuthenticated } from "@/utils/authUtils";
 
 const RADAR_SIZE = 800;
 const CENTER = RADAR_SIZE / 2;
@@ -25,31 +22,18 @@ const QUAD_ANGLES = [
 	{ angle: -(3 * Math.PI) / 4, startAngle: -Math.PI, endAngle: -Math.PI / 2 },
 ];
 
-export default function TechRadar({
-	onActiveBlipChange,
-	showAppBar = false,
-	editable = false,
-}) {
+export default function TechRadar({ onActiveBlipChange, showAppBar = false }) {
 	const location = useLocation();
 	const isStandalone = showAppBar || location?.pathname === "/radar";
-	const canEdit = Boolean(editable && isAuthenticated());
 
 	const {
 		rings: rawRings,
 		quadrants: rawQuadrants,
 		blips: rawBlips,
-		availableLanguages,
-		allProjects,
-		customBlipsCount,
-		addOrUpdateBlip,
-		deleteBlip,
-		resetToDefault,
 	} = useTechRadarData();
 
 	const [activeBlip, setActiveBlip] = useState(null);
 	const [selectedQuadrant, setSelectedQuadrant] = useState("All");
-	const [isFormOpen, setIsFormOpen] = useState(false);
-	const [editingBlip, setEditingBlip] = useState(null);
 
 	const rings = useMemo(
 		() =>
@@ -133,16 +117,6 @@ export default function TechRadar({
 		}
 	};
 
-	const handleOpenAddForm = () => {
-		setEditingBlip(null);
-		setIsFormOpen(true);
-	};
-
-	const handleOpenEditForm = (blip) => {
-		setEditingBlip(blip);
-		setIsFormOpen(true);
-	};
-
 	const content = (
 		<div className="flex flex-col gap-6 w-full">
 			{/* Top Toolbar / Filter Controls */}
@@ -197,33 +171,9 @@ export default function TechRadar({
 					))}
 				</div>
 
-				{canEdit ? (
-					<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-						{customBlipsCount > 0 && (
-							<button
-								type="button"
-								onClick={resetToDefault}
-								className="btn btn-outline btn-sm flex items-center gap-1"
-								title="Reset custom blips to default"
-							>
-								<RotateCcw size={13} />
-								<span>Reset ({customBlipsCount})</span>
-							</button>
-						)}
-						<button
-							type="button"
-							onClick={handleOpenAddForm}
-							className="btn btn-primary btn-sm flex items-center gap-1"
-						>
-							<Plus size={14} />
-							<span>Add Technology</span>
-						</button>
-					</div>
-				) : (
-					<span className="editorial-meta text-secondary">
-						{visibleBlips.length} Technologies
-					</span>
-				)}
+				<span className="editorial-meta text-secondary">
+					{visibleBlips.length} Technologies
+				</span>
 			</div>
 
 			<div className="flex flex-col md:flex-row gap-6 items-center w-full">
@@ -371,22 +321,8 @@ export default function TechRadar({
 										{activeBlip.source === "github" && (
 											<span className="chip chip-sm">GitHub Tag</span>
 										)}
-										{activeBlip.isCustom && (
-											<span className="chip chip-sm">Custom</span>
-										)}
 									</div>
 								</div>
-								{canEdit && (
-									<button
-										type="button"
-										onClick={() => handleOpenEditForm(activeBlip)}
-										className="btn btn-outline btn-sm flex items-center gap-1"
-										title="Edit this technology in form"
-									>
-										<Edit3 size={13} />
-										<span>Edit</span>
-									</button>
-								)}
 							</div>
 
 							<p className="caption text-secondary mb-3">
@@ -445,27 +381,12 @@ export default function TechRadar({
 								className="editorial-body text-secondary"
 								style={{ fontSize: "0.85rem", maxWidth: "280px" }}
 							>
-								Derived dynamically from repository language tags, categories,
-								and custom entries.
+								Derived dynamically from GitHub repository languages and topics.
 							</p>
 						</div>
 					)}
 				</div>
 			</div>
-
-			{canEdit && (
-				<TechRadarForm
-					isOpen={isFormOpen}
-					onClose={() => setIsFormOpen(false)}
-					onSave={addOrUpdateBlip}
-					onDelete={deleteBlip}
-					initialBlip={editingBlip}
-					availableLanguages={availableLanguages}
-					allProjects={allProjects}
-					quadrants={rawQuadrants}
-					rings={rawRings}
-				/>
-			)}
 		</div>
 	);
 
@@ -513,5 +434,4 @@ export default function TechRadar({
 TechRadar.propTypes = {
 	onActiveBlipChange: PropTypes.func,
 	showAppBar: PropTypes.bool,
-	editable: PropTypes.bool,
 };

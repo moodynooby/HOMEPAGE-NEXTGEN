@@ -10,26 +10,28 @@ import {
 	THEME_MODES,
 } from "@/theme/themeConfig";
 
-const SEARCH_PRESETS = [
-	{ id: "react", name: "React", keywords: "react", query: "React" },
-	{ id: "python", name: "Python", keywords: "python", query: "Python" },
-	{
-		id: "ml",
-		name: "Machine Learning",
-		keywords: "machine learning ml",
-		query: "Machine Learning",
-	},
-	{
-		id: "web3",
-		name: "Web3",
-		keywords: "web3 crypto blockchain",
-		query: "Web3",
-	},
-	{ id: "rust", name: "Rust", keywords: "rust", query: "Rust" },
-];
-
 const icon = (Icon, size = 16) =>
 	Icon ? <Icon size={size} strokeWidth={1.5} /> : null;
+
+function buildSearchPresets(projects = []) {
+	const counts = new Map();
+	for (const project of projects) {
+		for (const term of [project.language, project.category]) {
+			const clean = term?.trim();
+			if (!clean) continue;
+			counts.set(clean, (counts.get(clean) || 0) + 1);
+		}
+	}
+	return Array.from(counts.entries())
+		.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+		.slice(0, 6)
+		.map(([term]) => ({
+			id: term.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+			name: term,
+			keywords: term.toLowerCase(),
+			query: term,
+		}));
+}
 
 export function buildCommandActions({
 	navigate,
@@ -37,6 +39,7 @@ export function buildCommandActions({
 	setShortcutsOpen,
 	handleJumpToSection,
 	copyToClipboard,
+	projects = [],
 }) {
 	const navActions = NAV_ITEMS.map((item) => ({
 		id: `nav-${item.path}`,
@@ -57,11 +60,11 @@ export function buildCommandActions({
 		icon: icon(THEME_MODE_ICONS[mode]),
 	}));
 
-	const searchActions = SEARCH_PRESETS.map((preset) => ({
+	const searchActions = buildSearchPresets(projects).map((preset) => ({
 		id: `filter-${preset.id}`,
 		name: `Filter Projects: ${preset.name}`,
 		keywords: preset.keywords,
-		perform: () => navigate(`/projects?q=${preset.query}`),
+		perform: () => navigate(`/projects?q=${encodeURIComponent(preset.query)}`),
 		icon: icon(Filter),
 	}));
 
@@ -111,11 +114,5 @@ export function buildCommandActions({
 		},
 		...jumpActions,
 		...socialActions,
-		{
-			id: "nav-admin",
-			name: "Curator Admin Console",
-			keywords: "admin console cms json manage radar",
-			perform: () => navigate("/admin"),
-		},
 	];
 }

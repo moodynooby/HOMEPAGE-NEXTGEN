@@ -1,116 +1,151 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import {
-	PROJECT_CONFIG,
-	TIMELINE_MILESTONES,
-} from "@/content/timelineMilestones";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import ProjectTimeline from "../ProjectTimeline";
+
+vi.mock("@/hooks/useProjectsData", () => ({
+	default: () => ({
+		loading: false,
+		loadError: "",
+		projects: [
+			{
+				githubName: "Todo.Txt",
+				category: "Web App",
+				language: "JavaScript",
+				tagline: "Plain-text todo app.",
+				year: 2024,
+				pushed_at: "2026-10-01T00:00:00Z",
+				stars: 12,
+				topics: ["react"],
+			},
+			{
+				githubName: "Modern-TWP",
+				category: "Browser Extension",
+				language: "TypeScript",
+				tagline: "Fast translation extension.",
+				year: 2025,
+				pushed_at: "2026-09-01T00:00:00Z",
+				stars: 20,
+				topics: ["webextension"],
+			},
+		],
+	}),
+}));
+
+vi.mock("@/utils/githubUtils", async (importOriginal) => {
+	const actual = await importOriginal();
+	return {
+		...actual,
+		fetchRepoReleases: vi.fn(async (repoName) => {
+			if (repoName === "Todo.Txt") {
+				return [
+					{
+						id: 101,
+						tag_name: "v1.2.0",
+						name: "Keyboard Navigation Overhaul",
+						body: "Added full vim-style keybindings.\n- J/K navigation\n- Quick archive",
+						published_at: "2026-11-01T12:00:00Z",
+						prerelease: false,
+						html_url:
+							"https://github.com/moodynooby/Todo.Txt/releases/tag/v1.2.0",
+					},
+				];
+			}
+			return [];
+		}),
+	};
+});
 
 const cardCount = () => screen.getAllByTestId(/^milestone-item-/).length;
 
 describe("ProjectTimeline Component", () => {
-	it("offers a search box and a filter chip for every project", () => {
+	it("offers a search box and filter chips for repositories", async () => {
 		render(<ProjectTimeline />);
 
+		await waitFor(() => {
+			expect(screen.getByTestId("filter-Todo.Txt")).toBeInTheDocument();
+		});
 		expect(screen.getByTestId("milestone-search")).toBeInTheDocument();
-		for (const projectId of Object.keys(PROJECT_CONFIG)) {
-			expect(screen.getByTestId(`filter-${projectId}`)).toBeInTheDocument();
-		}
+		expect(screen.getByTestId("filter-Modern-TWP")).toBeInTheDocument();
 	});
 
-	it("renders every milestone in the content", () => {
+	it("renders dynamic GitHub releases and fallback activity milestones", async () => {
 		render(<ProjectTimeline />);
 
-		expect(cardCount()).toBe(TIMELINE_MILESTONES.length);
-		expect(screen.getByText(TIMELINE_MILESTONES[0].title)).toBeInTheDocument();
+		await waitFor(() => {
+			expect(
+				screen.getByText("Keyboard Navigation Overhaul"),
+			).toBeInTheDocument();
+		});
+		expect(cardCount()).toBe(2);
 	});
 
-	it("filters milestones when repository filter chips are clicked", () => {
+	it("filters milestones when repository filter chips are clicked", async () => {
 		render(<ProjectTimeline />);
 
-		const projectId = Object.keys(PROJECT_CONFIG)[0];
-		const expected = TIMELINE_MILESTONES.filter(
-			(milestone) => milestone.project === projectId,
-		).length;
+		await waitFor(() => {
+			expect(cardCount()).toBe(2);
+		});
 
-		fireEvent.click(screen.getByTestId(`filter-${projectId}`));
-
-		expect(cardCount()).toBe(expected);
+		fireEvent.click(screen.getByTestId("filter-Todo.Txt"));
+		expect(cardCount()).toBe(1);
 		expect(
-			screen.getByText(
-				new RegExp(
-					`Showing ${expected} of ${TIMELINE_MILESTONES.length} milestones in ${projectId}`,
-				),
-			),
+			screen.getByText(/Showing 1 of 2 milestones in Todo\.Txt/),
 		).toBeInTheDocument();
 
 		fireEvent.click(screen.getByTestId("filter-All"));
-		expect(cardCount()).toBe(TIMELINE_MILESTONES.length);
+		expect(cardCount()).toBe(2);
 	});
 
-	it("filters milestones by a commit from the content", () => {
-		const sample = TIMELINE_MILESTONES.find((milestone) => milestone.commit);
+	it("filters milestones by search query", async () => {
 		render(<ProjectTimeline />);
 
-		const searchInput = screen.getByRole("textbox", {
-			name: /Search milestones/i,
+		await waitFor(() => {
+			expect(cardCount()).toBe(2);
 		});
-		fireEvent.change(searchInput, { target: { value: sample.commit } });
 
-		expect(screen.getByText(sample.title)).toBeInTheDocument();
+		fireEvent.change(
+			screen.getByRole("textbox", { name: /Search milestones/i }),
+			{
+				target: { value: "v1.2.0" },
+			},
+		);
+
+		expect(
+			screen.getByText("Keyboard Navigation Overhaul"),
+		).toBeInTheDocument();
 		expect(cardCount()).toBe(1);
 	});
 
-	it("opens the changelog drawer with the selected milestone's data", () => {
-		const sample = TIMELINE_MILESTONES[0];
+	it("opens and closes the changelog drawer", async () => {
 		render(<ProjectTimeline />);
+
+		await waitFor(() => {
+			expect(
+				screen.getByText("Keyboard Navigation Overhaul"),
+			).toBeInTheDocument();
+		});
 
 		fireEvent.click(
 			screen.getByRole("button", {
-				name: `View release details for ${sample.title}`,
+				name: "View release details for Keyboard Navigation Overhaul",
 			}),
 		);
 
 		expect(screen.getByTestId("milestone-drawer")).toBeInTheDocument();
-		expect(screen.getByTestId("drawer-title")).toHaveTextContent(sample.title);
-		expect(screen.getByTestId("drawer-commit-link")).toHaveAttribute(
-			"href",
-			`${PROJECT_CONFIG[sample.project].repoUrl}/commit/${sample.commit}`,
+		expect(screen.getByTestId("drawer-title")).toHaveTextContent(
+			"Keyboard Navigation Overhaul",
 		);
-	});
-
-	it("closes the drawer when the close button is clicked", () => {
-		render(<ProjectTimeline />);
-
-		fireEvent.click(
-			screen.getByRole("button", {
-				name: `View release details for ${TIMELINE_MILESTONES[0].title}`,
-			}),
-		);
-		expect(screen.getByTestId("milestone-drawer")).toBeInTheDocument();
 
 		fireEvent.click(screen.getByTestId("close-drawer"));
 		expect(screen.queryByTestId("drawer-title")).not.toBeInTheDocument();
 	});
 
-	it("reverses the milestone order when sorting is toggled", () => {
+	it("shows an empty state and resets when no milestones match", async () => {
 		render(<ProjectTimeline />);
 
-		const firstTitle = () =>
-			screen.getAllByTestId(/^milestone-item-/)[0].querySelector("h4")
-				.textContent;
-
-		const newestFirst = firstTitle();
-		fireEvent.click(screen.getByRole("button", { name: /Sort oldest first/i }));
-
-		expect(
-			screen.getByRole("button", { name: /Sort newest first/i }),
-		).toBeInTheDocument();
-		expect(firstTitle()).not.toBe(newestFirst);
-	});
-
-	it("shows an empty state and resets when no milestones match", () => {
-		render(<ProjectTimeline />);
+		await waitFor(() => {
+			expect(cardCount()).toBe(2);
+		});
 
 		fireEvent.change(
 			screen.getByRole("textbox", { name: /Search milestones/i }),
@@ -124,6 +159,6 @@ describe("ProjectTimeline Component", () => {
 		).toBeInTheDocument();
 
 		fireEvent.click(screen.getByRole("button", { name: /Clear Filters/i }));
-		expect(cardCount()).toBe(TIMELINE_MILESTONES.length);
+		expect(cardCount()).toBe(2);
 	});
 });

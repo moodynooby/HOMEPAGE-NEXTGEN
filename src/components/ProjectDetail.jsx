@@ -25,7 +25,9 @@ export default function ProjectDetail() {
 	const bookmarked = isBookmarked(projectName);
 	const label = bookmarked ? "Remove bookmark" : "Bookmark project";
 
-	const projectIndex = projects.findIndex((p) => p.githubName === projectName);
+	const projectIndex = projects.findIndex(
+		(p) => p.githubName.toLowerCase() === projectName?.toLowerCase(),
+	);
 	const project = projectIndex === -1 ? null : projects[projectIndex];
 	const {
 		markdown,

@@ -12,12 +12,14 @@ import CommandResults from "@/components/CommandResults";
 import ShortcutsDialog from "@/components/ShortcutsDialog";
 import { buildCommandActions } from "@/config/commands";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import useProjectsData from "@/hooks/useProjectsData";
 import useShortcutsModal from "@/hooks/useShortcutsModal";
 
 export default function CommandPalette({ children }) {
 	const navigate = useNavigate();
 	const { setMode } = useThemeContext();
 	const [shortcutsOpen, setShortcutsOpen] = useShortcutsModal();
+	const { projects } = useProjectsData();
 
 	const handleJumpToSection = useCallback(
 		(sectionId) => navigate("/", { state: { scrollTo: sectionId } }),
@@ -36,8 +38,16 @@ export default function CommandPalette({ children }) {
 				setShortcutsOpen,
 				handleJumpToSection,
 				copyToClipboard,
+				projects,
 			}),
-		[navigate, setMode, setShortcutsOpen, handleJumpToSection, copyToClipboard],
+		[
+			navigate,
+			setMode,
+			setShortcutsOpen,
+			handleJumpToSection,
+			copyToClipboard,
+			projects,
+		],
 	);
 
 	return (

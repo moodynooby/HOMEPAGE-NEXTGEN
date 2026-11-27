@@ -1,234 +1,144 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { STORAGE_KEYS } from "@/config/storage";
-import radarData from "@/content/techRadar.json";
+import { useMemo } from "react";
 import useProjectsData from "@/hooks/useProjectsData";
-import { isAuthenticated } from "@/utils/authUtils";
+
+export const RADAR_RINGS = ["Adopt", "Trial", "Assess", "Hold"];
+export const RADAR_QUADRANTS = [
+	"Languages",
+	"Frontend/UI",
+	"Backend/Data",
+	"DevOps/Cloud",
+];
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-const readCustomBlips = () => {
-	try {
-		const raw = localStorage.getItem(STORAGE_KEYS.radarCustomBlips);
-		if (!raw) return [];
-		const parsed = JSON.parse(raw);
-		return Array.isArray(parsed) ? parsed : [];
-	} catch (_error) {
-		return [];
-	}
+const TOPIC_METADATA = {
+	react: { name: "React", quadrant: "Frontend/UI" },
+	reactjs: { name: "React", quadrant: "Frontend/UI" },
+	vite: { name: "Vite", quadrant: "Frontend/UI" },
+	tailwindcss: { name: "Tailwind CSS", quadrant: "Frontend/UI" },
+	tailwind: { name: "Tailwind CSS", quadrant: "Frontend/UI" },
+	css: { name: "CSS", quadrant: "Frontend/UI" },
+	webextension: { name: "WebExtensions", quadrant: "Frontend/UI" },
+	"browser-extension": { name: "WebExtensions", quadrant: "Frontend/UI" },
+	"firefox-addon": { name: "WebExtensions", quadrant: "Frontend/UI" },
+	"chrome-extension": { name: "WebExtensions", quadrant: "Frontend/UI" },
+	threejs: { name: "Three.js", quadrant: "Frontend/UI" },
+	canvas: { name: "HTML5 Canvas", quadrant: "Frontend/UI" },
+	vue: { name: "Vue", quadrant: "Frontend/UI" },
+	nextjs: { name: "Next.js", quadrant: "Frontend/UI" },
+	nodejs: { name: "Node.js", quadrant: "Backend/Data" },
+	node: { name: "Node.js", quadrant: "Backend/Data" },
+	express: { name: "Express", quadrant: "Backend/Data" },
+	sqlite: { name: "SQLite", quadrant: "Backend/Data" },
+	postgres: { name: "PostgreSQL", quadrant: "Backend/Data" },
+	postgresql: { name: "PostgreSQL", quadrant: "Backend/Data" },
+	supabase: { name: "Supabase", quadrant: "Backend/Data" },
+	fastapi: { name: "FastAPI", quadrant: "Backend/Data" },
+	flask: { name: "Flask", quadrant: "Backend/Data" },
+	ai: { name: "Generative AI", quadrant: "Backend/Data" },
+	llm: { name: "Generative AI", quadrant: "Backend/Data" },
+	"machine-learning": { name: "Machine Learning", quadrant: "Backend/Data" },
+	"computer-vision": { name: "Computer Vision", quadrant: "Backend/Data" },
+	docker: { name: "Docker", quadrant: "DevOps/Cloud" },
+	netlify: { name: "Netlify", quadrant: "DevOps/Cloud" },
+	vercel: { name: "Vercel", quadrant: "DevOps/Cloud" },
+	"github-actions": { name: "GitHub Actions", quadrant: "DevOps/Cloud" },
+	ci: { name: "CI/CD", quadrant: "DevOps/Cloud" },
+	aws: { name: "AWS", quadrant: "DevOps/Cloud" },
+	linux: { name: "Linux", quadrant: "DevOps/Cloud" },
 };
 
-const writeCustomBlips = (blips) => {
-	try {
-		localStorage.setItem(STORAGE_KEYS.radarCustomBlips, JSON.stringify(blips));
-	} catch (_error) {
-		// Ignore storage errors in restricted contexts
-	}
+const CATEGORY_INFERENCES = {
+	"Browser Extension": { name: "WebExtensions", quadrant: "Frontend/UI" },
+	"Web App": { name: "React", quadrant: "Frontend/UI" },
+	"AI Tool": { name: "Generative AI", quadrant: "Backend/Data" },
+	"Computer Vision": { name: "Computer Vision", quadrant: "Backend/Data" },
 };
+
+function determineRing(matchingProjects) {
+	const count = matchingProjects.length;
+	const latestPush = matchingProjects.reduce((latest, p) => {
+		const ts = p.pushed_at ? new Date(p.pushed_at).getTime() : 0;
+		return Math.max(latest, ts);
+	}, 0);
+	const monthsSincePush = latestPush
+		? (Date.now() - latestPush) / (1000 * 60 * 60 * 24 * 30)
+		: Infinity;
+
+	if (count >= 3 || (count >= 2 && monthsSincePush <= 18)) return "Adopt";
+	if (count >= 2 || monthsSincePush <= 24) return "Trial";
+	return "Assess";
+}
+
+function buildBlip(id, name, quadrant, matchingProjects) {
+	const projectNames = matchingProjects.map((p) => p.githubName);
+	const minYear = matchingProjects.reduce((earliest, p) => {
+		const y = Number(p.year);
+		return !Number.isNaN(y) && y > 2000 ? Math.min(earliest, y) : earliest;
+	}, CURRENT_YEAR);
+
+	return {
+		id,
+		name,
+		quadrant,
+		ring: determineRing(matchingProjects),
+		yoe: Math.max(1, CURRENT_YEAR - minYear + 1),
+		keyRepos: projectNames.slice(0, 3),
+		projects: projectNames,
+		source: "github",
+	};
+}
 
 export default function useTechRadarData() {
 	const { projects, loading } = useProjectsData();
-	const [customBlips, setCustomBlips] = useState(readCustomBlips);
 
-	useEffect(() => {
-		const handleStorage = (e) => {
-			if (e.key === STORAGE_KEYS.radarCustomBlips) {
-				setCustomBlips(readCustomBlips());
-			}
-		};
-		window.addEventListener("storage", handleStorage);
-		return () => window.removeEventListener("storage", handleStorage);
-	}, []);
-
-	// Extract unique languages and projects from GitHub repo data
-	const { availableLanguages, allProjects, projectsByLanguage } =
-		useMemo(() => {
-			const langMap = new Map();
-			const projectNames = projects.map((p) => p.githubName);
-
-			for (const project of projects) {
-				const lang = project.language?.trim();
-				if (!lang) continue;
-
-				if (!langMap.has(lang)) {
-					langMap.set(lang, []);
-				}
-				langMap.get(lang).push(project);
-			}
-
-			const sortedLangs = Array.from(langMap.keys()).sort((a, b) => {
-				const diff = langMap.get(b).length - langMap.get(a).length;
-				return diff !== 0 ? diff : a.localeCompare(b);
-			});
-
-			return {
-				availableLanguages: sortedLangs,
-				allProjects: projectNames,
-				projectsByLanguage: langMap,
-			};
-		}, [projects]);
-
-	// Derive dynamic blips merging:
-	// 1. Detected GitHub languages from projects
-	// 2. Curated baseline blips from techRadar.json
-	// 3. User-created custom blips from dynamic form
 	const blips = useMemo(() => {
-		const result = [];
-		const processedNames = new Set();
-		let nextId = 1;
+		const grouped = new Map();
 
-		// 1. Custom blips take precedence
-		for (const custom of customBlips) {
-			const id = custom.id || `custom-${nextId++}`;
-			result.push({
-				...custom,
-				id,
-				isCustom: true,
-				source: "custom",
-			});
-			processedNames.add(custom.name.toLowerCase());
-		}
+		const addTech = (name, quadrant, project) => {
+			const key = `${quadrant}::${name.toLowerCase()}`;
+			if (!grouped.has(key)) {
+				grouped.set(key, { name, quadrant, projects: new Map() });
+			}
+			grouped.get(key).projects.set(project.githubName, project);
+		};
 
-		// 2. Curated blips from techRadar.json
-		const curatedMap = new Map();
-		for (const blip of radarData.blips) {
-			curatedMap.set(blip.name.toLowerCase(), blip);
-		}
+		for (const project of projects) {
+			const lang = project.language?.trim();
+			if (lang) {
+				addTech(lang, "Languages", project);
+			}
 
-		// 3. Dynamic GitHub languages
-		for (const lang of availableLanguages) {
-			const lower = lang.toLowerCase();
-			if (processedNames.has(lower)) continue;
-
-			const matchingProjects = projectsByLanguage.get(lang) || [];
-			const matchingNames = matchingProjects.map((p) => p.githubName);
-			const minYear = matchingProjects.reduce((earliest, p) => {
-				const y = Number(p.year);
-				return !Number.isNaN(y) && y > 2000 ? Math.min(earliest, y) : earliest;
-			}, CURRENT_YEAR);
-
-			const calculatedYoe = Math.max(1, CURRENT_YEAR - minYear + 1);
-
-			// Automatically determine ring by usage frequency unless curated
-			const curated = curatedMap.get(lower);
-			const ring =
-				curated?.ring ||
-				(matchingProjects.length >= 3
-					? "Adopt"
-					: matchingProjects.length >= 2
-						? "Trial"
-						: "Assess");
-
-			const yoe = Math.max(curated?.yoe || 0, calculatedYoe);
-			const keyRepos =
-				matchingNames.length > 0
-					? matchingNames.slice(0, 3)
-					: curated?.keyRepos || [];
-
-			result.push({
-				id: curated?.id || `github-${nextId++}`,
-				name: curated?.name || lang,
-				quadrant: "Languages",
-				ring,
-				yoe,
-				keyRepos,
-				projects:
-					matchingNames.length > 0 ? matchingNames : curated?.projects || [],
-				source: "github",
-			});
-			processedNames.add(lower);
-		}
-
-		// 4. Remaining curated blips (e.g. React, Node.js, Docker, AWS, Vue, etc.)
-		for (const [lower, curated] of curatedMap.entries()) {
-			if (processedNames.has(lower)) continue;
-
-			// Dynamically infer related projects for known frameworks/tools
-			const inferredProjects = [...(curated.projects || [])];
-			if (lower === "react") {
-				for (const p of projects) {
-					if (
-						(p.category === "Web App" || p.githubName === "modern-portfolio") &&
-						!inferredProjects.includes(p.githubName)
-					) {
-						inferredProjects.push(p.githubName);
-					}
+			for (const topic of project.topics || []) {
+				const mapped = TOPIC_METADATA[topic.toLowerCase()];
+				if (mapped) {
+					addTech(mapped.name, mapped.quadrant, project);
 				}
 			}
 
-			result.push({
-				...curated,
-				projects: inferredProjects,
-				keyRepos:
-					inferredProjects.length > 0
-						? inferredProjects.slice(0, 3)
-						: curated.keyRepos || [],
-				source: "curated",
-			});
-			processedNames.add(lower);
-		}
-
-		return result;
-	}, [customBlips, availableLanguages, projectsByLanguage, projects]);
-
-	const addOrUpdateBlip = useCallback((blipData) => {
-		if (!isAuthenticated()) return;
-		setCustomBlips((prev) => {
-			const id = blipData.id || `custom-${Date.now()}`;
-			const normalized = {
-				...blipData,
-				id,
-				yoe: Number(blipData.yoe) || 1,
-				keyRepos: Array.isArray(blipData.keyRepos) ? blipData.keyRepos : [],
-				projects: Array.isArray(blipData.projects) ? blipData.projects : [],
-			};
-
-			const existingIndex = prev.findIndex(
-				(b) =>
-					b.id === id || b.name.toLowerCase() === blipData.name.toLowerCase(),
-			);
-
-			let next;
-			if (existingIndex >= 0) {
-				next = [...prev];
-				next[existingIndex] = { ...prev[existingIndex], ...normalized };
-			} else {
-				next = [normalized, ...prev];
+			const categoryTech = CATEGORY_INFERENCES[project.category];
+			if (categoryTech) {
+				addTech(categoryTech.name, categoryTech.quadrant, project);
 			}
-
-			writeCustomBlips(next);
-			return next;
-		});
-	}, []);
-
-	const deleteBlip = useCallback((blipId) => {
-		if (!isAuthenticated()) return;
-		setCustomBlips((prev) => {
-			const next = prev.filter((b) => b.id !== blipId);
-			writeCustomBlips(next);
-			return next;
-		});
-	}, []);
-
-	const resetToDefault = useCallback(() => {
-		if (!isAuthenticated()) return;
-		setCustomBlips([]);
-		try {
-			localStorage.removeItem(STORAGE_KEYS.radarCustomBlips);
-		} catch (_e) {
-			// ignore
 		}
-	}, []);
+
+		let nextId = 1;
+		return Array.from(grouped.values())
+			.map((entry) =>
+				buildBlip(
+					`github-${nextId++}`,
+					entry.name,
+					entry.quadrant,
+					Array.from(entry.projects.values()),
+				),
+			)
+			.sort((a, b) => b.projects.length - a.projects.length || b.yoe - a.yoe);
+	}, [projects]);
 
 	return {
-		rings: radarData.rings,
-		quadrants: radarData.quadrants,
+		rings: RADAR_RINGS,
+		quadrants: RADAR_QUADRANTS,
 		blips,
-		availableLanguages,
-		allProjects,
-		customBlipsCount: customBlips.length,
-		addOrUpdateBlip,
-		deleteBlip,
-		resetToDefault,
 		loading,
 	};
 }

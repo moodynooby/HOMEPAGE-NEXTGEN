@@ -4,14 +4,12 @@ import MilestoneCard from "@/components/MilestoneCard";
 import MilestoneChangelogDrawer from "@/components/MilestoneChangelogDrawer";
 import TimelineToolbar from "@/components/TimelineToolbar";
 import { FILTER_ALL } from "@/config/ledger";
-import {
-	PROJECT_CONFIG,
-	TIMELINE_MILESTONES,
-} from "@/content/timelineMilestones";
 import useTimelineFilters from "@/hooks/useTimelineFilters";
 
 export default function ProjectTimeline({ limit = null }) {
 	const {
+		projectConfig,
+		totalMilestones,
 		selectedProject,
 		setSelectedProject,
 		searchQuery,
@@ -48,15 +46,14 @@ export default function ProjectTimeline({ limit = null }) {
 				searchQuery={searchQuery}
 				setSearchQuery={setSearchQuery}
 				projectFilterOptions={projectFilterOptions}
-				totalProjects={Object.keys(PROJECT_CONFIG).length}
+				totalProjects={Object.keys(projectConfig).length}
 			/>
 
 			<hr className="editorial-divider mb-6" />
 
 			<div className="flex justify-between items-center mb-4">
 				<span className="editorial-meta">
-					Showing {filteredMilestones.length} of {TIMELINE_MILESTONES.length}{" "}
-					milestones
+					Showing {filteredMilestones.length} of {totalMilestones} milestones
 					{selectedProject !== FILTER_ALL && ` in ${selectedProject}`}
 					{searchQuery && ` matching "${searchQuery}"`}
 				</span>
@@ -108,7 +105,7 @@ export default function ProjectTimeline({ limit = null }) {
 							<MilestoneCard
 								key={milestone.id}
 								milestone={milestone}
-								proj={PROJECT_CONFIG[milestone.project] || {}}
+								proj={projectConfig[milestone.project] || {}}
 								onOpen={setActiveMilestone}
 							/>
 						))}
@@ -143,7 +140,7 @@ export default function ProjectTimeline({ limit = null }) {
 			<MilestoneChangelogDrawer
 				activeMilestone={activeMilestone}
 				onClose={() => setActiveMilestone(null)}
-				projectConfig={PROJECT_CONFIG}
+				projectConfig={projectConfig}
 			/>
 		</div>
 	);

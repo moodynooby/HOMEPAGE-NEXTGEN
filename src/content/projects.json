@@ -122,9 +122,9 @@
 		"chromeStatsId": "nanobrowser-ai-web-agent"
 	},
 	{
-		"githubName": "Club-Carnival-26",
-		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/Club-Carnival-26/master/README.md",
-		"githubImg": "https://raw.githubusercontent.com/moodynooby/Club-Carnival-26/master/logo.png",
+		"githubName": "AI-Mitr",
+		"githubContentPath": "https://raw.githubusercontent.com/moodynooby/AI-Mitr/master/README.md",
+		"githubImg": "https://raw.githubusercontent.com/moodynooby/AI-Mitr/master/logo.png",
 		"tagline": "AI Mitr — a fine-tuned, voice-powered AI assistant that answers questions about college documents.",
 		"category": "AI Tool"
 	}
